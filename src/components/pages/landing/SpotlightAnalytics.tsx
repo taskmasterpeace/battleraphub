@@ -11,7 +11,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "@/components/pages/landing/LineChart";
+} from "@/components/ui/chart";
 import { BarChartIcon as ChartSquare } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";

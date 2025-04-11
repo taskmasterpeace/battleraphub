@@ -3,7 +3,7 @@ export interface Battler {
   name: string;
   image: string;
   location: string;
-  rating: number;
+  rating?: number;
   change?: number;
   bio?: string;
   accolades?: string[];
@@ -13,7 +13,12 @@ export interface Battler {
   weightedRating?: number;
   unweightedRating?: number;
   userType?: "media" | "battler" | "league_owner" | "admin";
-  lastUpdated: string;
+  banner?: string
+  totalPoints?: number
+  createdAt?: Date
+  addedBy?: string // ID of the user who added this battler
+  addedAt?: string // When the battler was added
+  lastUpdated?: string;
 }
 
 export interface MediaUser {
@@ -36,6 +41,20 @@ export interface MediaUser {
     likes: number;
     date: string;
   }[];
+}
+
+export interface Badge {
+  category: string
+  badge: string
+  description: string
+  isPositive: boolean
+}
+
+// Ex: "Writing" - "Wordplay" - "Use of complex words"
+export interface Attribute {
+  category: string
+  attribute: string
+  description: string
 }
 
 export interface CommunityStats {

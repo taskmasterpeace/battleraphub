@@ -31,7 +31,7 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="dark">
             <Header />
-            <main className="min-h-screen flex flex-col items-center pt-16">{children}</main>
+            <main className="min-h-screen pt-16">{children}</main>
           </ThemeProvider>
         </AuthProvider>
       </body>

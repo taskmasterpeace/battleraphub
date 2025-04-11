@@ -12,7 +12,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "@/components/pages/landing/LineChart";
+} from "@/components/ui/chart";
 import { communityStats } from "@/__mocks__/landing";
 import { CommunityStats } from "@/types";
 
