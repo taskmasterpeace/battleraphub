@@ -11,7 +11,7 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signInWithGoogle: (redirectTo?: string) => Promise<void>;
   signOut: () => Promise<void>;
-  signUp: (email: string, password: string) => Promise<AuthResponse>;
+  signUp: (name: string, email: string, password: string) => Promise<AuthResponse>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -57,10 +57,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (name: string, email: string, password: string) => {
     return await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          name,
+        },
+      },
     });
   };
 

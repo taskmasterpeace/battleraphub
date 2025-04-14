@@ -52,7 +52,7 @@ export default function YouTubeFeature() {
     );
   }
 
-  if (videos.length === 0) {
+  if (videos?.length === 0) {
     return (
       <div className="h-full w-full bg-gray-800 rounded-lg flex items-center justify-center">
         <p className="text-gray-400">No videos available</p>

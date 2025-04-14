@@ -1,5 +1,17 @@
+import { PAGES } from "@/config";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+
+const PUBLIC_ROUTES = [
+  PAGES.SIGN_UP,
+  PAGES.LOGIN,
+  PAGES.RESET_PASSWORD,
+  PAGES.FORGOT_PASSWORD,
+  PAGES.HOME,
+  PAGES.BATTLERS,
+];
+
+const PROTECTED_ROUTES = [PAGES.SELECT_ROLE, PAGES.PROTECTED];
 
 export const updateSession = async (request: NextRequest) => {
   // This `try/catch` block is only here for the interactive tutorial.
@@ -37,13 +49,30 @@ export const updateSession = async (request: NextRequest) => {
     // https://supabase.com/docs/guides/auth/server-side/nextjs
     const user = await supabase.auth.getUser();
 
-    // protected routes
-    if (request.nextUrl.pathname.startsWith("/protected") && user.error) {
-      return NextResponse.redirect(new URL("/sign-in", request.url));
+    if (PUBLIC_ROUTES.includes(request.nextUrl.pathname) && !user.error) {
+      return NextResponse.redirect(new URL(PAGES.PROTECTED, request.url));
     }
 
-    if (request.nextUrl.pathname === "/" && !user.error) {
-      return NextResponse.redirect(new URL("/protected", request.url));
+    if (PROTECTED_ROUTES.includes(request.nextUrl.pathname) && user.error) {
+      return NextResponse.redirect(new URL(PAGES.LOGIN, request.url));
+    }
+
+    // If user is logged in but don't have role setup, redirect to role setup page
+    if (
+      user.data.user &&
+      !user.data.user.user_metadata.role &&
+      request.nextUrl.pathname !== PAGES.SELECT_ROLE
+    ) {
+      return NextResponse.redirect(new URL(PAGES.SELECT_ROLE, request.url));
+    }
+
+    // If role selected and goes to select role page, redirect to home
+    if (
+      user.data.user &&
+      user.data.user.user_metadata.role &&
+      request.nextUrl.pathname === PAGES.SELECT_ROLE
+    ) {
+      return NextResponse.redirect(new URL(PAGES.PROTECTED, request.url));
     }
 
     return response;

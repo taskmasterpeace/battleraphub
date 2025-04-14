@@ -18,15 +18,17 @@ import { Label } from "@/components/ui/label";
 import GoogleButton from "@/components/pages/auth/GoogleButton";
 
 import Image from "next/image";
-
+import { createClient } from "@/utils/supabase/client";
+import { createUser } from "./index";
+import { User } from "@supabase/supabase-js";
 export default function Signup() {
   const { signUp } = useAuth();
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,17 +38,24 @@ export default function Signup() {
     setSuccess("");
 
     try {
-      const { data, error } = await signUp(email, password);
-      console.log("data", data);
+      const { data, error } = await signUp(name, email, password);
       if (error) {
         setError(error.message);
       } else {
-        setSuccess("Registration successful! Please check your email to confirm your account.");
         // Clear form
         setEmail("");
+        setName("");
         setPassword("");
         setConfirmPassword("");
-        setStep(1);
+
+        const supabase = await createClient();
+        const { error: createUserError } = await createUser(data.user as User, supabase);
+
+        if (createUserError) {
+          setError(createUserError.message);
+        } else {
+          setSuccess("Registration successful! Please check your email to confirm your account.");
+        }
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -76,9 +85,7 @@ export default function Signup() {
           </div>
           <CardTitle className="text-2xl text-center">Create an Account</CardTitle>
           <CardDescription className="text-center">
-            {step === 1
-              ? "Sign up to rate and analyze battle rap performances"
-              : "Tell us about your role in the battle rap community"}
+            {"Sign up to rate and analyze battle rap performances"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -105,6 +112,17 @@ export default function Signup() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Your Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
