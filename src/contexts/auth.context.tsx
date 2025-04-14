@@ -107,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         options: {
           redirectTo: redirectTo
             ? `${window.location.origin}${redirectTo}`
-            : `${window.location.origin}/`,
+            : `${window.location.origin}/auth/callback`,
         },
       });
 

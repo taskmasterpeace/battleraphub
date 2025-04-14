@@ -60,7 +60,7 @@ export default function YouTubeFeature() {
     );
   }
 
-  const currentVideo = videos[currentIndex];
+  const currentVideo = videos?.[currentIndex];
 
   return (
     <div className="relative h-full w-full">
@@ -69,16 +69,16 @@ export default function YouTubeFeature() {
           <div className="relative aspect-video h-full">
             <Image
               src={
-                currentVideo.thumbnail ||
+                currentVideo?.thumbnail ||
                 "/placeholder.svg?height=180&width=320&text=Battle+Rap+Stories"
               }
-              alt={currentVideo.title}
+              alt={currentVideo?.title}
               fill
               className="object-cover"
             />
             <div
               className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer"
-              onClick={() => openVideo(currentVideo.videoId)}
+              onClick={() => openVideo(currentVideo?.videoId)}
             >
               <Button
                 variant="default"
@@ -90,7 +90,7 @@ export default function YouTubeFeature() {
             </div>
           </div>
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-            <h3 className="font-medium text-lg text-white mb-2">{currentVideo.title}</h3>
+            <h3 className="font-medium text-lg text-white mb-2">{currentVideo?.title}</h3>
             <div className="flex justify-between items-center">
               <div className="flex gap-2">
                 <Button
@@ -114,7 +114,7 @@ export default function YouTubeFeature() {
                 variant="ghost"
                 size="sm"
                 className="h-8 px-3 text-xs bg-black/50 text-white hover:bg-red-600"
-                onClick={() => openVideo(currentVideo.videoId)}
+                onClick={() => openVideo(currentVideo?.videoId)}
               >
                 Watch on YouTube
               </Button>
@@ -124,7 +124,7 @@ export default function YouTubeFeature() {
       </Card>
 
       <div className="absolute -bottom-6 left-0 right-0 flex justify-center gap-1">
-        {videos.map((_, index) => (
+        {videos?.map((_, index) => (
           <button
             key={index}
             className={`h-2 w-2 rounded-full transition-colors ${

@@ -18,9 +18,7 @@ import { Label } from "@/components/ui/label";
 import GoogleButton from "@/components/pages/auth/GoogleButton";
 
 import Image from "next/image";
-import { createClient } from "@/utils/supabase/client";
-import { createUser } from "./index";
-import { User } from "@supabase/supabase-js";
+
 export default function Signup() {
   const { signUp } = useAuth();
   const [email, setEmail] = useState("");
@@ -38,7 +36,7 @@ export default function Signup() {
     setSuccess("");
 
     try {
-      const { data, error } = await signUp(name, email, password);
+      const { error } = await signUp(name, email, password);
       if (error) {
         setError(error.message);
       } else {
@@ -48,14 +46,7 @@ export default function Signup() {
         setPassword("");
         setConfirmPassword("");
 
-        const supabase = await createClient();
-        const { error: createUserError } = await createUser(data.user as User, supabase);
-
-        if (createUserError) {
-          setError(createUserError.message);
-        } else {
-          setSuccess("Registration successful! Please check your email to confirm your account.");
-        }
+        setSuccess("Registration successful! Please check your email to confirm your account.");
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
