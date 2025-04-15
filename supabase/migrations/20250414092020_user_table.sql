@@ -1,3 +1,13 @@
+-- trigger function to manage last_updated column
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
+    RETURNS TRIGGER
+    AS $$
+    BEGIN
+        NEW.updated_at = now();
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -12,14 +22,22 @@ CREATE TABLE IF NOT EXISTS users (
   twitter TEXT,
   instagram TEXT,
   verified BOOLEAN DEFAULT FALSE,
-  auth_id TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  auth_id UUID,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- trigger function to manage updated_at column
+DROP TRIGGER IF EXISTS handle_updated_at ON "public"."users";
 
--- Trigger function to add entry into public.users table when a new user is created in auth schema
+CREATE TRIGGER handle_updated_at
+    BEFORE UPDATE
+    ON "public"."users"
+    FOR EACH ROW
+    EXECUTE PROCEDURE handle_updated_at();
 
--- Trigger function
+-- trigger function to add entry into public.users table when a new user is created in auth schema
+
 create or replace function public.handle_new_user()
 returns trigger as $$
 declare
@@ -43,10 +61,26 @@ begin
 end;
 $$ language plpgsql security definer;
 
--- Trigger on auth.users table
+-- trigger on auth.users table
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 
 create trigger on_auth_user_created
 after insert on auth.users
 for each row
 execute function public.handle_new_user();
+
+-- Enable RLS
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
+-- read policy
+CREATE POLICY "Enable read access to authenticated user" ON users AS PERMISSIVE FOR
+SELECT
+    TO authenticated USING (true);
+
+-- update policy
+CREATE POLICY "Enable update to authenticated user" ON "public"."users" AS PERMISSIVE FOR
+UPDATE TO authenticated USING (auth.uid() = auth_id);
+
+-- delete policy
+create policy "Enable delete for users based on user_id" on "public"."users" AS PERMISSIVE FOR
+DELETE to authenticated using (auth.uid() = auth_id);

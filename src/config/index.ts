@@ -16,6 +16,19 @@ const ROLES_NAME = {
   [ROLE.LEAGUE_OWNER_INVESTOR]: "League Owner/Investor",
 };
 
+const DB_TABLES = {
+  USERS: "users",
+  BATTLERS: "battlers",
+};
+
+const PERMISSION = {
+  COMMUNITY_MANAGER: {
+    [DB_TABLES.BATTLERS]: {
+      create: true,
+    },
+  },
+};
+
 const PAGES = {
   SIGN_UP: "/auth/signup",
   LOGIN: "/auth/login",
@@ -27,8 +40,4 @@ const PAGES = {
   PROTECTED: "/protected",
 };
 
-const DB_TABLES = {
-  USERS: "users",
-};
-
-export { ROLE, ROLES, ROLES_NAME, PAGES, DB_TABLES };
+export { ROLE, ROLES, ROLES_NAME, PAGES, DB_TABLES, PERMISSION };
