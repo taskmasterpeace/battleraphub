@@ -29,3 +29,15 @@ ALTER TABLE battlers ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Enable read access to public" ON public.battlers AS PERMISSIVE FOR
 SELECT
     TO public USING (true);
+
+-- insert policy
+CREATE POLICY "Enable insert access to service role" ON public.battlers AS PERMISSIVE FOR
+INSERT TO service_role WITH CHECK (true);
+
+-- update policy
+CREATE POLICY "Enable update access to service role" ON public.battlers AS PERMISSIVE FOR
+UPDATE TO service_role USING (true);
+
+-- delete policy
+CREATE POLICY "Enable delete access to service role" ON public.battlers AS PERMISSIVE FOR
+DELETE TO service_role USING (true);

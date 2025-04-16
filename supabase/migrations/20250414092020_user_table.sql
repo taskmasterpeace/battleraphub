@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS users (
   twitter TEXT,
   instagram TEXT,
   verified BOOLEAN DEFAULT FALSE,
-  auth_id UUID,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -50,10 +49,10 @@ begin
   user_avatar := new.raw_user_meta_data->>'avatar_url';
 
   if user_avatar is not null and user_avatar <> '' then
-    insert into public.users (auth_id, name, email, avatar)
+    insert into public.users (id, name, email, avatar)
     values (new.id, user_name, user_email, user_avatar);
   else
-    insert into public.users (auth_id, name, email)
+    insert into public.users (id, name, email)
     values (new.id, user_name, user_email);
   end if;
 
@@ -79,8 +78,12 @@ SELECT
 
 -- update policy
 CREATE POLICY "Enable update to authenticated user" ON "public"."users" AS PERMISSIVE FOR
-UPDATE TO authenticated USING (auth.uid() = auth_id);
+UPDATE TO authenticated USING (auth.uid() = id);
 
 -- delete policy
 create policy "Enable delete for users based on user_id" on "public"."users" AS PERMISSIVE FOR
-DELETE to authenticated using (auth.uid() = auth_id);
+DELETE to authenticated using (auth.uid() = id);
+
+-- insert policy
+CREATE POLICY "Enable insert for authenticated users" ON "public"."users" AS PERMISSIVE FOR
+INSERT TO authenticated WITH CHECK (auth.uid() = id);
