@@ -13,11 +13,11 @@ export interface Battler {
   weightedRating?: number;
   unweightedRating?: number;
   userType?: "media" | "battler" | "league_owner" | "admin";
-  banner?: string
-  totalPoints?: number
-  createdAt?: Date
-  addedBy?: string // ID of the user who added this battler
-  addedAt?: string // When the battler was added
+  banner?: string;
+  totalPoints?: number;
+  createdAt?: Date;
+  addedBy?: string; // ID of the user who added this battler
+  addedAt?: string; // When the battler was added
   lastUpdated?: string;
 }
 
@@ -44,17 +44,17 @@ export interface MediaUser {
 }
 
 export interface Badge {
-  category: string
-  badge: string
-  description: string
-  isPositive: boolean
+  category: string;
+  badge: string;
+  description: string;
+  isPositive: boolean;
 }
 
 // Ex: "Writing" - "Wordplay" - "Use of complex words"
 export interface Attribute {
-  category: string
-  attribute: string
-  description: string
+  category: string;
+  attribute: string;
+  description: string;
 }
 
 export interface CommunityStats {
@@ -71,4 +71,39 @@ export interface AnalyticsData {
   chartData: { name: string; value: number }[];
   dataKey: string;
   color: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  user_permissions: {
+    user_id: string;
+  }[];
+  avatar: string;
+  role_id: number;
+  youtube: string;
+  twitter: string;
+  instagram: string;
+  verified: boolean;
+  added_by: string;
+}
+
+export interface Battlers {
+  id: string;
+  battler_tags: {
+    tags: {
+      id: string;
+      name: string;
+    };
+  }[];
+  name: string;
+  avatar: string;
+  bio: string;
+  location: string;
+}
+
+export interface TagsOption {
+  id: number;
+  tagId: string;
+  name: string;
 }

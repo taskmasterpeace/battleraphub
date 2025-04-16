@@ -27,7 +27,7 @@ export default function RoleSelector({ role, onChange }: RoleSelectorProps) {
       <RadioGroup
         value={role.toString()}
         onValueChange={handleRoleChange}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        className="grid grid-cols-1 gap-4"
       >
         <RoleCard
           title={ROLES_NAME[ROLE.FAN]}
@@ -109,7 +109,7 @@ function RoleCard({
             <div className="flex items-center">
               <Label
                 htmlFor={`role-${title.toLowerCase()}`}
-                className="text-base font-medium cursor-pointer flex items-center flex-wrap"
+                className="text-base font-medium cursor-pointer flex items-center flex-wrap gap-y-1"
               >
                 {icon}
                 <span className="ml-2">{title}</span>

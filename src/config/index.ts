@@ -19,7 +19,12 @@ const ROLES_NAME = {
 const DB_TABLES = {
   USERS: "users",
   BATTLERS: "battlers",
+  BATTLERS_TAGS: "battler_tags",
+  TAGS: "tags",
+  USER_PERMISSIONS: "user_permissions",
 };
+
+const BUCKET_NAME = "battleraprank";
 
 const PERMISSION = {
   COMMUNITY_MANAGER: {
@@ -27,6 +32,10 @@ const PERMISSION = {
       create: true,
     },
   },
+};
+
+const PERMISSIONS = {
+  COMMUNITY_MANAGER: "COMMUNITY_MANAGER",
 };
 
 const PAGES = {
@@ -40,4 +49,4 @@ const PAGES = {
   PROTECTED: "/protected",
 };
 
-export { ROLE, ROLES, ROLES_NAME, PAGES, DB_TABLES, PERMISSION };
+export { ROLE, ROLES, ROLES_NAME, PAGES, DB_TABLES, PERMISSION, BUCKET_NAME, PERMISSIONS };

@@ -72,7 +72,7 @@ export default function YouTubeFeature() {
                 currentVideo?.thumbnail ||
                 "/placeholder.svg?height=180&width=320&text=Battle+Rap+Stories"
               }
-              alt={currentVideo?.title}
+              alt={currentVideo?.title || "Battle Rap Stories"}
               fill
               className="object-cover"
             />
