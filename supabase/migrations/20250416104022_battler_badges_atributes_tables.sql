@@ -1,10 +1,11 @@
-create type battle_criteria as enum ('writing', 'performance', 'personal');
+DROP TYPE IF EXISTS battle_criteria;
+CREATE TYPE battle_criteria AS ENUM ('writing', 'performance', 'personal');
 
 -- badges table
 CREATE TABLE
     IF NOT EXISTS badges (
         id SERIAL PRIMARY KEY,
-        name TEXT NOT NULL,
+        name TEXT UNIQUE NOT NULL,
         description TEXT NOT NULL,
         is_positive BOOLEAN NOT NULL,
         category battle_criteria NOT NULL,
@@ -16,7 +17,7 @@ CREATE TABLE
 CREATE TABLE
     IF NOT EXISTS attributes (
         id SERIAL PRIMARY KEY,
-        name TEXT NOT NULL,
+        name TEXT UNIQUE NOT NULL,
         description TEXT NOT NULL,
         category battle_criteria NOT NULL,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -26,23 +27,25 @@ CREATE TABLE
 -- battler badges table
 CREATE TABLE
     IF NOT EXISTS battler_badges (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id UUID DEFAULT uuid_generate_v4(),
         user_id UUID REFERENCES users (id),
         battler_id UUID REFERENCES battlers (id),
         badge_id INTEGER REFERENCES badges (id),
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        PRIMARY KEY (user_id, battler_id, badge_id)
     );
 
 -- battler rating table
 CREATE TABLE
     IF NOT EXISTS battler_ratings (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id UUID DEFAULT uuid_generate_v4(),
         user_id UUID REFERENCES users (id),
         battler_id UUID REFERENCES battlers (id),
         score NUMERIC(2, 2) NOT NULL,
         prev_score NUMERIC(2, 2) DEFAULT 0,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        PRIMARY KEY (user_id, battler_id)
     );
 
 -- Trigger function to manage updated_at column

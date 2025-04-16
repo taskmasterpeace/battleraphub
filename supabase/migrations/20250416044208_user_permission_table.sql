@@ -1,10 +1,11 @@
--- tags table
+-- user permissions table
 CREATE TABLE
     IF NOT EXISTS user_permissions (
         user_id UUID REFERENCES users (id),
         permission TEXT,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        PRIMARY KEY (user_id, permission)
     );
 
 -- trigger function to manage updated_at column

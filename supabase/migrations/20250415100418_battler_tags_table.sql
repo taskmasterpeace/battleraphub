@@ -1,10 +1,11 @@
--- tags table
+-- battler tags table
 CREATE TABLE
     IF NOT EXISTS battler_tags (
         battler_id UUID REFERENCES battlers (id),
         tag_id INTEGER REFERENCES tags (id),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        PRIMARY KEY (battler_id, tag_id)
     );
 
 -- trigger function to manage updated_at column
