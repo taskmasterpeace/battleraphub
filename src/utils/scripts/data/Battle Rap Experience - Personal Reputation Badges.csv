@@ -1,0 +1,66 @@
+Category,Badge,Description
+PersonalReputation,Respected Veteran,Earned respect in the culture over a long career
+PersonalReputation,Crowd Favorite,"Has a strong, loyal fanbase"
+PersonalReputation,Consummate Professional,"Reliable and professional, never no-shows or backs out"
+PersonalReputation,Believability,"Authentic in delivery and persona, never questioned by the crowd"
+PersonalReputation,Resilient Battler,Always bounces back from losses or tough battles
+PersonalReputation,Great Sportsmanship,Respects opponents and maintains a professional demeanor
+PersonalReputation,Versatile Battler,Can adapt to any format or setting
+PersonalReputation,Show Stealer,Known for stealing the show in big battles
+PersonalReputation,Big Stage Performer,Always performs best on the biggest stages
+PersonalReputation,Comeback King/Queen,Bounces back strong after a weak round or battle
+PersonalReputation,Fan Engagement,Stays connected with fans and builds a strong rapport
+PersonalReputation,League Loyalist,Sticks with one league and builds its reputation
+PersonalReputation,PPV Sales Driver,Brings in fans and drives up pay-per-view sales
+PersonalReputation,Battle Technician,Strategically breaks down opponents with precision
+PersonalReputation,Humble Winner,Takes victories with grace and respect
+PersonalReputation,Community Builder,Gives back to the battle rap culture and supports newcomers
+PersonalReputation,Mentor Figure,Helps elevate and guide younger battlers
+PersonalReputation,Home-Court Hero,Dominates when battling in their home city or league
+PersonalReputation,Comeback Story,Made a triumphant return after a hiatus or setback
+PersonalReputation,Creative Innovator,Pioneers new approaches and styles in battle rap
+PersonalReputation,Battle of the Night Winner,Consistently has the most memorable performance
+PersonalReputation,Consistent Grinder,Constantly battles and stays sharp
+PersonalReputation,Clutch Performer,Known for delivering when the stakes are high
+PersonalReputation,Well-Connected,Well-liked and respected by league owners and battlers
+PersonalReputation,Underrated Legend,Often overlooked but consistently delivers high-quality performances
+PersonalReputation,Believable Persona,Authentic in every aspect of their delivery
+PersonalReputation,Sharp Strategist,Approaches battles with a game plan and executes it well
+NegPersonalReputation,Sore Loser,Reacts poorly to losing
+NegPersonalReputation,Canceller,Backs out of battles frequently
+NegPersonalReputation,Drama Starter,Causes unnecessary conflict
+NegPersonalReputation,Excuse Maker,Always has excuses for poor performance
+NegPersonalReputation,Disrespectful to Opponents,Lack of professionalism towards opponents
+NegPersonalReputation,League Hopper,Constantly switching loyalty between leagues
+NegPersonalReputation,Pay-Per-View Killer,Underperforms on big stages
+NegPersonalReputation,Overly Sensitive,Takes criticism too personally
+NegPersonalReputation,Unreliable Battler,No-shows or underperforms frequently
+NegPersonalReputation,Crowd Panderer,Plays too much to the crowd without delivering real substance
+NegPersonalReputation,Ghost Writer User,Has someone else writing for them
+NegPersonalReputation,Performance Enhancing Drug User,Relies on substances to perform
+NegPersonalReputation,Match Fixer,Fixes or throws battles for gain
+NegPersonalReputation,Scammer,Takes deposits or promises and doesn't deliver
+NegPersonalReputation,Unprofessional Conduct,Behaves inappropriately in battles
+NegPersonalReputation,Disloyal to Leagues,Betrays the trust of the league owners
+NegPersonalReputation,Fake Tough Guy,Tries to act tougher than they really are
+NegPersonalReputation,Clout Chaser,In it just for attention and fame
+NegPersonalReputation,Sellout,Sacrifices authenticity for commercial gain
+NegPersonalReputation,Poor Sportsmanship,"Disrespectful after a battle, win or lose"
+NegPersonalReputation,Ego Issues,Struggles to accept criticism or feedback
+NegPersonalReputation,Disrespectful to Fans,Fails to engage with or is rude to fans
+NegPersonalReputation,Known Choker,Reputation for consistently choking in battles
+NegPersonalReputation,Difficult to Work With,Hard to coordinate with for league owners
+NegPersonalReputation,Unreasonable Demands,Asks for more than they can deliver
+NegPersonalReputation,Poor Battle Selection,Takes mismatches or unfavorable battles
+NegPersonalReputation,Overexposure,Battles too often and becomes stale
+NegPersonalReputation,Underexposure,Doesn't battle enough to stay relevant
+NegPersonalReputation,Poor Brand Management,Struggles to market themselves properly
+NegPersonalReputation,Culturally Appropriative,Misuses elements of other cultures
+NegPersonalReputation,Outdated Style,Still rapping with a dated style or technique
+NegPersonalReputation,Tryhard Wordsmith,Overcomplicates language for little payoff
+NegPersonalReputation,Corny Punchline Specialist,Delivers overly cheesy or forced punchlines
+NegPersonalReputation,Inauthentic Persona,Tries to adopt a persona that doesn't feel real
+NegPersonalReputation,Overly Aggressive Battler,Comes off as too aggressive for no reason
+NegPersonalReputation,Too Academic/Complex,Uses overly complex language that loses the crowd
+NegPersonalReputation,Unoriginal Concept User,Recycles concepts too often
+NegPersonalReputation,Trend Follower,Always following what's popular instead of being original
