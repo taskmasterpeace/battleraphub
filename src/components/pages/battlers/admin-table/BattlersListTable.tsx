@@ -20,33 +20,23 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { createBattlersAction, deleteBattlersAction, editBattlersAction } from "@/app/actions";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { deleteBattlersAction } from "@/app/actions";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { SubmitButton } from "@/components/submit-button";
-import { FormMessage, Message } from "@/components/form-message";
 import { createClient } from "@/utils/supabase/client";
 import { DB_TABLES } from "@/config";
-import { Battlers, TagsOption } from "@/types";
-import { MultiSelect } from "@/components/multi-select";
+import { Battlers } from "@/types";
 import { Badge } from "@/components/ui/badge";
+import FormBattlers from "@/components/pages/battlers/admin-table/FormBattlers";
+import { toast } from "sonner";
 
 const itemsPerPage = 10;
 
 const supabase = createClient();
 
-const BattlersListTable = ({ searchParams }: { searchParams: Message }) => {
+const BattlersListTable = () => {
   const [open, setOpen] = useState(false);
-  const [tagsData, setTagsData] = useState<TagsOption[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [edit, setEditOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [battlersData, setBattlersData] = useState<Battlers[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -63,6 +53,9 @@ const BattlersListTable = ({ searchParams }: { searchParams: Message }) => {
         .select(
           `
           *,
+          users!battlers_added_by_fkey (
+            added_by: name
+          ),
           battler_tags (
             tags (
               id,
@@ -71,7 +64,8 @@ const BattlersListTable = ({ searchParams }: { searchParams: Message }) => {
           )
         `,
         )
-        .range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
+        .range((page - 1) * itemsPerPage, page * itemsPerPage - 1)
+        .order("created_at", { ascending: false });
 
       if (error) {
         console.error("Error fetching users:", error);
@@ -88,23 +82,21 @@ const BattlersListTable = ({ searchParams }: { searchParams: Message }) => {
     fetchBattlersList(currentPage);
   }, [currentPage]);
 
-  const fetchTagsData = async () => {
-    const { data, error } = await supabase.from(DB_TABLES.TAGS).select("*");
-    if (error) {
-      console.log("error", error);
-      return;
+  const deleteBattler = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    try {
+      const response = await deleteBattlersAction(formData);
+      if (response.success) {
+        toast.success(response.message);
+        fetchBattlersList(currentPage);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(`Delete battler failed: ${error}`);
     }
-    setTagsData(data || []);
   };
-
-  useEffect(() => {
-    fetchTagsData();
-  }, []);
-
-  const tagOptions = tagsData.map((tag) => ({
-    label: tag.name,
-    value: tag.id.toString(),
-  }));
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -115,62 +107,29 @@ const BattlersListTable = ({ searchParams }: { searchParams: Message }) => {
             <Button variant="default">Create Battlers</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
-            <form>
-              <DialogHeader>
-                <DialogTitle>Create Battlers</DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-                <Label htmlFor="name">Name</Label>
-                <Input name="name" placeholder="Enter your name" required />
-                <Label htmlFor="tags">Tags</Label>
-                <MultiSelect
-                  name="tags"
-                  options={tagOptions}
-                  onValueChange={(values) => {
-                    setSelectedTags(values);
-                  }}
-                  placeholder="Select Tags"
-                  variant="inverted"
-                  maxCount={3}
-                  className="mb-2"
-                />
-                <Input type="hidden" name="tags" value={JSON.stringify(selectedTags)} />
-                <Label htmlFor="location">location</Label>
-                <Input name="location" placeholder="Enter your location" required />
-                <Label htmlFor="bio">Bio</Label>
-                <Input name="bio" placeholder="Enter bio" required />
-                <Label htmlFor="avatar">Avatar</Label>
-                <Input name="avatar" type="file" accept="image/*" required />
-              </div>
-              <DialogFooter className="flex !flex-col gap-3 items-center mt-2">
-                <SubmitButton
-                  className="w-full"
-                  pendingText="Creating..."
-                  formAction={createBattlersAction}
-                >
-                  Create
-                </SubmitButton>
-                <FormMessage message={searchParams} />
-              </DialogFooter>
-            </form>
+            <FormBattlers
+              createBattler={true}
+              setOpenClose={() => setOpen(false)}
+              fetchBattlersList={() => fetchBattlersList(currentPage)}
+            />
           </DialogContent>
         </Dialog>
       </div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Avatar</TableHead>
+            <TableHead></TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Tags</TableHead>
             <TableHead>Bio</TableHead>
             <TableHead>Location</TableHead>
+            <TableHead>Added By</TableHead>
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {battlersData.length > 0 ? (
             battlersData.map((battler) => {
-              const selectedTagIds = battler.battler_tags.map((tag) => tag.tags?.id.toString());
               return (
                 <TableRow key={battler.id}>
                   <TableCell className="pr-0 w-[100px]">
@@ -204,12 +163,29 @@ const BattlersListTable = ({ searchParams }: { searchParams: Message }) => {
                     </div>
                   </TableCell>
                   <TableCell className="px-3 min-w-[350px] !w-[350px]">
-                    <div className="max-w-[350px]">{battler.bio}</div>
+                    <div className="max-w-[350px]">
+                      {battler.bio?.length > 125 ? `${battler.bio.slice(0, 125)}...` : battler.bio}
+                    </div>
                   </TableCell>
-                  <TableCell className="px-3 min-w-[300px] !w-[300px]">
-                    <div className="truncate max-w-[300px]">{battler.location}</div>
+                  <TableCell className="px-3 min-w-[100px] !w-[300px]">
+                    <div className="truncate max-w-[250px]">{battler.location}</div>
                   </TableCell>
-
+                  <TableCell className="px-3 min-w-[100px] !w-[300px]">
+                    <div className="truncate max-w-[300px]">
+                      {battler.users.added_by ? (
+                        <Badge
+                          variant={"default"}
+                          className="rounded-md text-medium capitalize text-xs"
+                        >
+                          {battler.users.added_by}
+                        </Badge>
+                      ) : (
+                        <Badge variant={"default"} className="rounded-md">
+                          -
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell className="text-right w-[100px]">
                     <Popover>
                       <PopoverTrigger>
@@ -217,84 +193,23 @@ const BattlersListTable = ({ searchParams }: { searchParams: Message }) => {
                       </PopoverTrigger>
                       <PopoverContent className="w-full max-w-[190px]">
                         <div className="flex flex-col items-start gap-3 w-full">
-                          <Dialog>
+                          <Dialog open={edit} onOpenChange={setEditOpen}>
                             <DialogTrigger asChild>
                               <Button variant={"secondary"} size={"sm"} className="w-[150px]">
                                 Edit Battlers
                               </Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px]">
-                              <form>
-                                <DialogHeader>
-                                  <DialogTitle>Edit Battlers</DialogTitle>
-                                </DialogHeader>
-                                <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-                                  <Input type="hidden" name="userId" value={battler.id} />
-                                  <Label htmlFor="name">Name</Label>
-                                  <Input
-                                    name="name"
-                                    defaultValue={battler.name}
-                                    placeholder="Enter your name"
-                                    required
-                                  />
-
-                                  <Label htmlFor="tags">Tags</Label>
-                                  <MultiSelect
-                                    name="tags"
-                                    options={tagOptions}
-                                    defaultValue={selectedTagIds}
-                                    onValueChange={(values) => {
-                                      setSelectedTags(values);
-                                    }}
-                                    placeholder="Select Tags"
-                                    variant="inverted"
-                                    className="mb-2"
-                                    maxCount={3}
-                                  />
-                                  <Input
-                                    type="hidden"
-                                    name="tags"
-                                    value={JSON.stringify(selectedTags)}
-                                  />
-
-                                  <Label htmlFor="location">Location</Label>
-                                  <Input
-                                    name="location"
-                                    defaultValue={battler.location}
-                                    placeholder="Enter your location"
-                                    required
-                                  />
-
-                                  <Label htmlFor="bio">Bio</Label>
-                                  <Input
-                                    name="bio"
-                                    defaultValue={battler.bio}
-                                    placeholder="Enter bio"
-                                    required
-                                  />
-                                  <Label htmlFor="avatar">Avatar</Label>
-                                  <Input name="avatar" type="file" accept="image/*" />
-                                  <Input
-                                    type="hidden"
-                                    name="currentAvatar"
-                                    value={battler.avatar || ""}
-                                  />
-                                </div>
-                                <DialogFooter className="flex !flex-col gap-3 items-center mt-2">
-                                  <SubmitButton
-                                    className="w-full"
-                                    pendingText="Updating..."
-                                    formAction={editBattlersAction}
-                                  >
-                                    Edit
-                                  </SubmitButton>
-                                  <FormMessage message={searchParams} />
-                                </DialogFooter>
-                              </form>
+                              <FormBattlers
+                                createBattler={false}
+                                setOpenClose={() => setEditOpen(false)}
+                                fetchBattlersList={() => fetchBattlersList(currentPage)}
+                                battlerData={battler}
+                              />
                             </DialogContent>
                           </Dialog>
 
-                          <form action={deleteBattlersAction}>
+                          <form onSubmit={(e) => deleteBattler(e)}>
                             <Input type="hidden" name="userId" value={battler.id} />
                             <Button
                               type="submit"

@@ -27,14 +27,16 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { createClient } from "@/utils/supabase/client";
-import { DB_TABLES, ROLES_NAME } from "@/config";
+import { DB_TABLES, ROLE, ROLES_NAME } from "@/config";
 import {
   deleteUserAction,
   giveUserPermissionAction,
+  markAsVerifiedAction,
   revokeUserPermissionAction,
 } from "@/app/actions";
 import { Input } from "@/components/ui/input";
 import { User } from "@/types";
+import { toast } from "sonner";
 
 const itemsPerPage = 10;
 
@@ -55,6 +57,7 @@ const UserListTable = () => {
       const { data, error } = await supabase
         .from(DB_TABLES.USERS)
         .select(`*, user_permissions(user_id)`)
+        .or(`role_id.neq.${ROLE.ADMIN},role_id.is.null`)
         .range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
 
       if (error) {
@@ -73,14 +76,81 @@ const UserListTable = () => {
     fetchUserList(currentPage);
   }, [currentPage]);
 
+  const onRevokePermission = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    try {
+      const response = await revokeUserPermissionAction(formData);
+      if (response.success) {
+        toast.success(response.message);
+        fetchUserList(currentPage);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(`revoke permission failed: ${error}`);
+    }
+  };
+
+  const onGivePermission = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    try {
+      const response = await giveUserPermissionAction(formData);
+      if (response.success) {
+        toast.success(response.message);
+        fetchUserList(currentPage);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(`give permission failed: ${error}`);
+    }
+  };
+
+  const markAsVerified = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    try {
+      const response = await markAsVerifiedAction(formData);
+      if (response.success) {
+        toast.success(response.message);
+        fetchUserList(currentPage);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(`mark as verified failed: ${error}`);
+    }
+  };
+
+  const onDeleteUser = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    try {
+      const response = await deleteUserAction(formData);
+      if (response.success) {
+        toast.success(response.message);
+        fetchUserList(currentPage);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(`delete user failed: ${error}`);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="text-2xl font-bold py-3 text-nowrap">User List</div>
+      <div className="py-4">
+        <h1 className="text-3xl font-bold text-nowrap">User List</h1>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead></TableHead>
             <TableHead>Name</TableHead>
-            <TableHead>Avatar</TableHead>
+            <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Youtube</TableHead>
             <TableHead>Platform X</TableHead>
@@ -93,15 +163,16 @@ const UserListTable = () => {
           {userData.length > 0 ? (
             userData.map((user) => (
               <TableRow key={user.id}>
-                <TableCell className="text-nowrap px-3 min-w-[300px] !w-[500px]">
-                  {user.name}
-                </TableCell>
-                <TableCell className="pr-0">
-                  <Avatar className="h-7 w-7">
+                <TableCell className="">
+                  <Avatar className="h-12 w-12">
                     <AvatarImage src={user?.avatar || ""} alt={user.name} />
                     <AvatarFallback>{user.name.slice(0, 2).toUpperCase() || "NA"}</AvatarFallback>
                   </Avatar>
                 </TableCell>
+                <TableCell className="text-wrap px-3 min-w-[250px] !w-[250px]">
+                  {user.name}
+                </TableCell>
+                <TableCell>{user.email}</TableCell>
                 <TableCell className="text-nowrap px-3">
                   {user.role_id ? (
                     <Badge variant="outline" className="rounded-sm px-2 py-1">
@@ -145,32 +216,49 @@ const UserListTable = () => {
                     </PopoverTrigger>
                     <PopoverContent className="w-full max-w-[190px]">
                       <div className="flex flex-col items-start gap-3 w-full">
-                        {user.user_permissions?.find((perm) => perm.user_id === user.id) ? (
-                          <form action={revokeUserPermissionAction}>
-                            <Input type="hidden" name="userId" value={user.id} />
-                            <Button
-                              type="submit"
-                              variant={"secondary"}
-                              size={"sm"}
-                              className="w-[150px]"
-                            >
-                              Revoke permission
-                            </Button>
-                          </form>
-                        ) : (
-                          <form action={giveUserPermissionAction}>
-                            <Input type="hidden" name="userId" value={user.id} />
-                            <Button
-                              type="submit"
-                              variant={"secondary"}
-                              size={"sm"}
-                              className="w-[150px]"
-                            >
-                              Give permission
-                            </Button>
-                          </form>
-                        )}
-                        <form action={deleteUserAction}>
+                        <div>
+                          {user.verified === false && (
+                            <form onSubmit={(e) => markAsVerified(e)}>
+                              <Input type="hidden" name="userId" value={user.id} />
+                              <Button
+                                type="submit"
+                                variant={"secondary"}
+                                size={"sm"}
+                                className="w-[150px]"
+                              >
+                                Mark as Verified
+                              </Button>
+                            </form>
+                          )}
+                        </div>
+                        <div>
+                          {user.user_permissions?.find((perm) => perm.user_id === user.id) ? (
+                            <form onSubmit={(e) => onRevokePermission(e)}>
+                              <Input type="hidden" name="userId" value={user.id} />
+                              <Button
+                                type="submit"
+                                variant={"secondary"}
+                                size={"sm"}
+                                className="w-[150px]"
+                              >
+                                Revoke c.m. permission
+                              </Button>
+                            </form>
+                          ) : (
+                            <form onSubmit={(e) => onGivePermission(e)}>
+                              <Input type="hidden" name="userId" value={user.id} />
+                              <Button
+                                type="submit"
+                                variant={"secondary"}
+                                size={"sm"}
+                                className="w-[150px]"
+                              >
+                                Give c.m. permission
+                              </Button>
+                            </form>
+                          )}
+                        </div>
+                        <form onSubmit={(e) => onDeleteUser(e)}>
                           <Input type="hidden" name="userId" value={user.id} />
                           <Button
                             type="submit"
@@ -189,7 +277,7 @@ const UserListTable = () => {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={8} className="text-center py-4">
+              <TableCell colSpan={9} className="text-center py-4">
                 No data available
               </TableCell>
             </TableRow>

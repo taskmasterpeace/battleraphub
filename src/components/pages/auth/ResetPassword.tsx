@@ -6,11 +6,30 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/submit-button";
 import { resetPasswordAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { PAGES } from "@/config";
 
-const ResetPassword = ({ searchParams }: { searchParams: Message }) => {
+const ResetPassword = () => {
+  const navigate = useRouter();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const onResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    try {
+      const response = await resetPasswordAction(formData);
+      if (response.success) {
+        toast.success(response.message);
+        navigate.push(PAGES.LOGIN);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(`Reset password failed: ${error}`);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
@@ -22,7 +41,7 @@ const ResetPassword = ({ searchParams }: { searchParams: Message }) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <form action={resetPasswordAction} className="space-y-4">
+          <form onSubmit={(e) => onResetPassword(e)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="password">New Password</Label>
               <Input
@@ -51,7 +70,6 @@ const ResetPassword = ({ searchParams }: { searchParams: Message }) => {
             <div className="flex items-center justify-center">
               <SubmitButton pendingText="Resetting...">Reset password</SubmitButton>
             </div>
-            <FormMessage message={searchParams} />
           </form>
         </CardContent>
       </Card>

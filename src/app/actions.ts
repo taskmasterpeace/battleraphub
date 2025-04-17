@@ -1,11 +1,15 @@
 "use server";
 
-import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { protectedCreateClient } from "@/utils/supabase/protected-server";
-import { BUCKET_NAME, DB_TABLES, PERMISSIONS } from "@/config";
+import { BUCKET_NAME, DB_TABLES, PAGES, PERMISSIONS } from "@/config";
+import {
+  successResponse,
+  errorResponse,
+  redirectResponse,
+  encodedRedirect,
+} from "@/utils/response";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -27,11 +31,11 @@ export const signUpAction = async (formData: FormData) => {
 
   if (error) {
     console.error(error.code + " " + error.message);
-    return encodedRedirect("error", "/sign-up", error.message);
+    return encodedRedirect("error", PAGES.SIGN_UP, error.message);
   } else {
     return encodedRedirect(
       "success",
-      "/sign-up",
+      PAGES.SIGN_UP,
       "Thanks for signing up! Please check your email for a verification link.",
     );
   }
@@ -48,10 +52,10 @@ export const signInAction = async (formData: FormData) => {
   });
 
   if (error) {
-    return encodedRedirect("error", "/sign-in", error.message);
+    return encodedRedirect("error", PAGES.LOGIN, error.message);
   }
 
-  return redirect("/protected");
+  return redirectResponse(PAGES.PROTECTED);
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {
@@ -61,7 +65,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   const callbackUrl = formData.get("callbackUrl")?.toString();
 
   if (!email) {
-    return encodedRedirect("error", "/forgot-password", "Email is required");
+    return errorResponse("Email is required");
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -70,18 +74,14 @@ export const forgotPasswordAction = async (formData: FormData) => {
 
   if (error) {
     console.error(error.message);
-    return encodedRedirect("error", "/forgot-password", "Could not reset password");
+    return errorResponse("Could not reset password");
   }
 
   if (callbackUrl) {
-    return redirect(callbackUrl);
+    return redirectResponse(callbackUrl);
   }
 
-  return encodedRedirect(
-    "success",
-    "/forgot-password",
-    "Check your email for a link to reset your password.",
-  );
+  return successResponse("Check your email for a link to reset your password.");
 };
 
 export const resetPasswordAction = async (formData: FormData) => {
@@ -91,15 +91,11 @@ export const resetPasswordAction = async (formData: FormData) => {
   const confirmPassword = formData.get("confirmPassword") as string;
 
   if (!password || !confirmPassword) {
-    return encodedRedirect(
-      "error",
-      "/reset-password",
-      "Password and confirm password are required",
-    );
+    return errorResponse("Password and confirm password are required");
   }
 
   if (password !== confirmPassword) {
-    return encodedRedirect("error", "/reset-password", "Passwords do not match");
+    return errorResponse("Passwords do not match");
   }
 
   const { error } = await supabase.auth.updateUser({
@@ -107,16 +103,15 @@ export const resetPasswordAction = async (formData: FormData) => {
   });
 
   if (error) {
-    return encodedRedirect("error", "/reset-password", "Password update failed");
+    return errorResponse("Password update failed");
   }
-
-  return encodedRedirect("success", "/reset-password", "Password updated successfully");
+  return successResponse("Password updated successfully");
 };
 
 export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  return redirect("/sign-in");
+  return redirectResponse(PAGES.LOGIN);
 };
 
 export const giveUserPermissionAction = async (formData: FormData) => {
@@ -124,7 +119,7 @@ export const giveUserPermissionAction = async (formData: FormData) => {
   const userId = formData.get("userId") as string;
 
   if (!userId) {
-    return encodedRedirect("error", "/admin/user-list", "userId is required");
+    return errorResponse("userId is required");
   }
 
   const { data: user, error: userError } = await supabase
@@ -133,7 +128,7 @@ export const giveUserPermissionAction = async (formData: FormData) => {
     .eq("id", userId);
 
   if (userError || !user?.length) {
-    return encodedRedirect("error", "/admin/user-list", "User not found");
+    return errorResponse("User not found");
   }
 
   const { error: permissionError } = await supabase.from(DB_TABLES.USER_PERMISSIONS).insert({
@@ -143,7 +138,7 @@ export const giveUserPermissionAction = async (formData: FormData) => {
 
   if (permissionError) {
     console.error("Permission error:", permissionError);
-    return encodedRedirect("error", "/admin/user-list", "Failed to update user permissions");
+    return errorResponse("Failed to update user permissions");
   }
 
   const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
@@ -154,10 +149,9 @@ export const giveUserPermissionAction = async (formData: FormData) => {
 
   if (updateError) {
     console.error("Update metadata error:", updateError);
-    return encodedRedirect("error", "/admin/user-list", "Failed to update user metadata");
+    return errorResponse("Failed to update user metadata");
   }
-
-  return encodedRedirect("success", "/admin/user-list", "User permissions updated successfully");
+  return successResponse("User permissions updated successfully");
 };
 
 export const revokeUserPermissionAction = async (formData: FormData) => {
@@ -165,7 +159,7 @@ export const revokeUserPermissionAction = async (formData: FormData) => {
   const userId = formData.get("userId") as string;
 
   if (!userId) {
-    return encodedRedirect("error", "/admin/user-list", "userId is required");
+    return errorResponse("userId is required");
   }
 
   const { data: user, error: userError } = await supabase
@@ -174,7 +168,7 @@ export const revokeUserPermissionAction = async (formData: FormData) => {
     .eq("id", userId);
 
   if (userError || !user?.length) {
-    return encodedRedirect("error", "/admin/user-list", "User not found");
+    return errorResponse("User not found");
   }
 
   const { error: permissionError } = await supabase
@@ -185,7 +179,7 @@ export const revokeUserPermissionAction = async (formData: FormData) => {
 
   if (permissionError) {
     console.error("Permission removal error:", permissionError);
-    return encodedRedirect("error", "/admin/user-list", "Failed to revoke user permissions");
+    return errorResponse("Failed to revoke user permissions");
   }
 
   const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
@@ -196,10 +190,9 @@ export const revokeUserPermissionAction = async (formData: FormData) => {
 
   if (updateError) {
     console.error("Update metadata error:", updateError);
-    return encodedRedirect("error", "/admin/user-list", "Failed to update user metadata");
+    return errorResponse("Failed to update user metadata");
   }
-
-  return encodedRedirect("success", "/admin/user-list", "User permissions revoked successfully");
+  return successResponse("User permissions revoked successfully");
 };
 
 export const deleteUserAction = async (formData: FormData) => {
@@ -207,7 +200,7 @@ export const deleteUserAction = async (formData: FormData) => {
   const userId = formData.get("userId") as string;
 
   if (!userId) {
-    return encodedRedirect("error", "/admin/user-list", "userId is required");
+    return errorResponse("userId is required");
   }
 
   const { error: permError } = await supabase
@@ -217,91 +210,131 @@ export const deleteUserAction = async (formData: FormData) => {
 
   if (permError) {
     console.error("Failed to delete user_permissions:", permError);
-    return encodedRedirect("error", "/admin/user-list", "Failed to delete user permissions");
+    return errorResponse("Failed to delete user permissions");
   }
 
   const { error } = await supabase.from(DB_TABLES.USERS).delete().eq("id", userId);
+  const { error: authError } = await supabase.auth.admin.deleteUser(userId);
 
-  if (error) {
+  if (error || authError) {
     console.error("Delete error:", error);
-    return encodedRedirect("error", "/admin/user-list", "Failed to delete user");
+    return errorResponse("Failed to delete user");
   }
 
-  return encodedRedirect("success", "/admin/user-list", "user deleted successfully");
+  return successResponse("user deleted successfully");
+};
+
+export const markAsVerifiedAction = async (formData: FormData) => {
+  const supabase = await protectedCreateClient();
+  const userId = formData.get("userId") as string;
+
+  if (!userId) {
+    return errorResponse("userId is required");
+  }
+
+  const { data: user, error: userError } = await supabase
+    .from(DB_TABLES.USERS)
+    .select()
+    .eq("id", userId)
+    .single();
+
+  if (userError || !user) {
+    return successResponse("User not found");
+  }
+
+  const { error: updateError } = await supabase
+    .from(DB_TABLES.USERS)
+    .update({ verified: true })
+    .eq("id", userId);
+
+  if (updateError) {
+    console.error("Verification error:", updateError);
+    return errorResponse("Failed to verify user");
+  }
+
+  return successResponse("User verified successfully");
 };
 
 export const createBattlersAction = async (formData: FormData) => {
   const supabase = await protectedCreateClient();
   const supabaseClient = await createClient();
 
-  const { data: userData } = await supabaseClient.auth.getUser();
+  try {
+    const { data: userData } = await supabaseClient.auth.getUser();
 
-  if (!userData?.user) {
-    return encodedRedirect("error", "/admin/battlers", "User not authenticated");
+    if (!userData?.user) {
+      return errorResponse("User is not authorized");
+    }
+
+    const name = formData.get("name") as string;
+    const location = formData.get("location") as string;
+    const bio = formData.get("bio") as string;
+    const avatar = formData.get("avatar") as File;
+    const tagsRaw = formData.get("tags") as string;
+    const tags = tagsRaw ? (JSON.parse(tagsRaw) as string[]) : [];
+
+    if (!avatar || !avatar.name) {
+      return errorResponse("Avatar is required");
+    }
+
+    const timestamp = new Date().getTime();
+    const uploadedImageUrl = `battlers/${avatar.name}_${timestamp}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(BUCKET_NAME)
+      .upload(uploadedImageUrl, avatar, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: avatar.type || "image/jpeg",
+      });
+
+    if (uploadError) {
+      console.error("Upload error:", uploadError);
+      return errorResponse("Error while uploading avatar");
+    }
+
+    const { data: publicUrlData } = await supabase.storage
+      .from(BUCKET_NAME)
+      .getPublicUrl(uploadedImageUrl);
+
+    const { data: battlerInsertData, error: insertError } = await supabase
+      .from(DB_TABLES.BATTLERS)
+      .insert({
+        name,
+        location,
+        bio,
+        avatar: publicUrlData.publicUrl,
+        added_by: userData.user.id,
+      })
+      .select("id")
+      .single();
+
+    if (insertError || !battlerInsertData?.id) {
+      console.error("Insert error:", insertError);
+      return errorResponse("Error saving battler data");
+    }
+
+    const battlerId = battlerInsertData.id;
+
+    if (tags.length > 0) {
+      const tagData = tags.map((tagId) => ({
+        battler_id: battlerId,
+        tag_id: tagId,
+      }));
+
+      const { error: tagsError } = await supabase.from(DB_TABLES.BATTLERS_TAGS).insert(tagData);
+
+      if (tagsError) {
+        console.error("Battler tag insertion error:", tagsError);
+        return errorResponse("Error saving battler tags");
+      }
+    }
+
+    return successResponse("Battler created successfully");
+  } catch (error) {
+    console.error("Unexpected error in createBattlersAction:", error);
+    return errorResponse("An unexpected error occurred while creating battler.");
   }
-
-  const name = formData.get("name") as string;
-  const location = formData.get("location") as string;
-  const bio = formData.get("bio") as string;
-  const avatar = formData.get("avatar") as File;
-  const tagsRaw = formData.get("tags") as string;
-  const tags = tagsRaw ? (JSON.parse(tagsRaw) as string[]) : [];
-
-  if (!name || !location || !bio || !avatar || !tags) {
-    return encodedRedirect("error", "/admin/battlers", "Missing required fields");
-  }
-
-  const timestamp = new Date().getTime();
-  const uploadedImageUrl = `battlers/${avatar.name}_${timestamp}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from(BUCKET_NAME)
-    .upload(uploadedImageUrl, avatar, {
-      cacheControl: "3600",
-      upsert: false,
-    });
-
-  if (uploadError) {
-    console.error("Upload error:", uploadError);
-    return encodedRedirect("error", "/admin/battlers", "Error while uploading image");
-  }
-
-  const { data: publicUrlData } = await supabase.storage
-    .from(BUCKET_NAME)
-    .getPublicUrl(uploadedImageUrl);
-
-  const { data: battlerInsertData, error: insertError } = await supabase
-    .from(DB_TABLES.BATTLERS)
-    .insert({
-      name,
-      location,
-      bio,
-      avatar: publicUrlData.publicUrl,
-      added_by: userData.user.id,
-    })
-    .select("id")
-    .single();
-
-  if (insertError || !battlerInsertData?.id) {
-    console.error("Insert error:", insertError);
-    return encodedRedirect("error", "/admin/battlers", "Error saving battler data");
-  }
-
-  const battlerId = battlerInsertData.id;
-
-  const tagData = tags.map((tagId) => ({
-    battler_id: battlerId,
-    tag_id: tagId,
-  }));
-
-  const { error: battlersError } = await supabase.from(DB_TABLES.BATTLERS_TAGS).insert(tagData);
-
-  if (battlersError) {
-    console.error("Battlers Tag insertion error:", battlersError);
-    return encodedRedirect("error", "/admin/battlers", "Error saving battler tags");
-  }
-
-  return encodedRedirect("success", "/admin/battlers", "Battler created successfully");
 };
 
 export const editBattlersAction = async (formData: FormData) => {
@@ -311,78 +344,109 @@ export const editBattlersAction = async (formData: FormData) => {
   const { data: userData } = await supabaseClient.auth.getUser();
 
   if (!userData?.user) {
-    return encodedRedirect("error", "/admin/battlers", "User not authenticated");
+    return errorResponse("User not authenticated");
   }
 
   const userId = formData.get("userId") as string;
   const name = formData.get("name") as string;
   const location = formData.get("location") as string;
   const bio = formData.get("bio") as string;
-  const avatar = formData.get("avatar") as File;
   const tagsRaw = formData.get("tags") as string;
   const tags = tagsRaw ? (JSON.parse(tagsRaw) as string[]) : [];
+  const avatar = formData.get("avatar") as File;
 
-  if (!userId || !name || !location || !bio || !tags) {
-    return encodedRedirect("error", "/admin/battlers", "Missing required fields");
-  }
+  let avatarUrl: string | undefined;
 
-  let avatarUrl;
+  try {
+    if (avatar && avatar.size > 0) {
+      const timestamp = new Date().getTime();
+      const uploadedImageUrl = `battlers/${avatar.name}_${timestamp}`;
 
-  if (avatar && avatar.size > 0) {
-    const timestamp = new Date().getTime();
-    const uploadedImageUrl = `battlers/${avatar.name}_${timestamp}`;
+      const { data: currentBattler } = await supabase
+        .from(DB_TABLES.BATTLERS)
+        .select("avatar")
+        .eq("id", userId)
+        .single();
 
-    const { error: uploadError } = await supabase.storage
-      .from(BUCKET_NAME)
-      .upload(uploadedImageUrl, avatar, {
-        cacheControl: "3600",
-        upsert: true,
+      const { data: existingFile } = await supabase.storage.from(BUCKET_NAME).list("battlers", {
+        search: avatar.name,
       });
 
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
-      return encodedRedirect("error", "/admin/battlers", "Error uploading new avatar");
+      if (existingFile && existingFile.length > 0) {
+        const existingPath = `battlers/${existingFile[0].name}`;
+        const { data: existingUrl } = await supabase.storage
+          .from(BUCKET_NAME)
+          .getPublicUrl(existingPath);
+        avatarUrl = existingUrl.publicUrl;
+      } else {
+        const { error: uploadError } = await supabase.storage
+          .from(BUCKET_NAME)
+          .upload(uploadedImageUrl, avatar, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: avatar.type || "image/jpeg",
+          });
+
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          return errorResponse("Error uploading new avatar");
+        }
+
+        const { data: publicUrlData } = await supabase.storage
+          .from(BUCKET_NAME)
+          .getPublicUrl(uploadedImageUrl);
+        avatarUrl = publicUrlData.publicUrl;
+
+        if (currentBattler?.avatar) {
+          const oldPath = currentBattler.avatar.split("/").pop();
+          if (oldPath) {
+            await supabase.storage.from(BUCKET_NAME).remove([`battlers/${oldPath}`]);
+          }
+        }
+      }
     }
 
-    const { data: publicUrlData } = await supabase.storage
-      .from(BUCKET_NAME)
-      .getPublicUrl(uploadedImageUrl);
+    const { error: updateError } = await supabase
+      .from(DB_TABLES.BATTLERS)
+      .update({
+        name,
+        location,
+        bio,
+        ...(avatarUrl && { avatar: avatarUrl }),
+      })
+      .eq("id", userId);
 
-    avatarUrl = publicUrlData.publicUrl;
+    if (updateError) {
+      console.error("Update error:", updateError);
+      return errorResponse("Error updating battler");
+    }
+
+    // tags handle
+    if (tags) {
+      await supabase.from(DB_TABLES.BATTLERS_TAGS).delete().eq("battler_id", userId);
+
+      const tagData = tags.map((tagId) => ({
+        battler_id: userId,
+        tag_id: tagId,
+      }));
+
+      if (tagData.length > 0) {
+        const { error: tagInsertError } = await supabase
+          .from(DB_TABLES.BATTLERS_TAGS)
+          .insert(tagData);
+
+        if (tagInsertError) {
+          console.error("Tag update error:", tagInsertError);
+          return errorResponse("Error updating battler tags");
+        }
+      }
+    }
+
+    return successResponse("Battler updated successfully");
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+    return errorResponse(errorMessage);
   }
-
-  const { error: updateError } = await supabase
-    .from(DB_TABLES.BATTLERS)
-    .update({
-      name,
-      location,
-      bio,
-      ...(avatarUrl && { avatar: avatarUrl }),
-    })
-    .eq("id", userId);
-
-  if (updateError) {
-    console.error("Update error:", updateError);
-    return encodedRedirect("error", "/admin/battlers", "Error updating battler");
-  }
-
-  // Delete old tags
-  await supabase.from(DB_TABLES.BATTLERS_TAGS).delete().eq("battler_id", userId);
-
-  // Insert new tags
-  const tagData = tags.map((tagId) => ({
-    battler_id: userId,
-    tag_id: tagId,
-  }));
-
-  const { error: tagInsertError } = await supabase.from(DB_TABLES.BATTLERS_TAGS).insert(tagData);
-
-  if (tagInsertError) {
-    console.error("Tag update error:", tagInsertError);
-    return encodedRedirect("error", "/admin/battlers", "Error updating battler tags");
-  }
-
-  return encodedRedirect("success", "/admin/battlers", "Battler updated successfully");
 };
 
 export const deleteBattlersAction = async (formData: FormData) => {
@@ -390,22 +454,25 @@ export const deleteBattlersAction = async (formData: FormData) => {
   const userId = formData.get("userId") as string;
 
   if (!userId) {
-    return encodedRedirect("error", "/admin/battlers", "userId is required");
+    return errorResponse("userId is required");
   }
 
-  const { error: tagError } = await supabase.from("battler_tags").delete().eq("battler_id", userId);
+  const { error: tagError } = await supabase
+    .from(DB_TABLES.BATTLERS_TAGS)
+    .delete()
+    .eq("battler_id", userId);
 
   if (tagError) {
     console.error("Failed to delete battler_tags:", tagError);
-    return encodedRedirect("error", "/admin/battlers", "Failed to delete battler tags");
+    return errorResponse("Failed to delete battler tags");
   }
 
   const { error } = await supabase.from(DB_TABLES.BATTLERS).delete().eq("id", userId);
 
   if (error) {
     console.error("Delete error:", error);
-    return encodedRedirect("error", "/admin/battlers", "Failed to delete battler");
+    return errorResponse("Failed to delete battler");
   }
 
-  return encodedRedirect("success", "/admin/battlers", "Battler deleted successfully");
+  return successResponse("Battler deleted successfully");
 };

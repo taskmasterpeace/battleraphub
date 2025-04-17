@@ -1,4 +1,4 @@
-import { PAGES } from "@/config";
+import { PAGES, PERMISSIONS, ROLE } from "@/config";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -11,12 +11,29 @@ const PUBLIC_ROUTES = [
   PAGES.BATTLERS,
 ];
 
-const PROTECTED_ROUTES = [PAGES.SELECT_ROLE, PAGES.PROTECTED];
+const PROTECTED_ROUTES = [
+  PAGES.SELECT_ROLE,
+  PAGES.PROTECTED,
+  PAGES.ADMIN_BATTLERS,
+  PAGES.ADMIN_USER_LIST,
+];
+
+const ACCESS_CONTROL = {
+  [PAGES.ADMIN_USER_LIST]: {
+    roles: [ROLE.ADMIN],
+    permissions: [],
+  },
+  [PAGES.ADMIN_BATTLERS]: {
+    roles: [ROLE.ADMIN],
+    permissions: [PERMISSIONS.COMMUNITY_MANAGER],
+  },
+};
 
 export const updateSession = async (request: NextRequest) => {
   // This `try/catch` block is only here for the interactive tutorial.
   // Feel free to remove once you have Supabase connected.
   try {
+    const pathname = request.nextUrl.pathname;
     // Create an unmodified response
     let response = NextResponse.next({
       request: {
@@ -73,6 +90,20 @@ export const updateSession = async (request: NextRequest) => {
       request.nextUrl.pathname === PAGES.SELECT_ROLE
     ) {
       return NextResponse.redirect(new URL(PAGES.PROTECTED, request.url));
+    }
+    // Role base access control
+    if (user.data.user && ACCESS_CONTROL[pathname]) {
+      if (
+        ACCESS_CONTROL[pathname].roles?.length &&
+        !ACCESS_CONTROL[pathname].roles.includes(user.data.user.user_metadata.role)
+      ) {
+        return NextResponse.redirect(new URL(PAGES.HOME, request.url));
+      } else if (
+        ACCESS_CONTROL[pathname].permissions?.length &&
+        !ACCESS_CONTROL[pathname].permissions?.includes(user?.data?.user?.user_metadata.permission)
+      ) {
+        return NextResponse.redirect(new URL(PAGES.HOME, request.url));
+      }
     }
 
     return response;

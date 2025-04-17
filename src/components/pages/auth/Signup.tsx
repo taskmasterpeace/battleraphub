@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import { toast } from "sonner";
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth.context";
@@ -38,6 +39,7 @@ export default function Signup() {
     try {
       const { error } = await signUp(name, email, password);
       if (error) {
+        toast.error(error.message);
         setError(error.message);
       } else {
         // Clear form
@@ -45,13 +47,15 @@ export default function Signup() {
         setName("");
         setPassword("");
         setConfirmPassword("");
-
+        toast.success("Registration successful! Please check your email to confirm your account.");
         setSuccess("Registration successful! Please check your email to confirm your account.");
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
+        toast.error(err.message);
       } else {
+        toast.error("An unknown error occurred during registration");
         setError("An unknown error occurred during registration");
       }
     } finally {

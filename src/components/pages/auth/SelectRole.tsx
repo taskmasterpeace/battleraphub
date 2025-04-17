@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 import RoleSelector from "./RoleSelector";
 import Image from "next/image";
-import { ROLE } from "@/config";
+import { DB_TABLES, ROLE } from "@/config";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
@@ -29,7 +29,7 @@ export default function SelectRole() {
     try {
       const supabase = await createClient();
       // Update user role in metadata
-      const { error } = await supabase.auth.updateUser({
+      const { error, data } = await supabase.auth.updateUser({
         data: {
           role: role,
         },
@@ -39,6 +39,16 @@ export default function SelectRole() {
         throw error;
       }
 
+      const { error: userError } = await supabase
+        .from(DB_TABLES.USERS)
+        .update({
+          role_id: role,
+        })
+        .eq("id", data.user.id);
+
+      if (userError) {
+        throw userError;
+      }
       // Refresh the token to get the latest role
       await supabase.auth.getSession();
       router.push("/");

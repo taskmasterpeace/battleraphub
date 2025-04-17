@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/layout/theme-provider";
 import Header from "@/components/layout/Header";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/auth.context";
+import { Toaster } from "@/components/ui/toaster";
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -32,6 +33,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="dark">
             <Header />
             <main className="min-h-screen pt-16">{children}</main>
+            <Toaster position="top-right" />
           </ThemeProvider>
         </AuthProvider>
       </body>

@@ -47,6 +47,8 @@ const PAGES = {
   BATTLERS: "/battlers",
   HOME: "/",
   PROTECTED: "/protected",
+  ADMIN_USER_LIST: "/admin/user-list",
+  ADMIN_BATTLERS: "/admin/battlers",
 };
 
 export { ROLE, ROLES, ROLES_NAME, PAGES, DB_TABLES, PERMISSION, BUCKET_NAME, PERMISSIONS };

@@ -76,6 +76,7 @@ export interface AnalyticsData {
 export interface User {
   id: string;
   name: string;
+  email: string;
   user_permissions: {
     user_id: string;
   }[];
@@ -100,6 +101,9 @@ export interface Battlers {
   avatar: string;
   bio: string;
   location: string;
+  users: {
+    added_by: string;
+  };
 }
 
 export interface TagsOption {

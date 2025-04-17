@@ -7,10 +7,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/submit-button";
 import { forgotPasswordAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
+import { toast } from "sonner";
 
-const ForgotPassword = ({ searchParams }: { searchParams: Message }) => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
+
+  const onForgetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    try {
+      const response = await forgotPasswordAction(formData);
+      if (response.success) {
+        toast.success(response.message);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error(`Forgot password failed: ${error}`);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
@@ -22,7 +37,7 @@ const ForgotPassword = ({ searchParams }: { searchParams: Message }) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <form action={forgotPasswordAction} className="space-y-4">
+          <form onSubmit={(e) => onForgetPassword(e)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -38,7 +53,6 @@ const ForgotPassword = ({ searchParams }: { searchParams: Message }) => {
             <div className="flex items-center justify-center">
               <SubmitButton pendingText="Sending...">Send link</SubmitButton>
             </div>
-            <FormMessage message={searchParams} />
           </form>
         </CardContent>
       </Card>
