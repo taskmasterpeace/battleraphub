@@ -104,6 +104,6 @@ export interface Battlers {
 
 export interface TagsOption {
   id: number;
-  tagId: string;
+  tagId?: string;
   name: string;
 }
