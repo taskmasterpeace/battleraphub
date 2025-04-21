@@ -41,8 +41,9 @@ CREATE TABLE
         id UUID DEFAULT uuid_generate_v4(),
         user_id UUID REFERENCES users (id),
         battler_id UUID REFERENCES battlers (id),
-        score NUMERIC(2, 2) NOT NULL,
-        prev_score NUMERIC(2, 2) DEFAULT 0,
+        score NUMERIC(4, 2) NOT NULL,
+        prev_score NUMERIC(4, 2) DEFAULT 0,
+        attribute_id INTEGER REFERENCES attributes (id),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         PRIMARY KEY (user_id, battler_id)
