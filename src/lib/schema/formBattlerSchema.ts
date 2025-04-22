@@ -32,4 +32,17 @@ export const formBattlerSchema = z.object({
       return file && file.size <= MAX_FILE_SIZE;
     }, "Image size must be less than 5MB")
     .optional(),
+  banner: z
+    .custom<FileList>((val) => val instanceof FileList && val.length > 0, {
+      message: "Banner is required",
+    })
+    .refine((files) => {
+      const file = files?.[0];
+      return file && ACCEPTED_IMAGE_TYPES.includes(file.type);
+    }, "Only JPEG, JPG, PNG, SVG and WEBP images are allowed")
+    .refine((files) => {
+      const file = files?.[0];
+      return file && file.size <= MAX_FILE_SIZE;
+    }, "Image size must be less than 5MB")
+    .optional(),
 });

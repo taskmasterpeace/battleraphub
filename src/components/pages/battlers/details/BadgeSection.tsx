@@ -1,50 +1,62 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { CheckCircle, XCircle } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useState } from "react";
+import { CheckCircle, XCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface BadgeItem {
-  badge: string
-  description: string
+  badge: string;
+  description: string;
 }
 
 interface BadgeSectionProps {
-  title: string
-  badges: BadgeItem[]
-  isPositive: boolean
-  selectedBadges: string[]
-  onSelectBadge: (badge: string, isPositive: boolean) => void
+  title: string;
+  badges: BadgeItem[];
+  isPositive: boolean;
+  selectedBadges: string[];
+  onSelectBadge: (badge: string, isPositive: boolean) => void;
 }
 
-export default function BadgeSection({ title, badges, isPositive, selectedBadges, onSelectBadge }: BadgeSectionProps) {
+export default function BadgeSection({
+  title,
+  badges,
+  isPositive,
+  selectedBadges,
+  onSelectBadge,
+}: BadgeSectionProps) {
   // Track which badge is being hovered
-  const [hoveredBadge, setHoveredBadge] = useState<string | null>(null)
+  const [hoveredBadge, setHoveredBadge] = useState<string | null>(null);
 
   // Get color scheme based on positive/negative
   const getColorScheme = (isSelected: boolean) => {
     if (isPositive) {
       return isSelected
         ? "bg-green-600/30 text-green-300 border-green-500 shadow-md shadow-green-900/30"
-        : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-green-900/20 hover:border-green-700"
+        : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-green-900/20 hover:border-green-700";
     } else {
       return isSelected
         ? "bg-red-600/30 text-red-300 border-red-500 shadow-md shadow-red-900/30"
-        : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-red-900/20 hover:border-red-700"
+        : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-red-900/20 hover:border-red-700";
     }
-  }
+  };
 
   return (
     <div>
-      <h3 className={`text-lg font-semibold mb-4 flex items-center ${isPositive ? "text-green-500" : "text-red-500"}`}>
-        {isPositive ? <CheckCircle className="w-5 h-5 mr-2" /> : <XCircle className="w-5 h-5 mr-2" />}
+      <h3
+        className={`text-lg font-semibold mb-4 flex items-center ${isPositive ? "text-green-500" : "text-red-500"}`}
+      >
+        {isPositive ? (
+          <CheckCircle className="w-5 h-5 mr-2" />
+        ) : (
+          <XCircle className="w-5 h-5 mr-2" />
+        )}
         {title}
       </h3>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {badges.map((badgeItem, index) => {
-          const isSelected = selectedBadges.includes(badgeItem.badge)
-          const isHovered = hoveredBadge === badgeItem.badge
+          const isSelected = selectedBadges.includes(badgeItem.badge);
+          const isHovered = hoveredBadge === badgeItem.badge;
 
           return (
             <TooltipProvider key={`${badgeItem.badge}-${index}`}>
@@ -64,7 +76,13 @@ export default function BadgeSection({ title, badges, isPositive, selectedBadges
                       <span className="text-base font-medium mb-2">{badgeItem.badge}</span>
 
                       {/* Show a preview of description on hover */}
-                      {isHovered && <p className="text-xs text-gray-400 line-clamp-2">{badgeItem.description}</p>}
+                      <div>
+                        <p
+                          className={`text-xs text-gray-400 line-clamp-2 transition-opacity duration-200 ${isHovered ? "opacity-100" : "opacity-0"}`}
+                        >
+                          {badgeItem.description}
+                        </p>
+                      </div>
 
                       {/* Selection indicator */}
                       {isSelected && (
@@ -87,10 +105,9 @@ export default function BadgeSection({ title, badges, isPositive, selectedBadges
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
-

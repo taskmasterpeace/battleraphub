@@ -3,13 +3,14 @@
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { protectedCreateClient } from "@/utils/supabase/protected-server";
-import { BUCKET_NAME, DB_TABLES, PAGES, PERMISSIONS } from "@/config";
+import { DB_TABLES, PAGES, PERMISSIONS } from "@/config";
 import {
   successResponse,
   errorResponse,
   redirectResponse,
   encodedRedirect,
 } from "@/utils/response";
+import { uploadFileToStorage } from "@/lib/uploadFileToStorage";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -55,7 +56,7 @@ export const signInAction = async (formData: FormData) => {
     return encodedRedirect("error", PAGES.LOGIN, error.message);
   }
 
-  return redirectResponse(PAGES.PROTECTED);
+  return redirectResponse(PAGES.HOME);
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {
@@ -261,41 +262,24 @@ export const createBattlersAction = async (formData: FormData) => {
 
   try {
     const { data: userData } = await supabaseClient.auth.getUser();
-
-    if (!userData?.user) {
-      return errorResponse("User is not authorized");
-    }
+    if (!userData?.user) return errorResponse("User is not authorized");
 
     const name = formData.get("name") as string;
     const location = formData.get("location") as string;
     const bio = formData.get("bio") as string;
     const avatar = formData.get("avatar") as File;
+    const banner = formData.get("banner") as File;
     const tagsRaw = formData.get("tags") as string;
     const tags = tagsRaw ? (JSON.parse(tagsRaw) as string[]) : [];
 
-    if (!avatar || !avatar.name) {
-      return errorResponse("Avatar is required");
-    }
+    if (!avatar?.name) return errorResponse("Avatar is required");
+    if (!banner?.name) return errorResponse("Banner is required");
 
-    const timestamp = new Date().getTime();
-    const uploadedImageUrl = `battlers/${avatar.name}_${timestamp}`;
+    const avatarUpload = await uploadFileToStorage(supabase, avatar, "battlers/profile");
+    if (avatarUpload.error) return errorResponse(avatarUpload.error);
 
-    const { error: uploadError } = await supabase.storage
-      .from(BUCKET_NAME)
-      .upload(uploadedImageUrl, avatar, {
-        cacheControl: "3600",
-        upsert: false,
-        contentType: avatar.type || "image/jpeg",
-      });
-
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
-      return errorResponse("Error while uploading avatar");
-    }
-
-    const { data: publicUrlData } = await supabase.storage
-      .from(BUCKET_NAME)
-      .getPublicUrl(uploadedImageUrl);
+    const bannerUpload = await uploadFileToStorage(supabase, banner, "battlers/banner");
+    if (bannerUpload.error) return errorResponse(bannerUpload.error);
 
     const { data: battlerInsertData, error: insertError } = await supabase
       .from(DB_TABLES.BATTLERS)
@@ -303,7 +287,8 @@ export const createBattlersAction = async (formData: FormData) => {
         name,
         location,
         bio,
-        avatar: publicUrlData.publicUrl,
+        avatar: avatarUpload.publicUrl,
+        banner: bannerUpload.publicUrl,
         added_by: userData.user.id,
       })
       .select("id")
@@ -314,11 +299,9 @@ export const createBattlersAction = async (formData: FormData) => {
       return errorResponse("Error saving battler data");
     }
 
-    const battlerId = battlerInsertData.id;
-
     if (tags.length > 0) {
       const tagData = tags.map((tagId) => ({
-        battler_id: battlerId,
+        battler_id: battlerInsertData.id,
         tag_id: tagId,
       }));
 
@@ -342,10 +325,7 @@ export const editBattlersAction = async (formData: FormData) => {
   const supabaseClient = await createClient();
 
   const { data: userData } = await supabaseClient.auth.getUser();
-
-  if (!userData?.user) {
-    return errorResponse("User not authenticated");
-  }
+  if (!userData?.user) return errorResponse("User not authenticated");
 
   const userId = formData.get("userId") as string;
   const name = formData.get("name") as string;
@@ -354,58 +334,44 @@ export const editBattlersAction = async (formData: FormData) => {
   const tagsRaw = formData.get("tags") as string;
   const tags = tagsRaw ? (JSON.parse(tagsRaw) as string[]) : [];
   const avatar = formData.get("avatar") as File;
-
-  let avatarUrl: string | undefined;
+  const banner = formData.get("banner") as File;
 
   try {
+    // Fetch current battler to get current image URLs
+    const { data: currentBattler } = await supabase
+      .from(DB_TABLES.BATTLERS)
+      .select("avatar, banner")
+      .eq("id", userId)
+      .single();
+
+    let avatarUrl = currentBattler?.avatar;
+    let bannerUrl = currentBattler?.banner;
+
+    // Upload avatar if provided
     if (avatar && avatar.size > 0) {
-      const timestamp = new Date().getTime();
-      const uploadedImageUrl = `battlers/${avatar.name}_${timestamp}`;
-
-      const { data: currentBattler } = await supabase
-        .from(DB_TABLES.BATTLERS)
-        .select("avatar")
-        .eq("id", userId)
-        .single();
-
-      const { data: existingFile } = await supabase.storage.from(BUCKET_NAME).list("battlers", {
-        search: avatar.name,
-      });
-
-      if (existingFile && existingFile.length > 0) {
-        const existingPath = `battlers/${existingFile[0].name}`;
-        const { data: existingUrl } = await supabase.storage
-          .from(BUCKET_NAME)
-          .getPublicUrl(existingPath);
-        avatarUrl = existingUrl.publicUrl;
-      } else {
-        const { error: uploadError } = await supabase.storage
-          .from(BUCKET_NAME)
-          .upload(uploadedImageUrl, avatar, {
-            cacheControl: "3600",
-            upsert: false,
-            contentType: avatar.type || "image/jpeg",
-          });
-
-        if (uploadError) {
-          console.error("Upload error:", uploadError);
-          return errorResponse("Error uploading new avatar");
-        }
-
-        const { data: publicUrlData } = await supabase.storage
-          .from(BUCKET_NAME)
-          .getPublicUrl(uploadedImageUrl);
-        avatarUrl = publicUrlData.publicUrl;
-
-        if (currentBattler?.avatar) {
-          const oldPath = currentBattler.avatar.split("/").pop();
-          if (oldPath) {
-            await supabase.storage.from(BUCKET_NAME).remove([`battlers/${oldPath}`]);
-          }
-        }
-      }
+      const avatarUpload = await uploadFileToStorage(
+        supabase,
+        avatar,
+        "battlers/profile",
+        currentBattler?.avatar,
+      );
+      if (avatarUpload.error) return errorResponse(avatarUpload.error);
+      avatarUrl = avatarUpload.publicUrl;
     }
 
+    // Upload banner if provided
+    if (banner && banner.size > 0) {
+      const bannerUpload = await uploadFileToStorage(
+        supabase,
+        banner,
+        "battlers/banner",
+        currentBattler?.banner,
+      );
+      if (bannerUpload.error) return errorResponse(bannerUpload.error);
+      bannerUrl = bannerUpload.publicUrl;
+    }
+
+    // Update battler
     const { error: updateError } = await supabase
       .from(DB_TABLES.BATTLERS)
       .update({
@@ -413,6 +379,7 @@ export const editBattlersAction = async (formData: FormData) => {
         location,
         bio,
         ...(avatarUrl && { avatar: avatarUrl }),
+        ...(bannerUrl && { banner: bannerUrl }),
       })
       .eq("id", userId);
 
@@ -421,24 +388,22 @@ export const editBattlersAction = async (formData: FormData) => {
       return errorResponse("Error updating battler");
     }
 
-    // tags handle
-    if (tags) {
-      await supabase.from(DB_TABLES.BATTLERS_TAGS).delete().eq("battler_id", userId);
+    // Update tags
+    await supabase.from(DB_TABLES.BATTLERS_TAGS).delete().eq("battler_id", userId);
 
+    if (tags.length > 0) {
       const tagData = tags.map((tagId) => ({
         battler_id: userId,
         tag_id: tagId,
       }));
 
-      if (tagData.length > 0) {
-        const { error: tagInsertError } = await supabase
-          .from(DB_TABLES.BATTLERS_TAGS)
-          .insert(tagData);
+      const { error: tagInsertError } = await supabase
+        .from(DB_TABLES.BATTLERS_TAGS)
+        .insert(tagData);
 
-        if (tagInsertError) {
-          console.error("Tag update error:", tagInsertError);
-          return errorResponse("Error updating battler tags");
-        }
+      if (tagInsertError) {
+        console.error("Tag update error:", tagInsertError);
+        return errorResponse("Error updating battler tags");
       }
     }
 

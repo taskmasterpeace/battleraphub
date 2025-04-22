@@ -46,7 +46,7 @@ CREATE TABLE
         attribute_id INTEGER REFERENCES attributes (id),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        PRIMARY KEY (user_id, battler_id)
+        PRIMARY KEY (user_id, battler_id, attribute_id)
     );
 
 -- Trigger function to manage updated_at column

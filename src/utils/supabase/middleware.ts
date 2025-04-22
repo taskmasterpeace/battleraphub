@@ -2,14 +2,7 @@ import { PAGES, PERMISSIONS, ROLE } from "@/config";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_ROUTES = [
-  PAGES.SIGN_UP,
-  PAGES.LOGIN,
-  PAGES.RESET_PASSWORD,
-  PAGES.FORGOT_PASSWORD,
-  PAGES.HOME,
-  PAGES.BATTLERS,
-];
+const PUBLIC_ROUTES = [PAGES.SIGN_UP, PAGES.LOGIN, PAGES.RESET_PASSWORD, PAGES.FORGOT_PASSWORD];
 
 const PROTECTED_ROUTES = [
   PAGES.SELECT_ROLE,
@@ -92,16 +85,15 @@ export const updateSession = async (request: NextRequest) => {
       return NextResponse.redirect(new URL(PAGES.PROTECTED, request.url));
     }
     // Role base access control
-    if (user.data.user && ACCESS_CONTROL[pathname]) {
-      if (
-        ACCESS_CONTROL[pathname].roles?.length &&
-        !ACCESS_CONTROL[pathname].roles.includes(user.data.user.user_metadata.role)
-      ) {
-        return NextResponse.redirect(new URL(PAGES.HOME, request.url));
-      } else if (
-        ACCESS_CONTROL[pathname].permissions?.length &&
-        !ACCESS_CONTROL[pathname].permissions?.includes(user?.data?.user?.user_metadata.permission)
-      ) {
+    const rbacAccess = ACCESS_CONTROL[pathname];
+    if (user.data.user && rbacAccess) {
+      const hasRequiredRole =
+        !rbacAccess.roles?.length || rbacAccess.roles.includes(user.data.user.user_metadata.role);
+      const hasRequiredPermission =
+        !rbacAccess.permissions?.length ||
+        rbacAccess.permissions.includes(user.data.user.user_metadata.permission);
+
+      if (!hasRequiredRole && !hasRequiredPermission) {
         return NextResponse.redirect(new URL(PAGES.HOME, request.url));
       }
     }

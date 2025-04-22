@@ -22,6 +22,10 @@ const DB_TABLES = {
   BATTLERS_TAGS: "battler_tags",
   TAGS: "tags",
   USER_PERMISSIONS: "user_permissions",
+  BADGES: "badges",
+  ATTRIBUTES: "attributes",
+  BATTLER_BADGES: "battler_badges",
+  BATTLER_RATINGS: "battler_ratings",
 };
 
 const BUCKET_NAME = "battleraprank";
@@ -38,6 +42,12 @@ const PERMISSIONS = {
   COMMUNITY_MANAGER: "COMMUNITY_MANAGER",
 };
 
+const ATTRIBUTE_CATEGORIES = {
+  WRITING: "writing",
+  PERFORMANCE: "performance",
+  PERSONAL: "personal",
+};
+
 const PAGES = {
   SIGN_UP: "/auth/signup",
   LOGIN: "/auth/login",
@@ -49,6 +59,23 @@ const PAGES = {
   PROTECTED: "/protected",
   ADMIN_USER_LIST: "/admin/user-list",
   ADMIN_BATTLERS: "/admin/battlers",
+  FAVORITES: "/favorites",
+  ADMIN_TOOLS: "/admin-tools",
+  RANKINGS: "/rankings",
+  LEADERBOARD: "/leaderboard",
+  MEDIA: "/media",
+  ANALYTICS: "/analytics",
+  DIAGNOSTICS: "/diagnostics",
 };
 
-export { ROLE, ROLES, ROLES_NAME, PAGES, DB_TABLES, PERMISSION, BUCKET_NAME, PERMISSIONS };
+export {
+  ROLE,
+  ROLES,
+  ROLES_NAME,
+  PAGES,
+  DB_TABLES,
+  PERMISSION,
+  ATTRIBUTE_CATEGORIES,
+  BUCKET_NAME,
+  PERMISSIONS,
+};

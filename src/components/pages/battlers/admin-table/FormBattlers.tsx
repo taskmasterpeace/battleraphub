@@ -3,9 +3,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formBattlerSchema } from "@/lib/schema/formBattlerSchema";
+import { toast } from "sonner";
 import { z } from "zod";
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { MultiSelect } from "@/components/multi-select";
 import { SubmitButton } from "@/components/submit-button";
@@ -22,12 +22,13 @@ import { DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DB_TABLES } from "@/config";
 import { Battlers, TagsOption } from "@/types";
 import { createBattlersAction, editBattlersAction } from "@/app/actions";
-import { toast } from "sonner";
+import ImageUploader from "@/components/pages/battlers/admin-table/ImageUploader";
 
 type FormDataType = z.infer<typeof formBattlerSchema>;
 
 interface FormBattlersProps {
   createBattler?: boolean;
+  setPopoverOpen?: (value: boolean) => void;
   setOpenClose: (value: boolean) => void;
   fetchBattlersList: () => void;
   battlerData?: Battlers;
@@ -38,14 +39,16 @@ const supabase = createClient();
 const FormBattlers = ({
   createBattler,
   fetchBattlersList,
+  setPopoverOpen,
   battlerData,
   setOpenClose,
 }: FormBattlersProps) => {
   const [tagsData, setTagsData] = useState<TagsOption[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [imagePreview, setImagePreview] = useState<string>("");
+  const [profilePreview, setProfilePreview] = useState<string>("");
+  const [bannerPreview, setBannerPreview] = useState<string>("");
   const [currentAvatar, setCurrentAvatar] = useState<string>("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [currentBanner, setCurrentBanner] = useState<string>("");
 
   const selectedTagIds = battlerData?.battler_tags?.map((tag) => tag.tags?.id.toString());
   const form = useForm<FormDataType>({
@@ -56,6 +59,7 @@ const FormBattlers = ({
       location: "",
       bio: "",
       avatar: undefined,
+      banner: undefined,
     },
   });
 
@@ -75,6 +79,7 @@ const FormBattlers = ({
       setValue("location", battlerData.location || "");
       setValue("bio", battlerData.bio || "");
       setCurrentAvatar(battlerData.avatar || "");
+      setCurrentBanner(battlerData.banner || "");
     }
   }, [createBattler, battlerData, setValue]);
 
@@ -108,14 +113,12 @@ const FormBattlers = ({
 
       if (!createBattler && battlerData?.id) {
         formData.append("userId", battlerData.id);
-        if (currentAvatar) {
-          formData.append("currentAvatar", currentAvatar);
-        }
+        if (currentAvatar) formData.append("currentAvatar", currentAvatar);
+        if (currentBanner) formData.append("currentBanner", currentBanner);
       }
 
-      if (data.avatar && data.avatar.length > 0) {
-        formData.append("avatar", data.avatar[0]);
-      }
+      if (data.avatar?.[0]) formData.append("avatar", data.avatar[0]);
+      if (data.banner?.[0]) formData.append("banner", data.banner[0]);
 
       if (createBattler) {
         const response = await createBattlersAction(formData);
@@ -129,6 +132,7 @@ const FormBattlers = ({
         if (response.success) {
           toast.success(response.message);
           setOpenClose(false);
+          setPopoverOpen?.(false);
           fetchBattlersList();
         }
       }
@@ -138,9 +142,6 @@ const FormBattlers = ({
     }
   };
 
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
-  };
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -167,47 +168,32 @@ const FormBattlers = ({
             )}
           />
 
-          {createBattler ? (
-            <FormField
-              control={control}
-              name="tags"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tags</FormLabel>
-                  <MultiSelect
-                    options={tagOptions}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    placeholder="Select tags"
-                    maxCount={3}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ) : (
-            <FormField
-              control={control}
-              name="tags"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tags</FormLabel>
-                  <MultiSelect
-                    options={tagOptions}
-                    defaultValue={selectedTagIds}
-                    onValueChange={(values) => {
+          <FormField
+            control={control}
+            name="tags"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tags</FormLabel>
+                <MultiSelect
+                  options={tagOptions}
+                  defaultValue={createBattler ? undefined : selectedTagIds}
+                  onValueChange={(values) => {
+                    if (!createBattler) {
                       setSelectedTags(values);
-                      field.onChange(values);
-                    }}
-                    placeholder="Select tags"
-                    maxCount={3}
-                  />
+                    }
+                    field.onChange(values);
+                  }}
+                  value={createBattler ? field.value : undefined}
+                  placeholder="Select tags"
+                  maxCount={4}
+                />
+                {!createBattler && (
                   <Input type="hidden" name="tags" value={JSON.stringify(selectedTags)} />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={control}
@@ -237,50 +223,41 @@ const FormBattlers = ({
             )}
           />
 
-          <FormField
-            control={control}
-            name="avatar"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Avatar</FormLabel>
-                <FormControl>
-                  <div>
-                    {!createBattler && (imagePreview || currentAvatar) && (
-                      <div className="my-2">
-                        <Image
-                          src={imagePreview || currentAvatar}
-                          alt="Avatar preview"
-                          className="h-20 w-24 rounded-md object-cover border hover:cursor-pointer"
-                          width={64}
-                          height={64}
-                          onClick={handleImageClick}
-                          unoptimized
-                        />
-                      </div>
-                    )}
-                    <Input
-                      type="file"
-                      ref={fileInputRef}
-                      className={`${createBattler ? "cursor-pointer" : "hidden"}`}
-                      accept="image/jpeg,image/jpg,image/png,image/svg+xml,image/webp"
-                      onChange={(e) => {
-                        field.onChange(e.target.files);
-                        if (e.target.files && e.target.files[0]) {
-                          const url = URL.createObjectURL(e.target.files[0]);
-                          setImagePreview(url);
-                        }
-                      }}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div
+            className={`flex ${createBattler ? "flex-col gap-3" : "justify-between items-center gap-2 relative"}`}
+          >
+            <FormField
+              control={control}
+              name="avatar"
+              render={({ field }) => (
+                <ImageUploader
+                  label="Avatar"
+                  name="Avatar"
+                  field={field}
+                  currentImage={currentAvatar}
+                  preview={profilePreview}
+                  setPreview={setProfilePreview}
+                  createMode={createBattler ? true : false}
+                />
+              )}
+            />
 
-          {!createBattler && (
-            <Input type="hidden" name="currentAvatar" value={currentAvatar || ""} />
-          )}
+            <FormField
+              control={control}
+              name="banner"
+              render={({ field }) => (
+                <ImageUploader
+                  label="Banner"
+                  name="Banner"
+                  field={field}
+                  currentImage={currentBanner}
+                  preview={bannerPreview}
+                  setPreview={setBannerPreview}
+                  createMode={createBattler ? true : false}
+                />
+              )}
+            />
+          </div>
         </div>
 
         <DialogFooter className="flex flex-col gap-3 items-center mt-4">

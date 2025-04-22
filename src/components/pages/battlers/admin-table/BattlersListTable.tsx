@@ -37,8 +37,10 @@ const supabase = createClient();
 const BattlersListTable = () => {
   const [open, setOpen] = useState(false);
   const [edit, setEditOpen] = useState(false);
+  const [activePopover, setActivePopover] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [battlersData, setBattlersData] = useState<Battlers[]>([]);
+  const [activeTagId, setActiveTagId] = useState<string>("");
   const [totalCount, setTotalCount] = useState(0);
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
@@ -130,6 +132,11 @@ const BattlersListTable = () => {
         <TableBody>
           {battlersData.length > 0 ? (
             battlersData.map((battler) => {
+              const validTags = battler.battler_tags?.filter((tag) => tag.tags?.name) || [];
+              const isExpanded = activeTagId === battler.id;
+              const shouldCollapse = validTags.length > 4;
+              const displayTags = shouldCollapse && !isExpanded ? validTags.slice(0, 3) : validTags;
+
               return (
                 <TableRow key={battler.id}>
                   <TableCell className="pr-0 w-[100px]">
@@ -145,18 +152,26 @@ const BattlersListTable = () => {
                   </TableCell>
                   <TableCell className="px-3 min-w-[250px] !w-[350px]">
                     <div className="truncate max-w-[250px]">
-                      {battler.battler_tags ? (
+                      {validTags.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
-                          {battler.battler_tags
-                            .filter((tag) => tag.tags?.name)
-                            .map((tag, index) => (
-                              <Badge key={index} variant={"secondary"} className="rounded-md">
-                                {tag.tags?.name}
-                              </Badge>
-                            ))}
+                          {displayTags.map((tag, index) => (
+                            <Badge key={index} variant="secondary" className="rounded-md">
+                              {tag.tags.name}
+                            </Badge>
+                          ))}
+
+                          {shouldCollapse && (
+                            <Badge
+                              variant="outline"
+                              className="rounded-md cursor-pointer"
+                              onClick={() => setActiveTagId(isExpanded ? "" : battler.id)}
+                            >
+                              {isExpanded ? "Show less" : `+${validTags.length - 3} more`}
+                            </Badge>
+                          )}
                         </div>
                       ) : (
-                        <Badge variant={"secondary"} className="rounded-md">
+                        <Badge variant="secondary" className="rounded-md">
                           -
                         </Badge>
                       )}
@@ -187,13 +202,24 @@ const BattlersListTable = () => {
                     </div>
                   </TableCell>
                   <TableCell className="text-right w-[100px]">
-                    <Popover>
-                      <PopoverTrigger>
-                        <EllipsisVertical className="text-gray-500" />
+                    <Popover
+                      open={activePopover === battler.id}
+                      onOpenChange={(isOpen) => setActivePopover(isOpen ? battler.id : null)}
+                    >
+                      <PopoverTrigger asChild>
+                        <Button variant="link">
+                          <EllipsisVertical className="text-gray-500" />
+                        </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-full max-w-[190px]">
                         <div className="flex flex-col items-start gap-3 w-full">
-                          <Dialog open={edit} onOpenChange={setEditOpen}>
+                          <Dialog
+                            open={edit}
+                            onOpenChange={(open) => {
+                              setEditOpen(open);
+                              if (!open) setActivePopover(null);
+                            }}
+                          >
                             <DialogTrigger asChild>
                               <Button variant={"secondary"} size={"sm"} className="w-[150px]">
                                 Edit Battlers
@@ -202,6 +228,7 @@ const BattlersListTable = () => {
                             <DialogContent className="sm:max-w-[425px]">
                               <FormBattlers
                                 createBattler={false}
+                                setPopoverOpen={() => setActivePopover(null)}
                                 setOpenClose={() => setEditOpen(false)}
                                 fetchBattlersList={() => fetchBattlersList(currentPage)}
                                 battlerData={battler}

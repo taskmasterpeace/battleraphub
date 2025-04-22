@@ -1,44 +1,98 @@
-"use client"
+"use client";
 
-import { use, useState } from "react"
-import Image from "next/image"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MapPin } from "lucide-react"
-import AttributesTab from "@/components/pages/battlers/details/AttributesTab"
-import AnalyticsTab from "@/components/pages/battlers/details/AnalyticsTab"
-import { Badge } from "@/components/ui/badge"
-import { CheckCircle, XCircle } from "lucide-react"
-import { battlerDetails } from "@/__mocks__/battlers"
+import { use, useEffect, useState } from "react";
+import Image from "next/image";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MapPin } from "lucide-react";
+import AttributesTab from "@/components/pages/battlers/details/AttributesTab";
+import AnalyticsTab from "@/components/pages/battlers/details/AnalyticsTab";
+import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CheckCircle, XCircle } from "lucide-react";
+import { battlerDetails } from "@/__mocks__/battlers";
+import { toast } from "sonner";
+import { createClient } from "@/utils/supabase/client";
+import { DB_TABLES } from "@/config";
+import { Attribute, Badge as badgesType, Battlers } from "@/types";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
-export default function BattlerPage({ params }: { params: Promise<{ id: string }> }) {
+const supabase = createClient();
+
+interface BattlerDetailsProps {
+  params: Promise<{ id: string }>;
+  badgeData: badgesType[];
+  attributeData: Attribute[];
+}
+
+export default function BattlerPage({ params, badgeData, attributeData }: BattlerDetailsProps) {
   const { id: battlerId } = use(params);
+  const [battlerData, setBattlerData] = useState<Battlers>();
   const [selectedBadges, setSelectedBadges] = useState<{
-    positive: string[]
-    negative: string[]
+    positive: string[];
+    negative: string[];
   }>({
     positive: [],
     negative: [],
-  })
+  });
 
-  const [totalPoints, setTotalPoints] = useState(battlerDetails.totalPoints)
+  const [totalPoints, setTotalPoints] = useState(battlerDetails.totalPoints);
+
+  const fetchBattlerData = async () => {
+    try {
+      const { data: battlers, error: battlerError } = await supabase
+        .from(DB_TABLES.BATTLERS)
+        .select(
+          `*, 
+          battler_tags (
+            tags (
+              id,
+              name
+            )
+          )
+        `,
+        )
+        .eq("id", battlerId)
+        .eq("battler_tags.battler_id", battlerId);
+
+      if (battlerError) {
+        toast.error("Failed to fetch battler data");
+        return;
+      }
+
+      if (!battlers?.length) {
+        toast.error("Battler not found");
+        return;
+      }
+
+      setBattlerData(battlers[0] || []);
+    } catch (error) {
+      toast.error("Battler fetch error");
+      console.log("error", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBattlerData();
+  }, []);
 
   // Function to update badges (will be passed to AttributesTab)
-  const updateBadges = (badges: { positive: string[]; negative: string[] }) => {
-    setSelectedBadges(badges)
-  }
+  const updateBadges = async (badges: { positive: string[]; negative: string[] }) => {
+    setSelectedBadges(badges);
+  };
 
   // Function to update total points (will be passed to AttributesTab)
   const updateTotalPoints = (points: number) => {
-    setTotalPoints(points)
-  }
+    setTotalPoints(points);
+  };
 
   return (
     <div>
       {/* Banner */}
       <div className="w-full h-48 relative">
         <Image
-          src={battlerDetails.banner || "/placeholder.svg"}
-          alt={`${battlerDetails.name} banner`}
+          src={battlerData?.banner || "/placeholder.svg"}
+          alt={`${battlerData?.name} banner`}
           fill
           className="object-cover"
         />
@@ -49,21 +103,60 @@ export default function BattlerPage({ params }: { params: Promise<{ id: string }
         {/* Profile header */}
         <div className="flex flex-col md:flex-row gap-6 mb-8">
           <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-gray-900 relative">
-            <Image src={battlerDetails.image || "/placeholder.svg"} alt={battlerDetails.name} fill className="object-cover" />
+            <Image
+              src={battlerData?.avatar || "/placeholder.svg"}
+              alt={battlerData?.name || "NA"}
+              fill
+              className="object-cover"
+            />
           </div>
 
           <div className="flex-1">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold">{battlerDetails.name}</h1>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <h1 className="text-3xl font-bold cursor-pointer">{battlerData?.name}</h1>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="start"
+                    className="w-52 bg-background text-primary-foreground"
+                  >
+                    <div className="grid">
+                      <div className="space-y-1">
+                        <div className="text-md pl-2 pb-2 font-bold">Personal info</div>
+                        <Separator orientation="horizontal" />
+                        <div className="flex flex-col items-start">
+                          <Button
+                            variant="ghost"
+                            className="flex justify-start items-center px-2 py-2 hover:bg-gray-800 rounded-md my-1 w-full"
+                          >
+                            Battler
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            className="flex justify-start px-2 py-2 hover:bg-gray-800 rounded-md w-full"
+                          >
+                            Users
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="grid gap-2"></div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
                 <p className="text-gray-400 flex items-center mt-1">
                   <MapPin className="h-4 w-4 mr-1" />
-                  {battlerDetails.location}
+                  {battlerData?.location}
                 </p>
                 <div className="flex flex-wrap gap-1 mt-3">
-                  {battlerDetails.tags.map((tag) => (
-                    <span key={tag} className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded">
-                      {tag}
+                  {battlerData?.battler_tags?.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded"
+                    >
+                      {tag?.tags?.name}
                     </span>
                   ))}
                 </div>
@@ -109,7 +202,13 @@ export default function BattlerPage({ params }: { params: Promise<{ id: string }
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
           <TabsContent value="attributes">
-            <AttributesTab updateBadges={updateBadges} updateTotalPoints={updateTotalPoints} />
+            <AttributesTab
+              updateBadges={updateBadges}
+              attributeData={attributeData}
+              badgeData={badgeData}
+              updateTotalPoints={updateTotalPoints}
+              battlerId={battlerId}
+            />
           </TabsContent>
           <TabsContent value="analytics">
             <AnalyticsTab battlerId={battlerId} />
@@ -117,6 +216,5 @@ export default function BattlerPage({ params }: { params: Promise<{ id: string }
         </Tabs>
       </div>
     </div>
-  )
+  );
 }
-

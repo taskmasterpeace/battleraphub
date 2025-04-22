@@ -1,120 +1,267 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import AttributeSlider from "@/components/pages/battlers/details/AttributeSlider"
-import BadgeSection from "@/components/pages/battlers/details/BadgeSection"
-import { getWritingBadges, getPerformanceBadges, getPersonalBadges, getAttributesByCategory } from "@/lib/data-service"
-import { Badge, Attribute } from "@/types"
+import { useState, useEffect } from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge, Attribute } from "@/types";
+import { createClient } from "@/utils/supabase/client";
+import { ATTRIBUTE_CATEGORIES, DB_TABLES } from "@/config";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/auth.context";
+import { TabsContent } from "@/components/ui/tabs";
+import { AttributeTabsContent } from "@/components/pages/battlers/details/AttributeTabsContent";
 
-interface AttributesTabProps {
-  updateBadges: (badges: { positive: string[]; negative: string[] }) => void
-  updateTotalPoints: (points: number) => void
+const supabase = createClient();
+
+export interface AttributesTabProps {
+  updateBadges: (badges: { positive: string[]; negative: string[] }) => void;
+  updateTotalPoints: (points: number) => void;
+  attributeData: Attribute[];
+  badgeData: Badge[];
+  battlerId: string;
 }
 
-export default function AttributesTab({ updateBadges, updateTotalPoints }: AttributesTabProps) {
-  // State for all attribute ratings
-  const [ratings, setRatings] = useState<Record<string, number>>({})
-
-  // State for selected badges
+export default function AttributesTab({
+  updateBadges,
+  updateTotalPoints,
+  attributeData,
+  badgeData,
+  battlerId,
+}: AttributesTabProps) {
+  const [ratings, setRatings] = useState<Record<string, { id: string; score: number }>>({});
   const [selectedBadges, setSelectedBadges] = useState<{
-    positive: string[]
-    negative: string[]
+    positive: string[];
+    negative: string[];
   }>({
     positive: [],
     negative: [],
-  })
+  });
 
   // State for badges and attributes
-  const [writingBadges, setWritingBadges] = useState<Badge[]>([])
-  const [performanceBadges, setPerformanceBadges] = useState<Badge[]>([])
-  const [personalBadges, setPersonalBadges] = useState<Badge[]>([])
+  const [writingBadges, setWritingBadges] = useState<Badge[]>([]);
+  const [performanceBadges, setPerformanceBadges] = useState<Badge[]>([]);
+  const [personalBadges, setPersonalBadges] = useState<Badge[]>([]);
 
-  const [writingAttributes, setWritingAttributes] = useState<Attribute[]>([])
-  const [performanceAttributes, setPerformanceAttributes] = useState<Attribute[]>([])
-  const [personalAttributes, setPersonalAttributes] = useState<Attribute[]>([])
+  const [writingAttributes, setWritingAttributes] = useState<Attribute[]>([]);
+  const [performanceAttributes, setPerformanceAttributes] = useState<Attribute[]>([]);
+  const [personalAttributes, setPersonalAttributes] = useState<Attribute[]>([]);
 
-  // Fetch badges and attributes
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch badges
-        const writingData = await getWritingBadges()
-        const performanceData = await getPerformanceBadges()
-        const personalData = await getPersonalBadges()
+  const { user } = useAuth();
+  const userId = user?.id;
 
-        setWritingBadges(writingData)
-        setPerformanceBadges(performanceData)
-        setPersonalBadges(personalData)
+  const fetchBattlerBadges = async () => {
+    try {
+      const { data: battlerBadges, error } = await supabase
+        .from(DB_TABLES.BATTLER_BADGES)
+        .select("badge_id")
+        .eq("battler_id", battlerId);
 
-        // Fetch attributes
-        const writingAttrs = await getAttributesByCategory("Writing")
-        const performanceAttrs = await getAttributesByCategory("Performance")
-        const personalAttrs = await getAttributesByCategory("Personal")
-
-        setWritingAttributes(writingAttrs)
-        setPerformanceAttributes(performanceAttrs)
-        setPersonalAttributes(personalAttrs)
-
-        // Initialize ratings
-        const initialRatings: Record<string, number> = {}
-        ;[...writingAttrs, ...performanceAttrs, ...personalAttrs].forEach((attr) => {
-          initialRatings[attr.attribute] = 5.0
-        })
-        setRatings(initialRatings)
-      } catch (error) {
-        console.error("Error fetching data:", error)
+      if (error) {
+        toast.error("Error fetching battler badges");
+        return;
       }
+
+      const badgeIds = battlerBadges.map((bb) => bb.badge_id);
+
+      const filterBadgeData = badgeData.filter((badge) => badgeIds.includes(badge.id));
+      if (filterBadgeData) {
+        const positive = filterBadgeData.filter((b) => b.is_positive).map((b) => b.name);
+        const negative = filterBadgeData.filter((b) => !b.is_positive).map((b) => b.name);
+        setSelectedBadges({ positive, negative });
+      }
+    } catch (error) {
+      console.error("Error fetching battler badges:", error);
     }
+  };
 
-    fetchData()
-  }, [])
+  const fetchBattlerRatings = async () => {
+    try {
+      const writingAttrs = attributeData.filter(
+        (attr) => attr.category === ATTRIBUTE_CATEGORIES.WRITING,
+      );
+      const performanceAttrs = attributeData.filter(
+        (attr) => attr.category === ATTRIBUTE_CATEGORIES.PERFORMANCE,
+      );
+      const personalAttrs = attributeData.filter(
+        (attr) => attr.category === ATTRIBUTE_CATEGORIES.PERSONAL,
+      );
 
-  // Calculate total points whenever ratings change
+      setWritingAttributes(writingAttrs);
+      setPerformanceAttributes(performanceAttrs);
+      setPersonalAttributes(personalAttrs);
+
+      const { data: battlerRatings, error: ratingsError } = await supabase
+        .from(DB_TABLES.BATTLER_RATINGS)
+        .select("*")
+        .eq("battler_id", battlerId);
+
+      if (ratingsError) {
+        toast.error("Error fetching battler ratings");
+        return;
+      }
+
+      if (battlerRatings && battlerRatings.length > 0) {
+        const ratingMap: Record<string, { id: string; score: number }> = {};
+        battlerRatings.forEach((rating) => {
+          ratingMap[rating.attribute_id] = {
+            id: rating.id,
+            score: Number(rating.score),
+          };
+        });
+        setRatings(ratingMap);
+      }
+    } catch (error) {
+      console.error("Error fetching battler ratings:", error);
+      toast.error("Error fetching battler ratings");
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const writingBadges = badgeData.filter(
+        (badge) => badge.category === ATTRIBUTE_CATEGORIES.WRITING,
+      );
+      const performanceBadges = badgeData.filter(
+        (badge) => badge.category === ATTRIBUTE_CATEGORIES.PERFORMANCE,
+      );
+      const personalBadges = badgeData.filter(
+        (badge) => badge.category === ATTRIBUTE_CATEGORIES.PERSONAL,
+      );
+      setWritingBadges(writingBadges);
+      setPerformanceBadges(performanceBadges);
+      setPersonalBadges(personalBadges);
+
+      await fetchBattlerBadges();
+      await fetchBattlerRatings();
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Failed to fetch data: " + (error as Error).message);
+    }
+  };
+
   useEffect(() => {
-    if (Object.keys(ratings).length === 0) return
+    if (battlerId) {
+      fetchData();
+    }
+  }, [battlerId]);
 
-    // Calculate average of all ratings
-    const total = Object.values(ratings).reduce((sum, val) => sum + val, 0)
-    const average = total / Object.values(ratings).length
+  const handleRatingChange = async (attributeId: number, value: number) => {
+    if (!userId) return null;
+    try {
+      const existingRating = ratings[attributeId];
+      const { error, data } = await supabase
+        .from(DB_TABLES.BATTLER_RATINGS)
+        .upsert({
+          ...existingRating,
+          user_id: userId,
+          battler_id: battlerId,
+          attribute_id: attributeId,
+          score: value,
+        })
+        .select();
+
+      if (error) {
+        toast.error("Error saving rating");
+        return;
+      }
+
+      if (data.length) {
+        setRatings((prev) => ({
+          ...prev,
+          [attributeId]: {
+            id: data[0].id,
+            score: value,
+          },
+        }));
+      } else {
+        toast.error("Error saving rating");
+        return;
+      }
+    } catch (error) {
+      console.error("Error saving rating:", error);
+      toast.error("Failed to save rating");
+    }
+  };
+
+  useEffect(() => {
+    if (Object.keys(ratings).length === 0) return;
+    const total = Object.values(ratings).reduce((sum, val) => sum + val.score, 0);
+    const average = total / Object.values(ratings).length;
 
     // Update parent component
-    updateTotalPoints(average)
-  }, [ratings, updateTotalPoints])
+    updateTotalPoints(average);
+  }, [ratings, updateTotalPoints]);
 
-  // Update badges in parent component when selected badges change
-  useEffect(() => {
-    updateBadges(selectedBadges)
-  }, [selectedBadges, updateBadges])
+  const saveBadges = async (badgeId: string) => {
+    try {
+      const { error } = await supabase.from(DB_TABLES.BATTLER_BADGES).insert({
+        user_id: userId,
+        battler_id: battlerId,
+        badge_id: badgeId,
+      });
 
-  // Handle rating change
-  const handleRatingChange = (attribute: string, value: number) => {
-    setRatings((prev) => ({
-      ...prev,
-      [attribute]: value,
-    }))
-  }
+      if (error) {
+        toast.error("Error saving badge");
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("Error saving badge:", error);
+      return false;
+    }
+  };
 
-  // Handle badge selection
-  const handleBadgeSelect = (badge: string, isPositive: boolean) => {
-    setSelectedBadges((prev) => {
-      const type = isPositive ? "positive" : "negative"
+  const removeBadges = async (badgeId: string) => {
+    try {
+      const { error } = await supabase
+        .from(DB_TABLES.BATTLER_BADGES)
+        .delete()
+        .eq("user_id", userId)
+        .eq("battler_id", battlerId)
+        .eq("badge_id", badgeId);
 
-      // If already selected, remove it
-      if (prev[type].includes(badge)) {
-        return {
+      if (error) {
+        toast.error("Error removing badge");
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("Error removing badge:", error);
+      return false;
+    }
+  };
+
+  const handleBadgeSelect = async (badge: string, isPositive: boolean) => {
+    if (!userId) return null;
+    const allBadges = [...writingBadges, ...performanceBadges, ...personalBadges];
+    const badgeObj = allBadges.find((b) => b.name === badge);
+
+    if (!badgeObj || !badgeObj.id) return;
+
+    const type = isPositive ? "positive" : "negative";
+    const isSelected = selectedBadges[type].includes(badge);
+
+    if (isSelected) {
+      const success = await removeBadges(badgeObj.id.toString());
+      if (success) {
+        setSelectedBadges((prev) => ({
           ...prev,
           [type]: prev[type].filter((b) => b !== badge),
-        }
+        }));
       }
+    } else {
+      const success = await saveBadges(badgeObj.id.toString());
+      if (success) {
+        setSelectedBadges((prev) => ({
+          ...prev,
+          [type]: [...prev[type], badge],
+        }));
+      }
+    }
+  };
 
-      // Otherwise add it
-      return {
-        ...prev,
-        [type]: [...prev[type], badge],
-      }
-    })
-  }
+  useEffect(() => {
+    updateBadges(selectedBadges);
+  }, [selectedBadges, updateBadges]);
 
   return (
     <div>
@@ -125,142 +272,51 @@ export default function AttributesTab({ updateBadges, updateTotalPoints }: Attri
           <TabsTrigger value="personal">Personal</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="writing">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">
-              Writing
-            </h2>
-            <p className="text-gray-300 mb-6">Ability to write impactful and complex rhymes</p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {writingAttributes.map((attr) => (
-                <AttributeSlider
-                  key={attr.attribute}
-                  title={attr.attribute}
-                  description={attr.description}
-                  value={ratings[attr.attribute] || 5.0}
-                  onChange={(value) => handleRatingChange(attr.attribute, value)}
-                  gradientFrom="indigo-500"
-                  gradientTo="purple-500"
-                />
-              ))}
-            </div>
-
-            <h3 className="text-xl font-semibold mb-4">Writing Badges</h3>
-            <div className="space-y-8">
-              <BadgeSection
-                title="Positive"
-                badges={writingBadges
-                  .filter((b) => b.isPositive)
-                  .map((b) => ({ badge: b.badge, description: b.description }))}
-                isPositive={true}
-                selectedBadges={selectedBadges.positive}
-                onSelectBadge={handleBadgeSelect}
-              />
-              <BadgeSection
-                title="Negative"
-                badges={writingBadges
-                  .filter((b) => !b.isPositive)
-                  .map((b) => ({ badge: b.badge, description: b.description }))}
-                isPositive={false}
-                selectedBadges={selectedBadges.negative}
-                onSelectBadge={handleBadgeSelect}
-              />
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="performance">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
-              Performance
-            </h2>
-            <p className="text-gray-300 mb-6">Delivery, cadence, and stage presence</p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {performanceAttributes.map((attr) => (
-                <AttributeSlider
-                  key={attr.attribute}
-                  title={attr.attribute}
-                  description={attr.description}
-                  value={ratings[attr.attribute] || 5.0}
-                  onChange={(value) => handleRatingChange(attr.attribute, value)}
-                  gradientFrom="blue-500"
-                  gradientTo="cyan-500"
-                />
-              ))}
-            </div>
-
-            <h3 className="text-xl font-semibold mb-4">Performance Badges</h3>
-            <div className="space-y-8">
-              <BadgeSection
-                title="Positive"
-                badges={performanceBadges
-                  .filter((b) => b.isPositive)
-                  .map((b) => ({ badge: b.badge, description: b.description }))}
-                isPositive={true}
-                selectedBadges={selectedBadges.positive}
-                onSelectBadge={handleBadgeSelect}
-              />
-              <BadgeSection
-                title="Negative"
-                badges={performanceBadges
-                  .filter((b) => !b.isPositive)
-                  .map((b) => ({ badge: b.badge, description: b.description }))}
-                isPositive={false}
-                selectedBadges={selectedBadges.negative}
-                onSelectBadge={handleBadgeSelect}
-              />
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="personal">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-              Personal
-            </h2>
-            <p className="text-gray-300 mb-6">Character, reputation, and battle approach</p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {personalAttributes.map((attr) => (
-                <AttributeSlider
-                  key={attr.attribute}
-                  title={attr.attribute}
-                  description={attr.description}
-                  value={ratings[attr.attribute] || 5.0}
-                  onChange={(value) => handleRatingChange(attr.attribute, value)}
-                  gradientFrom="amber-500"
-                  gradientTo="orange-500"
-                />
-              ))}
-            </div>
-
-            <h3 className="text-xl font-semibold mb-4">Personal Badges</h3>
-            <div className="space-y-8">
-              <BadgeSection
-                title="Positive"
-                badges={personalBadges
-                  .filter((b) => b.isPositive)
-                  .map((b) => ({ badge: b.badge, description: b.description }))}
-                isPositive={true}
-                selectedBadges={selectedBadges.positive}
-                onSelectBadge={handleBadgeSelect}
-              />
-              <BadgeSection
-                title="Negative"
-                badges={personalBadges
-                  .filter((b) => !b.isPositive)
-                  .map((b) => ({ badge: b.badge, description: b.description }))}
-                isPositive={false}
-                selectedBadges={selectedBadges.negative}
-                onSelectBadge={handleBadgeSelect}
-              />
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+        {[
+          {
+            value: "writing",
+            title: "Writing",
+            description: "Ability to write impactful and complex rhymes",
+            attributes: writingAttributes,
+            badges: writingBadges,
+            gradientFrom: "indigo-500",
+            gradientTo: "purple-500",
+          },
+          {
+            value: "performance",
+            title: "Performance",
+            description: "Delivery, cadence, and stage presence",
+            attributes: performanceAttributes,
+            badges: performanceBadges,
+            gradientFrom: "blue-500",
+            gradientTo: "cyan-500",
+          },
+          {
+            value: "personal",
+            title: "Personal",
+            description: "Character, reputation, and battle approach",
+            attributes: personalAttributes,
+            badges: personalBadges,
+            gradientFrom: "amber-500",
+            gradientTo: "orange-500",
+          },
+        ].map((tab) => (
+          <TabsContent key={tab.value} value={tab.value}>
+            <AttributeTabsContent
+              title={tab.title}
+              description={tab.description}
+              attributes={tab.attributes}
+              badges={tab.badges}
+              ratings={ratings}
+              selectedBadges={selectedBadges}
+              handleRatingChange={handleRatingChange}
+              handleBadgeSelect={handleBadgeSelect}
+              gradientFrom={tab.gradientFrom}
+              gradientTo={tab.gradientTo}
+            />
+          </TabsContent>
+        ))}
+      </Tabs>{" "}
     </div>
-  )
+  );
 }
-

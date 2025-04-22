@@ -1,10 +1,15 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "@/components/ui/chart"
+import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { RatingCard } from "@/components/pages/battlers/details/RatingCard";
 
 // Mock data for analytics
 const battlers = [
@@ -12,7 +17,7 @@ const battlers = [
   { id: "2", name: "Tsu Surf" },
   { id: "3", name: "Geechi Gotti" },
   { id: "4", name: "Rum Nitty" },
-]
+];
 
 const myRatings = {
   writing: {
@@ -33,7 +38,7 @@ const myRatings = {
     Preparation: 9.0,
     Consistency: 8.0,
   },
-}
+};
 
 const communityRatings = {
   writing: {
@@ -54,27 +59,102 @@ const communityRatings = {
     Preparation: 8.7,
     Consistency: 7.8,
   },
-}
+};
 
 interface AnalyticsTabProps {
-  battlerId: string
+  battlerId: string;
+}
+
+interface ratingProps {
+  title: string;
+  description: string;
+  data: {
+    name: string;
+    "My Rating": number;
+    "Community Average": number;
+  }[];
+  barColor: string;
 }
 
 export default function AnalyticsTab({ battlerId }: AnalyticsTabProps) {
-  const [selectedBattler, setSelectedBattler] = useState(battlerId)
+  const [selectedBattler, setSelectedBattler] = useState(battlerId);
 
   // Transform data for charts
   const transformDataForChart = (category: "writing" | "performance" | "personal") => {
     return Object.entries(myRatings[category]).map(([name, value]) => ({
       name,
       "My Rating": value,
-      "Community Average": communityRatings[category][name as keyof (typeof communityRatings)[typeof category]],
-    }))
-  }
+      "Community Average":
+        communityRatings[category][name as keyof (typeof communityRatings)[typeof category]],
+    }));
+  };
 
-  const writingData = transformDataForChart("writing")
-  const performanceData = transformDataForChart("performance")
-  const personalData = transformDataForChart("personal")
+  const writingData = transformDataForChart("writing");
+  const performanceData = transformDataForChart("performance");
+  const personalData = transformDataForChart("personal");
+
+  const myRatingData: ratingProps[] = [
+    {
+      title: "Writing",
+      description: "My ratings for writing attributes",
+      data: writingData,
+      barColor: "#8884d8",
+    },
+    {
+      title: "Performance",
+      description: "My ratings for performance attributes",
+      data: performanceData,
+      barColor: "#82ca9d",
+    },
+    {
+      title: "Personal",
+      description: "My ratings for personal attributes",
+      data: personalData,
+      barColor: "#ffc658",
+    },
+  ];
+
+  const communityRatingData: ratingProps[] = [
+    {
+      title: "Writing",
+      description: "Community ratings for writing attributes",
+      data: writingData,
+      barColor: "#8884d8",
+    },
+    {
+      title: "Performance",
+      description: "Community ratings for performance attributes",
+      data: performanceData,
+      barColor: "#82ca9d",
+    },
+    {
+      title: "Personal",
+      description: "Community ratings for personal attributes",
+      data: personalData,
+      barColor: "#ffc658",
+    },
+  ];
+
+  const comparisonData: ratingProps[] = [
+    {
+      title: "Writing",
+      description: "Your ratings vs. Community average",
+      data: writingData,
+      barColor: "#8884d8",
+    },
+    {
+      title: "Performance",
+      description: "Your ratings vs. Community average",
+      data: performanceData,
+      barColor: "#82ca9d",
+    },
+    {
+      title: "Personal",
+      description: "Your ratings vs. Community average",
+      data: personalData,
+      barColor: "#ffc658",
+    },
+  ];
 
   return (
     <div>
@@ -103,203 +183,52 @@ export default function AnalyticsTab({ battlerId }: AnalyticsTabProps) {
 
         <TabsContent value="my-ratings">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Writing</CardTitle>
-                <CardDescription>Your ratings for writing attributes</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={writingData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 10]} />
-                      <Tooltip />
-                      <Bar dataKey="My Rating" fill="#8884d8" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Performance</CardTitle>
-                <CardDescription>Your ratings for performance attributes</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={performanceData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 10]} />
-                      <Tooltip />
-                      <Bar dataKey="My Rating" fill="#82ca9d" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Personal</CardTitle>
-                <CardDescription>Your ratings for personal attributes</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={personalData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 10]} />
-                      <Tooltip />
-                      <Bar dataKey="My Rating" fill="#ffc658" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+            {myRatingData.map((item, index) => {
+              return (
+                <RatingCard
+                  key={index}
+                  title={item.title}
+                  description={item.description}
+                  data={item.data}
+                  barColor={item.barColor}
+                />
+              );
+            })}
           </div>
         </TabsContent>
 
         <TabsContent value="community">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Writing</CardTitle>
-                <CardDescription>Community ratings for writing attributes</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={writingData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 10]} />
-                      <Tooltip />
-                      <Bar dataKey="Community Average" fill="#8884d8" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Performance</CardTitle>
-                <CardDescription>Community ratings for performance attributes</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={performanceData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 10]} />
-                      <Tooltip />
-                      <Bar dataKey="Community Average" fill="#82ca9d" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Personal</CardTitle>
-                <CardDescription>Community ratings for personal attributes</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={personalData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 10]} />
-                      <Tooltip />
-                      <Bar dataKey="Community Average" fill="#ffc658" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+            {communityRatingData.map((item, index) => {
+              return (
+                <RatingCard
+                  key={index}
+                  title={item.title}
+                  description={item.description}
+                  data={item.data}
+                  barColor={item.barColor}
+                />
+              );
+            })}
           </div>
         </TabsContent>
 
         <TabsContent value="comparison">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Writing Comparison</CardTitle>
-                <CardDescription>Your ratings vs. Community average</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={writingData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 10]} />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="My Rating" fill="#8884d8" />
-                      <Bar dataKey="Community Average" fill="#82ca9d" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Performance Comparison</CardTitle>
-                <CardDescription>Your ratings vs. Community average</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={performanceData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 10]} />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="My Rating" fill="#8884d8" />
-                      <Bar dataKey="Community Average" fill="#82ca9d" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Personal Comparison</CardTitle>
-                <CardDescription>Your ratings vs. Community average</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={personalData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis domain={[0, 10]} />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="My Rating" fill="#8884d8" />
-                      <Bar dataKey="Community Average" fill="#82ca9d" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+            {comparisonData.map((item, index) => {
+              return (
+                <RatingCard
+                  key={index}
+                  title={item.title}
+                  description={item.description}
+                  data={item.data}
+                  barColor={item.barColor}
+                />
+              );
+            })}
           </div>
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

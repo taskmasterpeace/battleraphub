@@ -44,16 +44,18 @@ export interface MediaUser {
 }
 
 export interface Badge {
+  id?: number;
   category: string;
-  badge: string;
+  name: string;
   description: string;
-  isPositive: boolean;
+  is_positive: boolean;
 }
 
 // Ex: "Writing" - "Wordplay" - "Use of complex words"
 export interface Attribute {
+  id: number;
   category: string;
-  attribute: string;
+  name: string;
   description: string;
 }
 
@@ -101,6 +103,7 @@ export interface Battlers {
   avatar: string;
   bio: string;
   location: string;
+  banner?: string;
   users: {
     added_by: string;
   };
@@ -110,4 +113,14 @@ export interface TagsOption {
   id: number;
   tagId?: string;
   name: string;
+}
+export interface NavList extends NavItem {
+  children?: NavItem[];
+}
+export interface NavItem {
+  label: string;
+  icon: React.ReactNode;
+  href: string;
+  roles: number[];
+  permissions: string[];
 }

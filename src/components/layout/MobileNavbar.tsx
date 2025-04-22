@@ -4,22 +4,7 @@ import type React from "react";
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import {
-  Menu,
-  Home,
-  Users,
-  BarChart2,
-  Video,
-  User,
-  LogIn,
-  Database,
-  Search,
-  Award,
-  Star,
-  Settings,
-  Bell,
-  Trophy,
-} from "lucide-react";
+import { Menu, User, LogIn, Search, Star, Settings, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth.context";
 import { usePathname } from "next/navigation";
@@ -31,9 +16,16 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { filterNavList, mainNavItems, secondaryNavItems } from "@/lib/navigation-links";
 
 export default function MobileNavbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,19 +34,13 @@ export default function MobileNavbar() {
   const pathname = usePathname();
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  const mainNavItems = [
-    { href: "/", label: "Home", icon: <Home className="w-5 h-5 mr-3" /> },
-    { href: "/battlers", label: "Battlers", icon: <Users className="w-5 h-5 mr-3" /> },
-    { href: "/analytics", label: "Analytics", icon: <BarChart2 className="w-5 h-5 mr-3" /> },
-    { href: "/media", label: "Media", icon: <Video className="w-5 h-5 mr-3" /> },
-  ];
+  const filteredMainLinks = mainNavItems.filter(
+    (link) =>
+      !link.roles.length ||
+      (user?.user_metadata?.role && link.roles.includes(user.user_metadata.role)),
+  );
 
-  const secondaryNavItems = [
-    { href: "/leaderboard", label: "Leaderboard", icon: <Trophy className="w-5 h-5 mr-3" /> },
-    { href: "/rankings", label: "Rankings", icon: <Award className="w-5 h-5 mr-3" /> },
-    { href: "/favorites", label: "Favorites", icon: <Star className="w-5 h-5 mr-3" /> },
-    { href: "/admin-tools", label: "Admin Tools", icon: <Database className="w-5 h-5 mr-3" /> },
-  ];
+  const filteredSecondaryLinks = filterNavList(secondaryNavItems, user);
 
   const isActive = (path: string) => {
     if (path === "/" && pathname !== "/") {
@@ -173,7 +159,7 @@ export default function MobileNavbar() {
               Main Navigation
             </h3>
             <div className="space-y-1">
-              {mainNavItems.map((item) => (
+              {filteredMainLinks.map((item) => (
                 <SheetClose asChild key={item.href}>
                   <Link
                     href={item.href}
@@ -197,21 +183,51 @@ export default function MobileNavbar() {
               Features
             </h3>
             <div className="space-y-1">
-              {secondaryNavItems.map((item) => (
-                <SheetClose asChild key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={`flex items-center py-3 px-4 rounded-md transition-colors ${
-                      isActive(item.href)
-                        ? "bg-amber-900/20 text-amber-400"
-                        : "text-gray-300 hover:bg-gray-800 hover:text-amber-400"
-                    }`}
-                  >
-                    {item.icon}
-                    {item.label}
-                  </Link>
-                </SheetClose>
-              ))}
+              {filteredSecondaryLinks.map((item) => {
+                if (item.children && item.children.length > 0) {
+                  const isActive =
+                    item.children.find((child) => child.href && pathname.startsWith(child.href)) ||
+                    pathname.startsWith(item.href);
+                  return (
+                    <div key={item.href}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className={`flex items-center py-3 px-4 rounded-md transition-colors hover:text-blue-400 ${
+                              isActive ? "text-blue-400" : "text-gray-300"
+                            }`}
+                          >
+                            {item.icon}
+                            {item.label}
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56" align="start">
+                          {item.children.map((child) => (
+                            <DropdownMenuItem asChild key={child.href}>
+                              <Link href={child.href || "#"}>{child.label}</Link>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  );
+                }
+                return (
+                  <SheetClose asChild key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center py-3 px-4 rounded-md transition-colors ${
+                        isActive(item.href)
+                          ? "bg-amber-900/20 text-amber-400"
+                          : "text-gray-300 hover:bg-gray-800 hover:text-amber-400"
+                      }`}
+                    >
+                      {item.icon}
+                      {item.label}
+                    </Link>
+                  </SheetClose>
+                );
+              })}
             </div>
           </div>
 

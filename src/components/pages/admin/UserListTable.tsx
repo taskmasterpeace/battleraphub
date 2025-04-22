@@ -214,7 +214,7 @@ const UserListTable = () => {
                     <PopoverTrigger>
                       <EllipsisVertical className="text-gray-500" />
                     </PopoverTrigger>
-                    <PopoverContent className="w-full max-w-[190px]">
+                    <PopoverContent className="w-[230px]">
                       <div className="flex flex-col items-start gap-3 w-full">
                         <div>
                           {user.verified === false && (
@@ -224,7 +224,7 @@ const UserListTable = () => {
                                 type="submit"
                                 variant={"secondary"}
                                 size={"sm"}
-                                className="w-[150px]"
+                                className="w-[190px]"
                               >
                                 Mark as Verified
                               </Button>
@@ -239,7 +239,7 @@ const UserListTable = () => {
                                 type="submit"
                                 variant={"secondary"}
                                 size={"sm"}
-                                className="w-[150px]"
+                                className="w-[190px]"
                               >
                                 Revoke c.m. permission
                               </Button>
@@ -251,7 +251,7 @@ const UserListTable = () => {
                                 type="submit"
                                 variant={"secondary"}
                                 size={"sm"}
-                                className="w-[150px]"
+                                className="w-[190px]"
                               >
                                 Give c.m. permission
                               </Button>
@@ -264,7 +264,7 @@ const UserListTable = () => {
                             type="submit"
                             variant={"destructive"}
                             size={"sm"}
-                            className="w-[150px]"
+                            className="w-[190px]"
                           >
                             Delete user
                           </Button>
