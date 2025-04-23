@@ -441,3 +441,30 @@ export const deleteBattlersAction = async (formData: FormData) => {
 
   return successResponse("Battler deleted successfully");
 };
+
+export const ratingRoleWeightsActions = async (formData: FormData) => {
+  const supabase = await protectedCreateClient();
+  try {
+    const weightsString = formData.get("roleWeights") as string;
+    const roleWeights = JSON.parse(weightsString);
+
+    const entries = Object.entries(roleWeights).map(([role, weight]) => ({
+      role_id: role,
+      weight: Number(weight),
+    }));
+
+    const { error } = await supabase
+      .from(DB_TABLES.RATING_ROLE_WEIGHTS)
+      .upsert(entries, { onConflict: "role_id" });
+
+    if (error) {
+      console.error("Upsert ratingRoleWeight error:", error);
+      return errorResponse("Failed to update rating role weights.");
+    }
+
+    return successResponse("Rating role weights updated successfully");
+  } catch (error) {
+    console.error("Unexpected error in ratingRoleWeightsActions:", error);
+    return errorResponse("An unexpected error occurred while updating weights.");
+  }
+};

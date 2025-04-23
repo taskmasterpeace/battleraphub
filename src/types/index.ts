@@ -124,3 +124,15 @@ export interface NavItem {
   roles: number[];
   permissions: string[];
 }
+
+export interface rolesWeights {
+  id: number;
+  role_id: number;
+  formKey: string;
+  key: string;
+  label: string;
+  color: string;
+  description: string;
+}
+
+export type RoleKey = "fan" | "media" | "battler" | "league_owner" | "admin";

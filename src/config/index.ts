@@ -26,6 +26,7 @@ const DB_TABLES = {
   ATTRIBUTES: "attributes",
   BATTLER_BADGES: "battler_badges",
   BATTLER_RATINGS: "battler_ratings",
+  RATING_ROLE_WEIGHTS: "rating_role_weights",
 };
 
 const BUCKET_NAME = "battleraprank";

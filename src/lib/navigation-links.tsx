@@ -27,6 +27,13 @@ export const NAV_LINKS: NavList[] = [
     icon: <Database className="w-4 h-4 inline mr-1" />,
     children: [
       {
+        label: "Admin Tools",
+        href: PAGES.ADMIN_TOOLS,
+        roles: [ROLE.ADMIN],
+        permissions: [],
+        icon: null,
+      },
+      {
         label: "Users",
         href: PAGES.ADMIN_USER_LIST,
         roles: [ROLE.ADMIN],
@@ -106,6 +113,13 @@ export const secondaryNavItems: NavList[] = [
     label: "Admin",
     icon: <Database className="w-5 h-5 inline mr-3" />,
     children: [
+      {
+        label: "Admin-tools",
+        href: PAGES.ADMIN_TOOLS,
+        roles: [ROLE.ADMIN],
+        permissions: [],
+        icon: null,
+      },
       {
         label: "Users",
         href: PAGES.ADMIN_USER_LIST,
