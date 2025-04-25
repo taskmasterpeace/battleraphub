@@ -38,7 +38,7 @@ export const AttributeTabsContent = ({
         <AttributeSlider
           key={attr.name}
           title={attr.name}
-          description={attr.description}
+          description={attr.description || ""}
           value={ratings?.[attr.id]?.score ?? 0}
           onChange={(value) => handleRatingChange(attr.id, value)}
           gradientFrom={gradientFrom}

@@ -1,177 +1,201 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { RatingCard } from "@/components/pages/battlers/details/RatingCard";
-
-// Mock data for analytics
-const battlers = [
-  { id: "1", name: "Loaded Lux" },
-  { id: "2", name: "Tsu Surf" },
-  { id: "3", name: "Geechi Gotti" },
-  { id: "4", name: "Rum Nitty" },
-];
-
-const myRatings = {
-  writing: {
-    Wordplay: 8.5,
-    Punchlines: 7.2,
-    Schemes: 9.0,
-    Angles: 8.8,
-  },
-  performance: {
-    Delivery: 7.5,
-    "Stage Presence": 8.0,
-    "Crowd Control": 7.8,
-    Showmanship: 7.2,
-  },
-  personal: {
-    Authenticity: 9.2,
-    "Battle IQ": 9.5,
-    Preparation: 9.0,
-    Consistency: 8.0,
-  },
-};
-
-const communityRatings = {
-  writing: {
-    Wordplay: 8.2,
-    Punchlines: 7.5,
-    Schemes: 8.7,
-    Angles: 8.5,
-  },
-  performance: {
-    Delivery: 7.8,
-    "Stage Presence": 7.5,
-    "Crowd Control": 7.3,
-    Showmanship: 7.0,
-  },
-  personal: {
-    Authenticity: 8.8,
-    "Battle IQ": 9.2,
-    Preparation: 8.7,
-    Consistency: 7.8,
-  },
-};
+import { Attribute, BattlerAnalytics, Battlers } from "@/types";
+import { CATEGORY_TYPES } from "@/config";
+import Image from "next/image";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { Command } from "cmdk";
+import {
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+import { useBattler } from "@/contexts/battler.context";
 
 interface AnalyticsTabProps {
-  battlerId: string;
+  battlerData: Battlers | undefined;
+  attributeData: Attribute[];
 }
 
-interface ratingProps {
-  title: string;
-  description: string;
-  data: {
-    name: string;
-    "My Rating": number;
-    "Community Average": number;
-  }[];
-  barColor: string;
-}
+const colorOptions = ["#8884d8", "#82ca9d", "#ffc658"];
 
-export default function AnalyticsTab({ battlerId }: AnalyticsTabProps) {
-  const [selectedBattler, setSelectedBattler] = useState(battlerId);
+export default function AnalyticsTab({ battlerData, attributeData }: AnalyticsTabProps) {
+  const {
+    battlerAnalytics,
+    battlerRatings,
+    battlersData,
+    fetchBattlerAnalytics,
+    setSearchQuery,
+    searchQuery,
+  } = useBattler();
+  const [open, setOpen] = useState(false);
+  const [selectedBattler, setSelectedBattler] = useState<Battlers | null>(null);
+  const [selectedBattlerAnalytics, setSelectedBattlerAnalytics] = useState<BattlerAnalytics[]>([]);
 
-  // Transform data for charts
-  const transformDataForChart = (category: "writing" | "performance" | "personal") => {
-    return Object.entries(myRatings[category]).map(([name, value]) => ({
-      name,
-      "My Rating": value,
-      "Community Average":
-        communityRatings[category][name as keyof (typeof communityRatings)[typeof category]],
-    }));
+  useEffect(() => {
+    const getBattlerAnalytics = async () => {
+      if (selectedBattler) {
+        const analytics = await fetchBattlerAnalytics(selectedBattler.id, false);
+        setSelectedBattlerAnalytics(analytics);
+      }
+    };
+    getBattlerAnalytics();
+  }, [selectedBattler, fetchBattlerAnalytics]);
+
+  const generateChartData = (
+    ratingData: { attribute_id: number; score: number }[],
+  ): {
+    [key: string]: {
+      title: string;
+      description: string;
+      data: { name: string; value: string }[];
+      barColor: string;
+    };
+  } => {
+    const data: {
+      [key: string]: {
+        title: string;
+        description: string;
+        data: {
+          name: string;
+          value: string;
+        }[];
+        barColor: string;
+      };
+    } = {};
+    Object.values(CATEGORY_TYPES).forEach((category, index) => {
+      data[category] = {
+        title: category.charAt(0).toUpperCase() + category.slice(1),
+        description: `${category} attributes ratings`,
+        data: [],
+        barColor: colorOptions[index],
+      };
+    });
+
+    const attributeMapper = attributeData.reduce(
+      (acc: { [key: string]: { name: string; category: string } }, attr) => {
+        acc[attr.id] = { name: attr.name, category: attr.category };
+        return acc;
+      },
+      {},
+    );
+
+    ratingData.forEach((item) => {
+      const attribute = attributeMapper[item.attribute_id];
+      data[attribute.category].data.push({
+        name: attribute.name,
+        value: item.score?.toString() || "0",
+      });
+    });
+
+    return data;
   };
 
-  const writingData = transformDataForChart("writing");
-  const performanceData = transformDataForChart("performance");
-  const personalData = transformDataForChart("personal");
+  const generateComparisonChartData = () => {
+    const battlerAnalyticsData = generateChartData(battlerAnalytics);
+    const selectedBattlerAnalyticsData = generateChartData(selectedBattlerAnalytics);
 
-  const myRatingData: ratingProps[] = [
-    {
-      title: "Writing",
-      description: "My ratings for writing attributes",
-      data: writingData,
-      barColor: "#8884d8",
-    },
-    {
-      title: "Performance",
-      description: "My ratings for performance attributes",
-      data: performanceData,
-      barColor: "#82ca9d",
-    },
-    {
-      title: "Personal",
-      description: "My ratings for personal attributes",
-      data: personalData,
-      barColor: "#ffc658",
-    },
-  ];
+    const mergedData: {
+      [key: string]: {
+        title: string;
+        description: string;
+        data: { name: string; [key: string]: string }[];
+        barColor: string;
+      };
+    } = {};
 
-  const communityRatingData: ratingProps[] = [
-    {
-      title: "Writing",
-      description: "Community ratings for writing attributes",
-      data: writingData,
-      barColor: "#8884d8",
-    },
-    {
-      title: "Performance",
-      description: "Community ratings for performance attributes",
-      data: performanceData,
-      barColor: "#82ca9d",
-    },
-    {
-      title: "Personal",
-      description: "Community ratings for personal attributes",
-      data: personalData,
-      barColor: "#ffc658",
-    },
-  ];
+    Object.keys(battlerAnalyticsData).forEach((key) => {
+      const data = battlerAnalyticsData[key].data.map((item) => {
+        const selectedItem = selectedBattlerAnalyticsData[key].data.find(
+          (selectedItem) => selectedItem.name === item.name,
+        );
+        return {
+          name: item.name,
+          [battlerData?.name || ""]: item.value,
+          [selectedBattler?.name || ""]: selectedItem?.value || "0",
+        };
+      });
 
-  const comparisonData: ratingProps[] = [
-    {
-      title: "Writing",
-      description: "Your ratings vs. Community average",
-      data: writingData,
-      barColor: "#8884d8",
-    },
-    {
-      title: "Performance",
-      description: "Your ratings vs. Community average",
-      data: performanceData,
-      barColor: "#82ca9d",
-    },
-    {
-      title: "Personal",
-      description: "Your ratings vs. Community average",
-      data: personalData,
-      barColor: "#ffc658",
-    },
-  ];
+      mergedData[key] = {
+        title: battlerAnalyticsData[key].title,
+        description: battlerAnalyticsData[key].description,
+        data,
+        barColor: battlerAnalyticsData[key].barColor,
+      };
+    });
+
+    return mergedData;
+  };
 
   return (
     <div>
       <div className="mb-6 flex flex-col sm:flex-row justify-between gap-4">
         <h2 className="text-2xl font-bold">Analytics</h2>
-        <Select value={selectedBattler} onValueChange={setSelectedBattler}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select battler" />
-          </SelectTrigger>
-          <SelectContent>
-            {battlers.map((battler) => (
-              <SelectItem key={battler.id} value={battler.id}>
-                {battler.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-[250px] justify-between"
+            >
+              {selectedBattler?.name || battlersData[0]?.name || "Select battler..."}
+              <ChevronsUpDown className="opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[250px] p-0">
+            <Command>
+              <CommandInput
+                placeholder="Search battler..."
+                className="h-9"
+                value={searchQuery}
+                onValueChange={(value) => setSearchQuery(value)}
+              />
+              <CommandList>
+                <CommandEmpty>No battler found.</CommandEmpty>
+                <CommandGroup>
+                  {battlersData.map((battler) => (
+                    <CommandItem
+                      key={battler.id}
+                      // value={battler.id}
+                      onSelect={() => {
+                        setSelectedBattler(battler);
+                        setSearchQuery("");
+                        setOpen(false);
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={battler.avatar || "/image/default-avatar-img.jpg"}
+                          alt={battler.name || "Battler Avatar"}
+                          className="w-6 h-6 rounded-full"
+                          width={24}
+                          height={24}
+                          unoptimized
+                        />
+                        {battler.name}
+                      </div>
+                      <Check
+                        className={cn(
+                          "ml-auto",
+                          selectedBattler?.id === battler.id ? "opacity-100" : "opacity-0",
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <Tabs defaultValue="my-ratings">
@@ -183,7 +207,7 @@ export default function AnalyticsTab({ battlerId }: AnalyticsTabProps) {
 
         <TabsContent value="my-ratings">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {myRatingData.map((item, index) => {
+            {Object.values(generateChartData(battlerRatings)).map((item, index) => {
               return (
                 <RatingCard
                   key={index}
@@ -191,6 +215,7 @@ export default function AnalyticsTab({ battlerId }: AnalyticsTabProps) {
                   description={item.description}
                   data={item.data}
                   barColor={item.barColor}
+                  keys={["value"]}
                 />
               );
             })}
@@ -199,7 +224,7 @@ export default function AnalyticsTab({ battlerId }: AnalyticsTabProps) {
 
         <TabsContent value="community">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {communityRatingData.map((item, index) => {
+            {Object.values(generateChartData(battlerAnalytics)).map((item, index) => {
               return (
                 <RatingCard
                   key={index}
@@ -207,6 +232,7 @@ export default function AnalyticsTab({ battlerId }: AnalyticsTabProps) {
                   description={item.description}
                   data={item.data}
                   barColor={item.barColor}
+                  keys={["value"]}
                 />
               );
             })}
@@ -215,7 +241,7 @@ export default function AnalyticsTab({ battlerId }: AnalyticsTabProps) {
 
         <TabsContent value="comparison">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {comparisonData.map((item, index) => {
+            {Object.values(generateComparisonChartData()).map((item, index) => {
               return (
                 <RatingCard
                   key={index}
@@ -223,6 +249,7 @@ export default function AnalyticsTab({ battlerId }: AnalyticsTabProps) {
                   description={item.description}
                   data={item.data}
                   barColor={item.barColor}
+                  keys={[battlerData?.name || "", selectedBattler?.name || ""]}
                 />
               );
             })}

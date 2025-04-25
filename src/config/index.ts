@@ -27,6 +27,7 @@ const DB_TABLES = {
   BATTLER_BADGES: "battler_badges",
   BATTLER_RATINGS: "battler_ratings",
   RATING_ROLE_WEIGHTS: "rating_role_weights",
+  BATTLER_ANALYTICS: "battler_analytics",
 };
 
 const BUCKET_NAME = "battleraprank";
@@ -69,6 +70,12 @@ const PAGES = {
   DIAGNOSTICS: "/diagnostics",
 };
 
+const CATEGORY_TYPES = {
+  WRITING: "writing",
+  PERFORMANCE: "performance",
+  PERSONAL: "personal",
+};
+
 export {
   ROLE,
   ROLES,
@@ -79,4 +86,5 @@ export {
   ATTRIBUTE_CATEGORIES,
   BUCKET_NAME,
   PERMISSIONS,
+  CATEGORY_TYPES,
 };

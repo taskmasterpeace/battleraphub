@@ -9,12 +9,12 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/auth.context";
 import { TabsContent } from "@/components/ui/tabs";
 import { AttributeTabsContent } from "@/components/pages/battlers/details/AttributeTabsContent";
+import { useBattler } from "@/contexts/battler.context";
 
 const supabase = createClient();
 
 export interface AttributesTabProps {
   updateBadges: (badges: { positive: string[]; negative: string[] }) => void;
-  updateTotalPoints: (points: number) => void;
   attributeData: Attribute[];
   badgeData: Badge[];
   battlerId: string;
@@ -22,11 +22,11 @@ export interface AttributesTabProps {
 
 export default function AttributesTab({
   updateBadges,
-  updateTotalPoints,
   attributeData,
   badgeData,
   battlerId,
 }: AttributesTabProps) {
+  const { battlerBadges, battlerRatings } = useBattler();
   const [ratings, setRatings] = useState<Record<string, { id: string; score: number }>>({});
   const [selectedBadges, setSelectedBadges] = useState<{
     positive: string[];
@@ -48,18 +48,8 @@ export default function AttributesTab({
   const { user } = useAuth();
   const userId = user?.id;
 
-  const fetchBattlerBadges = async () => {
-    try {
-      const { data: battlerBadges, error } = await supabase
-        .from(DB_TABLES.BATTLER_BADGES)
-        .select("badge_id")
-        .eq("battler_id", battlerId);
-
-      if (error) {
-        toast.error("Error fetching battler badges");
-        return;
-      }
-
+  useEffect(() => {
+    if (battlerBadges.length > 0) {
       const badgeIds = battlerBadges.map((bb) => bb.badge_id);
 
       const filterBadgeData = badgeData.filter((badge) => badgeIds.includes(badge.id));
@@ -68,81 +58,50 @@ export default function AttributesTab({
         const negative = filterBadgeData.filter((b) => !b.is_positive).map((b) => b.name);
         setSelectedBadges({ positive, negative });
       }
-    } catch (error) {
-      console.error("Error fetching battler badges:", error);
     }
-  };
-
-  const fetchBattlerRatings = async () => {
-    try {
-      const writingAttrs = attributeData.filter(
-        (attr) => attr.category === ATTRIBUTE_CATEGORIES.WRITING,
-      );
-      const performanceAttrs = attributeData.filter(
-        (attr) => attr.category === ATTRIBUTE_CATEGORIES.PERFORMANCE,
-      );
-      const personalAttrs = attributeData.filter(
-        (attr) => attr.category === ATTRIBUTE_CATEGORIES.PERSONAL,
-      );
-
-      setWritingAttributes(writingAttrs);
-      setPerformanceAttributes(performanceAttrs);
-      setPersonalAttributes(personalAttrs);
-
-      const { data: battlerRatings, error: ratingsError } = await supabase
-        .from(DB_TABLES.BATTLER_RATINGS)
-        .select("*")
-        .eq("battler_id", battlerId);
-
-      if (ratingsError) {
-        toast.error("Error fetching battler ratings");
-        return;
-      }
-
-      if (battlerRatings && battlerRatings.length > 0) {
-        const ratingMap: Record<string, { id: string; score: number }> = {};
-        battlerRatings.forEach((rating) => {
-          ratingMap[rating.attribute_id] = {
-            id: rating.id,
-            score: Number(rating.score),
-          };
-        });
-        setRatings(ratingMap);
-      }
-    } catch (error) {
-      console.error("Error fetching battler ratings:", error);
-      toast.error("Error fetching battler ratings");
-    }
-  };
-
-  const fetchData = async () => {
-    try {
-      const writingBadges = badgeData.filter(
-        (badge) => badge.category === ATTRIBUTE_CATEGORIES.WRITING,
-      );
-      const performanceBadges = badgeData.filter(
-        (badge) => badge.category === ATTRIBUTE_CATEGORIES.PERFORMANCE,
-      );
-      const personalBadges = badgeData.filter(
-        (badge) => badge.category === ATTRIBUTE_CATEGORIES.PERSONAL,
-      );
-      setWritingBadges(writingBadges);
-      setPerformanceBadges(performanceBadges);
-      setPersonalBadges(personalBadges);
-
-      await fetchBattlerBadges();
-      await fetchBattlerRatings();
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      toast.error("Failed to fetch data: " + (error as Error).message);
-    }
-  };
+  }, [badgeData, battlerBadges]);
 
   useEffect(() => {
-    if (battlerId) {
-      fetchData();
+    if (battlerRatings.length > 0) {
+      const ratingMap: Record<string, { id: string; score: number }> = {};
+      battlerRatings.forEach((rating) => {
+        ratingMap[rating.attribute_id] = {
+          id: rating.id,
+          score: Number(rating.score),
+        };
+      });
+      setRatings(ratingMap);
     }
-  }, [battlerId]);
+  }, [battlerRatings]);
+
+  useEffect(() => {
+    const writingBadges = badgeData.filter(
+      (badge) => badge.category === ATTRIBUTE_CATEGORIES.WRITING,
+    );
+    const performanceBadges = badgeData.filter(
+      (badge) => badge.category === ATTRIBUTE_CATEGORIES.PERFORMANCE,
+    );
+    const personalBadges = badgeData.filter(
+      (badge) => badge.category === ATTRIBUTE_CATEGORIES.PERSONAL,
+    );
+    setWritingBadges(writingBadges);
+    setPerformanceBadges(performanceBadges);
+    setPersonalBadges(personalBadges);
+
+    const writingAttrs = attributeData.filter(
+      (attr) => attr.category === ATTRIBUTE_CATEGORIES.WRITING,
+    );
+    const performanceAttrs = attributeData.filter(
+      (attr) => attr.category === ATTRIBUTE_CATEGORIES.PERFORMANCE,
+    );
+    const personalAttrs = attributeData.filter(
+      (attr) => attr.category === ATTRIBUTE_CATEGORIES.PERSONAL,
+    );
+
+    setWritingAttributes(writingAttrs);
+    setPerformanceAttributes(performanceAttrs);
+    setPersonalAttributes(personalAttrs);
+  }, [attributeData, badgeData]);
 
   const handleRatingChange = async (attributeId: number, value: number) => {
     if (!userId) return null;
@@ -181,15 +140,6 @@ export default function AttributesTab({
       toast.error("Failed to save rating");
     }
   };
-
-  useEffect(() => {
-    if (Object.keys(ratings).length === 0) return;
-    const total = Object.values(ratings).reduce((sum, val) => sum + val.score, 0);
-    const average = total / Object.values(ratings).length;
-
-    // Update parent component
-    updateTotalPoints(average);
-  }, [ratings, updateTotalPoints]);
 
   const saveBadges = async (badgeId: string) => {
     try {

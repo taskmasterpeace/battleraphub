@@ -251,7 +251,7 @@ export default function HighlightedBattler() {
               <div className="md:w-1/3 relative">
                 <div className="aspect-square relative">
                   <Image
-                    src={currentBattler.image || "/placeholder.svg"}
+                    src={currentBattler.image || "/image/default-avatar-img.jpg"}
                     alt={currentBattler.name}
                     fill
                     className="object-cover"

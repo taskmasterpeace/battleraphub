@@ -48,7 +48,7 @@ export default function Home() {
             >
               <div className="aspect-square relative">
                 <Image
-                  src={battler.image || "/placeholder.svg"}
+                  src={battler.image || "/image/default-avatar-img.jpg"}
                   alt={battler.name}
                   fill
                   className="object-cover"

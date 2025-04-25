@@ -143,7 +143,7 @@ const BattlersListTable = () => {
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={battler?.avatar || ""} alt={battler.name} />
                       <AvatarFallback>
-                        {battler.name.slice(0, 2).toUpperCase() || "NA"}
+                        {battler?.name?.slice(0, 2).toUpperCase() || "NA"}
                       </AvatarFallback>
                     </Avatar>
                   </TableCell>
@@ -179,7 +179,9 @@ const BattlersListTable = () => {
                   </TableCell>
                   <TableCell className="px-3 min-w-[350px] !w-[350px]">
                     <div className="max-w-[350px]">
-                      {battler.bio?.length > 125 ? `${battler.bio.slice(0, 125)}...` : battler.bio}
+                      {battler?.bio && battler.bio.length > 125
+                        ? `${battler.bio.slice(0, 125)}...`
+                        : battler?.bio}
                     </div>
                   </TableCell>
                   <TableCell className="px-3 min-w-[100px] !w-[300px]">
@@ -187,7 +189,7 @@ const BattlersListTable = () => {
                   </TableCell>
                   <TableCell className="px-3 min-w-[100px] !w-[300px]">
                     <div className="truncate max-w-[300px]">
-                      {battler.users.added_by ? (
+                      {battler?.users?.added_by ? (
                         <Badge
                           variant={"default"}
                           className="rounded-md text-medium capitalize text-xs"

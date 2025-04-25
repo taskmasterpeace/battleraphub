@@ -32,20 +32,16 @@ export default function Header() {
         <div className="flex items-center">
           <MobileNavbar />
           <Link href="/" className="flex items-center">
-            <div className="relative h-10 w-10 mr-2">
+            <div className="relative mr-2">
               <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1ahq-LogoshiRes-enhance-3.4x.png-RgnWSrnet4mLXiyHJq8wddQ1bMJ8Wr.jpeg"
+                src="/image/battleraphub.png"
                 alt="Algorithm Institute of Battle Rap"
-                width={40}
+                width={80}
                 height={40}
-                className="object-contain"
+                className="object-none !h-auto"
                 priority
-                style={{ maxHeight: "40px" }}
               />
             </div>
-            <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-blue-500">
-              AIBR
-            </span>
           </Link>
         </div>
         <div className="flex items-center gap-6">
