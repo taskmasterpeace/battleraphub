@@ -1,0 +1,113 @@
+import { LeaderboardCommunityStats, LeaderboardEntry, TopContributor } from "@/types";
+
+export const LeaderboardCommunityStatsData: LeaderboardCommunityStats = {
+  totalUsers: 1000,
+  totalRatings: 50000,
+  activeUsers: 750,
+  roleBreakdown: [
+    { role: "Battler", percentage: 50 },
+    { role: "Media", percentage: 30 },
+    { role: "League Owner", percentage: 20 },
+  ],
+  ratingDistribution: [
+    { range: "1-2", percentage: 10 },
+    { range: "3-4", percentage: 20 },
+    { range: "5-6", percentage: 30 },
+    { range: "7-8", percentage: 25 },
+    { range: "9-10", percentage: 15 },
+  ],
+  averageRating: 8.4,
+  newUsersThisWeek: 100,
+  newRatingsThisWeek: 1000,
+  battlersCovered: 89,
+  consistency: 92,
+  influence: 87,
+  recentActivity: "high",
+  contributionStreak: 14,
+  topGenres: ["URL", "KOTD", "RBE"],
+  favoriteRappers: ["Loaded Lux", "Rum Nitty", "Geechi Gotti"],
+};
+
+export const topContributors: TopContributor[] = [
+  {
+    userId: "1",
+    username: "jayblac",
+    displayName: "Jay Blac",
+    profileImage: "/placeholder.svg?height=400&width=400&text=Jay+Blac",
+    contribution: "Most Consistent Ratings",
+    score: 92,
+    description: "Provides highly consistent ratings across all battlers",
+  },
+  {
+    userId: "3",
+    username: "queenzflip",
+    displayName: "QueenzFlip",
+    profileImage: "/placeholder.svg?height=400&width=400&text=QueenzFlip",
+    contribution: "Most Active Reviewer",
+    score: 203,
+    description: "Highest number of active reviews in the past month",
+  },
+  {
+    userId: "4",
+    username: "15minutesoffame",
+    displayName: "15 Minutes of Fame",
+    profileImage: "/placeholder.svg?height=400&width=400&text=15MOF",
+    contribution: "Community Influencer",
+    score: 82,
+    description: "Ratings that most closely align with community consensus",
+  },
+];
+
+// Mock data for leaderboard
+export const leaderboardMockData: LeaderboardEntry[] = [
+  {
+    userId: "1",
+    username: "jayblac",
+    displayName: "Jay Blac",
+    profileImage: "/placeholder.svg?height=400&width=400&text=Jay+Blac",
+    totalRatings: 247,
+    consistency: 92,
+    influence: 87,
+    rank: 1,
+  },
+  {
+    userId: "3",
+    username: "queenzflip",
+    displayName: "QueenzFlip",
+    profileImage: "/placeholder.svg?height=400&width=400&text=QueenzFlip",
+    totalRatings: 203,
+    consistency: 88,
+    influence: 85,
+    rank: 2,
+  },
+  {
+    userId: "4",
+    username: "15minutesoffame",
+    displayName: "15 Minutes of Fame",
+    profileImage: "/placeholder.svg?height=400&width=400&text=15MOF",
+    totalRatings: 189,
+    consistency: 90,
+    influence: 82,
+    rank: 3,
+  },
+  {
+    userId: "2",
+    username: "loadedlux",
+    displayName: "Loaded Lux",
+    profileImage: "/placeholder.svg?height=400&width=400&text=Loaded+Lux",
+    totalRatings: 156,
+    consistency: 85,
+    influence: 76,
+    rank: 4,
+  },
+  {
+    userId: "5",
+    username: "battletruth",
+    displayName: "Battle Truth",
+    profileImage: "/placeholder.svg?height=400&width=400&text=Battle+Truth",
+    totalRatings: 142,
+    consistency: 82,
+    influence: 79,
+    rank: 5,
+  },
+];

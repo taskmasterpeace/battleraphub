@@ -161,3 +161,73 @@ export interface BattlerRating {
   created_at: string;
   updated_at: string;
 }
+
+// For analytic and leaderboard static data
+
+export interface RoleWeight {
+  role: RoleKey;
+  weight: number;
+  displayName: string;
+  description: string;
+  color: string;
+}
+
+export interface BattlerAttribute {
+  battlerId: string;
+  category?: string;
+  attribute?: string;
+  overallAverage: number;
+  fanAverage: number;
+  mediaAverage: number;
+  battlerAverage: number;
+  leagueOwnerAverage: number;
+  battlerName?: string;
+  battlerImage?: string;
+  battlerLocation?: string;
+  rating?: number;
+}
+
+export interface LeaderboardCommunityStats {
+  totalUsers: number;
+  newUsersThisWeek: number;
+  totalRatings: number;
+  newRatingsThisWeek: number;
+  averageRating: number;
+  battlersCovered?: number;
+  consistency: number;
+  influence: number;
+  recentActivity: string;
+  contributionStreak: number;
+  topGenres: string[];
+  favoriteRappers: string[];
+  activeUsers: number;
+  roleBreakdown: {
+    role: string;
+    percentage: number;
+  }[];
+  ratingDistribution: {
+    range: string;
+    percentage: number;
+  }[];
+}
+
+export interface TopContributor {
+  userId: string;
+  username: string;
+  displayName: string;
+  profileImage?: string;
+  contribution: string;
+  score: number;
+  description: string;
+}
+
+export interface LeaderboardEntry {
+  userId: string;
+  username: string;
+  displayName: string;
+  profileImage?: string;
+  totalRatings: number;
+  consistency: number;
+  influence: number;
+  rank: number;
+}
