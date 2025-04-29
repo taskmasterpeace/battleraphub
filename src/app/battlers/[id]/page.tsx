@@ -1,4 +1,5 @@
 import BattlerDetails from "@/components/pages/battlers/details";
+import { BattlerProvider } from "@/contexts/battler.context";
 import { DB_TABLES } from "@/config";
 import { protectedCreateClient } from "@/utils/supabase/protected-server";
 
@@ -20,5 +21,9 @@ export default async function BattlerDetailPage({ params }: { params: Promise<{ 
     return <div>Error fetching attributes</div>;
   }
 
-  return <BattlerDetails params={params} badgeData={badgeData} attributeData={attributeData} />;
+  return (
+    <BattlerProvider>
+      <BattlerDetails params={params} badgeData={badgeData} attributeData={attributeData} />
+    </BattlerProvider>
+  );
 }

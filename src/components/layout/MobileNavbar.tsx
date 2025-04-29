@@ -8,14 +8,7 @@ import { Menu, User, LogIn, Search, Star, Settings, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth.context";
 import { usePathname } from "next/navigation";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetClose,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +17,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
 import { filterNavList, mainNavItems, secondaryNavItems } from "@/lib/navigation-links";
 
 export default function MobileNavbar() {
@@ -77,20 +69,7 @@ export default function MobileNavbar() {
           side="left"
           className="w-[300px] sm:w-[350px] bg-gray-900 border-gray-800 overflow-y-auto"
         >
-          <SheetHeader className="border-b border-gray-800 pb-4 mb-4">
-            <SheetTitle className="flex items-center">
-              <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1ahq-LogoshiRes-enhance-3.4x.png-RgnWSrnet4mLXiyHJq8wddQ1bMJ8Wr.jpeg"
-                alt="Algorithm Institute of Battle Rap"
-                width={40}
-                height={40}
-                className="mr-2"
-              />
-              <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-300">
-                AIBR
-              </span>
-            </SheetTitle>
-          </SheetHeader>
+          <SheetHeader className="border-b border-gray-800 pb-4 mb-4" />
 
           {/* User profile section */}
           <div className="mb-6">

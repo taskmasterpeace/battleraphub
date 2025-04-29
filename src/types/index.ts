@@ -44,19 +44,21 @@ export interface MediaUser {
 }
 
 export interface Badge {
-  id?: number;
+  id: number;
   category: string;
   name: string;
   description: string;
   is_positive: boolean;
 }
 
+export type Category = "writing" | "performance" | "personal";
+
 // Ex: "Writing" - "Wordplay" - "Use of complex words"
 export interface Attribute {
   id: number;
-  category: string;
+  category: Category;
   name: string;
-  description: string;
+  description?: string;
 }
 
 export interface CommunityStats {
@@ -93,18 +95,20 @@ export interface User {
 
 export interface Battlers {
   id: string;
-  battler_tags: {
+  battler_tags?: {
     tags: {
       id: string;
       name: string;
     };
   }[];
-  name: string;
-  avatar: string;
-  bio: string;
-  location: string;
+  added_by?: string;
+  name?: string;
+  avatar?: string;
+  bio?: string;
+  score?: number;
+  location?: string;
   banner?: string;
-  users: {
+  users?: {
     added_by: string;
   };
 }
@@ -136,3 +140,96 @@ export interface rolesWeights {
 }
 
 export type RoleKey = "fan" | "media" | "battler" | "league_owner" | "admin";
+
+export interface BattlerAnalytics {
+  id: string;
+  battler_id: string;
+  attribute_id: number;
+  type: number;
+  score: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BattlerRating {
+  id: string;
+  user_id: string;
+  battler_id: string;
+  attribute_id: number;
+  score: number;
+  prev_score: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// For analytic and leaderboard static data
+
+export interface RoleWeight {
+  role: RoleKey;
+  role_id: number;
+  weight: number;
+  displayName: string;
+  description: string;
+  color: string;
+  backgroundColor: string;
+}
+
+export interface BattlerAttribute {
+  battler_id: string;
+  category?: string;
+  attribute?: string;
+  overallAverage: number;
+  fanAverage: number;
+  mediaAverage: number;
+  battlerAverage: number;
+  leagueOwnerAverage: number;
+  name?: string;
+  battlerImage?: string;
+  battlerLocation?: string;
+  average_score?: number;
+}
+
+export interface LeaderboardCommunityStats {
+  totalUsers: number;
+  newUsersThisWeek: number;
+  totalRatings: number;
+  newRatingsThisWeek: number;
+  averageRating: number;
+  battlersCovered?: number;
+  consistency: number;
+  influence: number;
+  recentActivity: string;
+  contributionStreak: number;
+  topGenres: string[];
+  favoriteRappers: string[];
+  activeUsers: number;
+  roleBreakdown: {
+    role: string;
+    percentage: number;
+  }[];
+  ratingDistribution: {
+    range: string;
+    percentage: number;
+  }[];
+}
+
+export interface TopContributor {
+  userId: string;
+  username: string;
+  displayName: string;
+  profileImage?: string;
+  contribution: string;
+  score: number;
+  description: string;
+}
+
+export interface LeaderboardEntry {
+  userId: string;
+  username: string;
+  displayName: string;
+  profileImage?: string;
+  totalRatings: number;
+  consistency: number;
+  influence: number;
+  rank: number;
+}

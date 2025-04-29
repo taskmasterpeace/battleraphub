@@ -179,8 +179,8 @@ export default function Battlers({ tags }: { tags: TagsOption[] }) {
           >
             <div className="aspect-square relative">
               <Image
-                src={battler.avatar || "/placeholder.svg"}
-                alt={battler.name}
+                src={battler.avatar || "/image/default-avatar-img.jpg"}
+                alt={battler?.name || "Battler Avatar"}
                 fill
                 className="object-cover"
               />
@@ -189,7 +189,7 @@ export default function Battlers({ tags }: { tags: TagsOption[] }) {
               <h3 className="font-medium">{battler.name}</h3>
               <p className="text-sm text-gray-400">{battler.location}</p>
               <div className="flex flex-wrap gap-1 mt-2">
-                {battler.battler_tags.map((tag) => (
+                {battler?.battler_tags?.map((tag) => (
                   <span
                     key={tag.tags.id}
                     className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded"

@@ -13,9 +13,10 @@ CREATE TABLE IF NOT EXISTS battler_analytics (
     UNIQUE(battler_id, attribute_id, type)
 );
 
+
 -- Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_battler_analytics_battler_id ON battler_analytics(battler_id);
--- CREATE INDEX IF NOT EXISTS idx_battler_analytics_attribute_id ON battler_analytics(attribute_id);
+CREATE INDEX IF NOT EXISTS idx_battler_analytics_score ON battler_analytics(score);
 
 -- Function to calculate and update analytics
 CREATE OR REPLACE FUNCTION calculate_battler_analytics()

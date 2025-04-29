@@ -27,6 +27,21 @@ const DB_TABLES = {
   BATTLER_BADGES: "battler_badges",
   BATTLER_RATINGS: "battler_ratings",
   RATING_ROLE_WEIGHTS: "rating_role_weights",
+  BATTLER_ANALYTICS: "battler_analytics",
+};
+
+const MATERIALIZED_VIEWS = {
+  TOP_POSITIVE_BADGES: "most_common_positive_badges",
+  TOP_NEGATIVE_BADGES: "most_common_negative_badges",
+  AVERAGE_RATING_TRENDS_BY_CATEGORY: "average_rating_trends_over_time_by_category",
+  AVERAGE_RATINGS_BY_CATEGORY: "average_ratings_by_category",
+  AVERAGE_RATINGS_OVER_TIME: "average_ratings_over_time",
+  COMMUNITY_RATING_DISTRIBUTION: "community_rating_distribution",
+  MOST_VALUED_ATTRUBUTES: "most_valued_attributes",
+  TOP_BATTLERS_UNWEIGHTED: "top_battlers_unweighted",
+  COMMUNITY_STATS: "community_stats_mv",
+  RATING_DISTRIBUTION: "rating_distribution_mv",
+  ACTIVE_ROLES_BY_RATINGS: "active_roles_by_ratings_mv",
 };
 
 const BUCKET_NAME = "battleraprank";
@@ -69,6 +84,12 @@ const PAGES = {
   DIAGNOSTICS: "/diagnostics",
 };
 
+const CATEGORY_TYPES = {
+  WRITING: "writing",
+  PERFORMANCE: "performance",
+  PERSONAL: "personal",
+};
+
 export {
   ROLE,
   ROLES,
@@ -76,7 +97,9 @@ export {
   PAGES,
   DB_TABLES,
   PERMISSION,
+  MATERIALIZED_VIEWS,
   ATTRIBUTE_CATEGORIES,
   BUCKET_NAME,
   PERMISSIONS,
+  CATEGORY_TYPES,
 };
