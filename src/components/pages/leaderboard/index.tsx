@@ -7,7 +7,6 @@ import TopContributorCards from "@/components/pages/leaderboard/TopContributorCa
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import UserLeaderboard from "@/components/pages/leaderboard/UserLeaderBoard";
-import { LeaderboardCommunityStatsData } from "@/__mocks__/leaderboard";
 
 const LeaderBoard = () => {
   return (
@@ -19,7 +18,7 @@ const LeaderBoard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2">
-          <UserStatsOverview stats={LeaderboardCommunityStatsData} />
+          <UserStatsOverview />
         </div>
         <div>
           <TopContributorCards />

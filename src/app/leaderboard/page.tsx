@@ -1,7 +1,12 @@
 import LeaderBoard from "@/components/pages/leaderboard";
+import { LeaderboardProvider } from "@/contexts/leaderboard.context";
 
 const LeaderBoardPage = () => {
-  return <LeaderBoard />;
+  return (
+    <LeaderboardProvider>
+      <LeaderBoard />
+    </LeaderboardProvider>
+  );
 };
 
 export default LeaderBoardPage;

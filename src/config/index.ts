@@ -30,6 +30,12 @@ const DB_TABLES = {
   BATTLER_ANALYTICS: "battler_analytics",
 };
 
+const MATERIALIZED_VIEWS = {
+  COMMUNITY_STATS: "community_stats_mv",
+  RATING_DISTRIBUTION: "rating_distribution_mv",
+  ACTIVE_ROLES_BY_RATINGS: "active_roles_by_ratings_mv",
+};
+
 const BUCKET_NAME = "battleraprank";
 
 const PERMISSION = {
@@ -83,6 +89,7 @@ export {
   PAGES,
   DB_TABLES,
   PERMISSION,
+  MATERIALIZED_VIEWS,
   ATTRIBUTE_CATEGORIES,
   BUCKET_NAME,
   PERMISSIONS,

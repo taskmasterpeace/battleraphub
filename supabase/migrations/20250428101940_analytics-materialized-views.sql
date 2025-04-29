@@ -3,6 +3,8 @@
 
 -- Top 10 battler view
 
+DROP MATERIALIZED VIEW IF EXISTS top_battlers_unweighted;
+
 CREATE MATERIALIZED VIEW IF NOT EXISTS top_battlers_unweighted AS 
 SELECT 
   b.name, 
@@ -18,6 +20,8 @@ limit 10;
 
 -- Average ratings by category
 
+DROP MATERIALIZED VIEW IF EXISTS average_ratings_by_category;
+
 CREATE MATERIALIZED VIEW IF NOT EXISTS average_ratings_by_category AS
 SELECT 
     a.category,
@@ -30,6 +34,8 @@ GROUP BY
     a.category;
 
 -- Average ratings over time in months
+
+DROP MATERIALIZED VIEW IF EXISTS average_ratings_over_time;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS average_ratings_over_time AS
 SELECT
@@ -46,6 +52,8 @@ ORDER BY
 
 -- Community Rating Distribution
 
+DROP MATERIALIZED VIEW IF EXISTS community_rating_distribution;
+
 CREATE MATERIALIZED VIEW IF NOT EXISTS community_rating_distribution AS
 SELECT
     width_bucket(score::float, 0, 10, 10) AS bucket,
@@ -58,6 +66,8 @@ ORDER BY
     bucket;
 
 -- Average rating Trends Over Time in months by category
+
+DROP MATERIALIZED VIEW IF EXISTS average_rating_trends_over_time_by_category;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS average_rating_trends_over_time_by_category AS
 SELECT
@@ -77,6 +87,8 @@ ORDER BY
 
 -- Attributes with highest average ratings (Most Valued Attributes)
 
+DROP MATERIALIZED VIEW IF EXISTS most_valued_attributes;
+
 CREATE MATERIALIZED VIEW IF NOT EXISTS most_valued_attributes AS
 SELECT
     a.id AS attribute_id,
@@ -95,6 +107,8 @@ ORDER BY
 LIMIT 10;
 
 -- Most common positive badge
+
+DROP MATERIALIZED VIEW IF EXISTS most_common_positive_badges;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS most_common_positive_badges AS
 SELECT
@@ -116,6 +130,8 @@ ORDER BY
 LIMIT 5;
 
 -- Most common negative badges
+
+DROP MATERIALIZED VIEW IF EXISTS most_common_negative_badges;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS most_common_negative_badges AS
 SELECT
