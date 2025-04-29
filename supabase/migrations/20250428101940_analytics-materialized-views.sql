@@ -15,7 +15,7 @@ FROM
   battler_analytics ba 
   left join battlers b on ba.battler_id = b.id 
 where type = 1 AND attribute_id = 0 
-order by score 
+order by score desc
 limit 10;
 
 -- Average ratings by category
@@ -25,7 +25,7 @@ DROP MATERIALIZED VIEW IF EXISTS average_ratings_by_category;
 CREATE MATERIALIZED VIEW IF NOT EXISTS average_ratings_by_category AS
 SELECT 
     a.category,
-    AVG(br.score::float) AS avg_rating
+    AVG(br.score::float)::decimal(16,2) AS avg_rating
 FROM 
     battler_ratings br
 JOIN 
@@ -40,7 +40,7 @@ DROP MATERIALIZED VIEW IF EXISTS average_ratings_over_time;
 CREATE MATERIALIZED VIEW IF NOT EXISTS average_ratings_over_time AS
 SELECT
     date_trunc('month', br.updated_at) AS month,
-    AVG(br.score::float) AS avg_rating
+    AVG(br.score::float)::decimal(16,2) AS avg_rating
 FROM
     battler_ratings br
 WHERE
@@ -73,7 +73,7 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS average_rating_trends_over_time_by_catego
 SELECT
     date_trunc('month', br.updated_at) AS month,
     a.category,
-    AVG(br.score::float) AS avg_rating
+    AVG(br.score::float)::decimal(16,2) AS avg_rating
 FROM
     battler_ratings br
 JOIN
@@ -94,7 +94,7 @@ SELECT
     a.id AS attribute_id,
     a.name AS attribute_name,
     a.category,
-    AVG(br.score::float) AS avg_rating,
+    AVG(br.score::float)::decimal(16,2) AS avg_rating,
     COUNT(*) AS rating_count
 FROM
     battler_ratings br
@@ -114,7 +114,6 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS most_common_positive_badges AS
 SELECT
     b.id AS badge_id,
     b.name AS badge_name,
-    b.is_positive,
     b.description,
     COUNT(bb.id) AS times_assigned
 FROM
@@ -156,49 +155,49 @@ LIMIT 5;
 SELECT cron.schedule(
     'refresh-top_battlers_unweighted',
     '0 0 * * *', -- Run daily at 00:00
-    'REFRESH MATERIALIZED VIEW CONCURRENTLY top_battlers_unweighted'
+    'REFRESH MATERIALIZED VIEW top_battlers_unweighted'
 );
 
 SELECT cron.schedule(
     'refresh-average_ratings_by_category',
     '5 0 * * *', -- Run daily at 00:05
-    'REFRESH MATERIALIZED VIEW CONCURRENTLY average_ratings_by_category'
+    'REFRESH MATERIALIZED VIEW average_ratings_by_category'
 );
 
 SELECT cron.schedule(
     'refresh-average_ratings_over_time',
     '10 0 * * *', -- Run daily at 00:10
-    'REFRESH MATERIALIZED VIEW CONCURRENTLY average_ratings_over_time'
+    'REFRESH MATERIALIZED VIEW average_ratings_over_time'
 );
 
 SELECT cron.schedule(
     'refresh-community_rating_distribution',
     '15 0 * * *', -- Run daily at 00:15
-    'REFRESH MATERIALIZED VIEW CONCURRENTLY community_rating_distribution'
+    'REFRESH MATERIALIZED VIEW community_rating_distribution'
 );
 
 SELECT cron.schedule(
     'refresh-average_rating_trends_over_time_by_category',
     '20 0 * * *', -- Run daily at 00:20
-    'REFRESH MATERIALIZED VIEW CONCURRENTLY average_rating_trends_over_time_by_category'
+    'REFRESH MATERIALIZED VIEW average_rating_trends_over_time_by_category'
 );
 
 SELECT cron.schedule(
     'refresh-most_valued_attributes',
     '25 0 * * *', -- Run daily at 00:25
-    'REFRESH MATERIALIZED VIEW CONCURRENTLY most_valued_attributes'
+    'REFRESH MATERIALIZED VIEW most_valued_attributes'
 );
 
 SELECT cron.schedule(
     'refresh-most_common_positive_badges',
     '30 0 * * *', -- Run daily at 00:30
-    'REFRESH MATERIALIZED VIEW CONCURRENTLY most_common_positive_badges'
+    'REFRESH MATERIALIZED VIEW most_common_positive_badges'
 );
 
 SELECT cron.schedule(
     'refresh-most_common_negative_badges',
     '35 0 * * *', -- Run daily at 00:35
-    'REFRESH MATERIALIZED VIEW CONCURRENTLY most_common_negative_badges'
+    'REFRESH MATERIALIZED VIEW most_common_negative_badges'
 );
 
 -- RPC function for role, category and attribute based analytics

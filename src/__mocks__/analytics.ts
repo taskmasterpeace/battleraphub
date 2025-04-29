@@ -1,6 +1,7 @@
 "use client";
 
-import { BattlerAttribute, RoleWeight, RoleKey } from "@/types";
+import { ROLE, ROLES_NAME } from "@/config";
+import { RoleWeight, RoleKey } from "@/types";
 
 export const defaultMockData = {
   topRatedBattlers: [
@@ -120,38 +121,48 @@ export const attributes = {
 export const defaultRoleWeights: RoleWeight[] = [
   {
     role: "fan",
+    role_id: ROLE.FAN,
     weight: 1.0,
-    displayName: "Fan",
+    displayName: ROLES_NAME[ROLE.FAN],
     description: "Battle rap enthusiasts and viewers",
-    color: "blue",
+    color: "orange", // suggest some nice color other than blue
+    backgroundColor: "bg-orange-500",
   },
   {
     role: "media",
+    role_id: ROLE.MEDIA,
     weight: 2.0,
-    displayName: "Media",
+    displayName: ROLES_NAME[ROLE.MEDIA],
     description: "Battle rap journalists, bloggers, and content creators",
     color: "purple",
+    backgroundColor: "bg-purple-500",
   },
   {
     role: "battler",
+    role_id: ROLE.BATTLE,
     weight: 2.5,
-    displayName: "Battler",
+    displayName: ROLES_NAME[ROLE.BATTLE],
     description: "Active battle rappers",
     color: "green",
+    backgroundColor: "bg-green-500",
   },
   {
     role: "league_owner",
+    role_id: ROLE.LEAGUE_OWNER_INVESTOR,
     weight: 3.0,
-    displayName: "League Owner",
+    displayName: ROLES_NAME[ROLE.LEAGUE_OWNER_INVESTOR],
     description: "Owners and operators of battle rap leagues",
     color: "amber",
+    backgroundColor: "bg-amber-500",
   },
   {
     role: "admin",
+    role_id: ROLE.ADMIN,
     weight: 5.0,
-    displayName: "Admin",
+    displayName: ROLES_NAME[ROLE.ADMIN],
     description: "Platform administrators",
     color: "red",
+    backgroundColor: "bg-red-500",
   },
 ];
 
@@ -304,107 +315,6 @@ export function resetMockRoleWeightsToDefault(): { success: boolean; error?: Err
     console.error("Error resetting role weights:", e);
     return { success: false, error: e as Error };
   }
-}
-export function getMockBattlerAttributeAverages(
-  battlerId: string,
-  category?: string,
-): BattlerAttribute[] {
-  // Try to get from localStorage first
-  const storedData = localStorage.getItem("mockBattlerAttributes");
-  let mockData: BattlerAttribute[] = [];
-
-  if (storedData) {
-    try {
-      mockData = JSON.parse(storedData);
-    } catch (e) {
-      console.error("Error parsing stored battler attributes:", e);
-      mockData = generateMockRatings();
-      localStorage.setItem("mockBattlerAttributes", JSON.stringify(mockData));
-    }
-  } else {
-    mockData = generateMockRatings();
-    localStorage.setItem("mockBattlerAttributes", JSON.stringify(mockData));
-  }
-
-  // Filter by battlerId and optionally by category
-  return mockData.filter((item: BattlerAttribute) => {
-    if (category) {
-      return item.battlerId === battlerId && item.category === category;
-    }
-    return item.battlerId === battlerId;
-  });
-}
-
-export function getMockTopBattlersByRole(
-  role: RoleKey,
-  category?: string,
-  attribute?: string,
-  limit = 10,
-): BattlerAttribute[] {
-  // Try to get from localStorage first
-  const storedData = localStorage.getItem("mockBattlerAttributes");
-  let mockData: BattlerAttribute[] = [];
-
-  if (storedData) {
-    try {
-      mockData = JSON.parse(storedData);
-    } catch (e) {
-      console.error("Error parsing stored battler attributes:", e);
-      mockData = generateMockRatings();
-      localStorage.setItem("mockBattlerAttributes", JSON.stringify(mockData));
-    }
-  } else {
-    mockData = generateMockRatings();
-    localStorage.setItem("mockBattlerAttributes", JSON.stringify(mockData));
-  }
-
-  // Select the appropriate average column based on role
-  let averageColumn = "overallAverage";
-  switch (role) {
-    case "fan":
-      averageColumn = "fanAverage";
-      break;
-    case "media":
-      averageColumn = "mediaAverage";
-      break;
-    case "battler":
-      averageColumn = "battlerAverage";
-      break;
-    case "league_owner":
-      averageColumn = "leagueOwnerAverage";
-      break;
-  }
-
-  // Filter by category and attribute if provided
-  let filteredData = mockData;
-  if (category) {
-    filteredData = filteredData.filter((item: BattlerAttribute) => item.category === category);
-  }
-  if (attribute) {
-    filteredData = filteredData.filter((item: BattlerAttribute) => item.attribute === attribute);
-  }
-
-  // Sort by the selected average column
-  filteredData.sort(
-    (a: BattlerAttribute, b: BattlerAttribute) =>
-      (b[averageColumn as keyof BattlerAttribute] as number) -
-      (a[averageColumn as keyof BattlerAttribute] as number),
-  );
-  // Limit the results
-  filteredData = filteredData.slice(0, limit);
-
-  // Join with battler data
-  return filteredData.map((item: BattlerAttribute) => {
-    const battler = mockBattlers.find((b) => b.id.toString() === item.battlerId);
-    const rating = item[averageColumn as keyof BattlerAttribute];
-    return {
-      ...item,
-      battlerName: battler?.name || "Unknown",
-      battlerImage: battler?.image || "",
-      battlerLocation: battler?.location || "",
-      rating: typeof rating === "number" ? rating : undefined,
-    };
-  });
 }
 
 // Function to regenerate all mock analytics data

@@ -5,20 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RatingCard } from "@/components/pages/battlers/details/RatingCard";
 import { Attribute, BattlerAnalytics, Battlers } from "@/types";
 import { CATEGORY_TYPES } from "@/config";
-import Image from "next/image";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Command } from "cmdk";
-import {
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { cn } from "@/lib/utils";
 import { useBattler } from "@/contexts/battler.context";
+import AutoComplete from "@/components/auto-complete";
 
 interface AnalyticsTabProps {
   battlerData: Battlers | undefined;
@@ -36,7 +24,6 @@ export default function AnalyticsTab({ battlerData, attributeData }: AnalyticsTa
     setSearchQuery,
     searchQuery,
   } = useBattler();
-  const [open, setOpen] = useState(false);
   const [selectedBattler, setSelectedBattler] = useState<Battlers | null>(null);
   const [selectedBattlerAnalytics, setSelectedBattlerAnalytics] = useState<BattlerAnalytics[]>([]);
 
@@ -139,63 +126,14 @@ export default function AnalyticsTab({ battlerData, attributeData }: AnalyticsTa
     <div>
       <div className="mb-6 flex flex-col sm:flex-row justify-between gap-4">
         <h2 className="text-2xl font-bold">Analytics</h2>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className="w-[250px] justify-between"
-            >
-              {selectedBattler?.name || battlersData[0]?.name || "Select battler..."}
-              <ChevronsUpDown className="opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[250px] p-0">
-            <Command>
-              <CommandInput
-                placeholder="Search battler..."
-                className="h-9"
-                value={searchQuery}
-                onValueChange={(value) => setSearchQuery(value)}
-              />
-              <CommandList>
-                <CommandEmpty>No battler found.</CommandEmpty>
-                <CommandGroup>
-                  {battlersData.map((battler) => (
-                    <CommandItem
-                      key={battler.id}
-                      // value={battler.id}
-                      onSelect={() => {
-                        setSelectedBattler(battler);
-                        setSearchQuery("");
-                        setOpen(false);
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Image
-                          src={battler.avatar || "/image/default-avatar-img.jpg"}
-                          alt={battler.name || "Battler Avatar"}
-                          className="w-6 h-6 rounded-full"
-                          width={24}
-                          height={24}
-                          unoptimized
-                        />
-                        {battler.name}
-                      </div>
-                      <Check
-                        className={cn(
-                          "ml-auto",
-                          selectedBattler?.id === battler.id ? "opacity-100" : "opacity-0",
-                        )}
-                      />
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <AutoComplete
+          placeholderText={selectedBattler?.name || battlersData[0]?.name || "Select battler..."}
+          options={battlersData}
+          setSearchQuery={setSearchQuery}
+          searchQuery={searchQuery}
+          selectedOption={selectedBattler as Battlers}
+          setSelectedOption={(value) => setSelectedBattler(value as Battlers)}
+        />
       </div>
 
       <Tabs defaultValue="my-ratings">

@@ -31,6 +31,14 @@ const DB_TABLES = {
 };
 
 const MATERIALIZED_VIEWS = {
+  TOP_POSITIVE_BADGES: "most_common_positive_badges",
+  TOP_NEGATIVE_BADGES: "most_common_negative_badges",
+  AVERAGE_RATING_TRENDS_BY_CATEGORY: "average_rating_trends_over_time_by_category",
+  AVERAGE_RATINGS_BY_CATEGORY: "average_ratings_by_category",
+  AVERAGE_RATINGS_OVER_TIME: "average_ratings_over_time",
+  COMMUNITY_RATING_DISTRIBUTION: "community_rating_distribution",
+  MOST_VALUED_ATTRUBUTES: "most_valued_attributes",
+  TOP_BATTLERS_UNWEIGHTED: "top_battlers_unweighted",
   COMMUNITY_STATS: "community_stats_mv",
   RATING_DISTRIBUTION: "rating_distribution_mv",
   ACTIVE_ROLES_BY_RATINGS: "active_roles_by_ratings_mv",

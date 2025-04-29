@@ -14,55 +14,76 @@ import {
   Line,
 } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
-import {
-  attributeBreakdownData,
-  battlers,
-  communityData,
-  defaultMockData,
-  mostCommonNegativeBadgesData,
-  mostCommonPositiveBadgesData,
-  mostValuedAttributesData,
-  ratingTrendsData,
-} from "@/__mocks__/analytics";
 import RoleBasedAnalytics from "@/components/pages/analytics/RoleBasedAnalytics";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Attribute, Battlers } from "@/types";
+import AutoComplete from "@/components/auto-complete";
+import { useAnalytics } from "@/contexts/analytics.context";
 
-const AnalyticsContentPage = () => {
-  const [analyticsData, setAnalyticsData] = useState(defaultMockData);
-  const [selectedBattler, setSelectedBattler] = useState("1");
-  const [isLoading, setIsLoading] = useState(true);
+interface AnalyticsProps {
+  attributeData: Attribute[];
+}
+
+const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
+  const {
+    battlerAnalytics,
+    battlersData,
+    searchQuery,
+    averageRatingByCategoryData,
+    ratingsOverTimeData,
+    ratingDistributionData,
+    mostValuesAttributes,
+    topBattlersUnweightedData,
+    topPositiveBadges,
+    topNegativeBadges,
+    trendOverTimeByCategory,
+    setSearchQuery,
+  } = useAnalytics();
+  const [selectedBattler, setSelectedBattler] = useState<Battlers | null>(null);
 
   useEffect(() => {
-    // Function to load data from localStorage
-    function loadMockData() {
-      setIsLoading(true);
-      try {
-        // Check if we have mock data in localStorage
-        if (typeof window !== "undefined") {
-          // const storedData = localStorage.getItem("mockAnalyticsData");
+    setSelectedBattler(battlersData?.[0]);
+  }, [battlersData]);
 
-          // if (storedData) {
-          //   console.log("Found mock data in localStorage");
-          //   setAnalyticsData(JSON.parse(storedData));
-          // } else {
-          setAnalyticsData(defaultMockData);
-          // }
-        }
-      } catch (error) {
-        console.error("Error loading mock data:", error);
-        setAnalyticsData(defaultMockData);
-      } finally {
-        setIsLoading(false);
-      }
+  // Attribute Breakdown
+  const filterBattlerAnalytics =
+    selectedBattler || (battlersData && battlersData[0])
+      ? attributeData
+          .map((attribute) => {
+            const analytics = battlerAnalytics?.filter(
+              (analytics) =>
+                analytics.attribute_id === attribute.id &&
+                analytics.battler_id === (selectedBattler?.id || battlersData?.[0]?.id),
+            );
+            return analytics?.map((analytic) => ({
+              name: attribute.name,
+              score: analytic.score.toFixed(2),
+            }));
+          })
+          .flat()
+          .filter(Boolean)
+      : [];
+
+  // Community Rating Distribution
+  const filterRatingDistribution = ratingDistributionData.reduce<
+    Array<{ bucket: string; rating_count: number }>
+  >((acc, data, index, array) => {
+    if (index === array.length - 1) return acc;
+    if (index === array.length - 2) {
+      return [
+        ...acc,
+        {
+          bucket: "9-10",
+          rating_count: data.rating_count + array[array.length - 1].rating_count,
+        },
+      ];
     }
-
-    loadMockData();
+    return [
+      ...acc,
+      {
+        bucket: `${Number(data?.bucket) - 1}-${data.bucket}`,
+        rating_count: data.rating_count,
+      },
+    ];
   }, []);
 
   return (
@@ -82,78 +103,69 @@ const AnalyticsContentPage = () => {
             <ChartCard
               title="Top Rated Battlers"
               description="Overall ratings across all categories"
-              loading={isLoading}
             >
               <BarChart
                 layout="vertical"
-                data={analyticsData.topRatedBattlers.map((b) => ({
-                  name: b.name,
-                  rating: b.total_points,
-                }))}
+                data={topBattlersUnweightedData}
                 margin={{ top: 20, right: 30, left: 40, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" domain={[0, 10]} />
-                <YAxis dataKey="name" type="category" width={100} />
-                <Tooltip />
-                <Bar dataKey="rating" fill="#8884d8" />
+                <XAxis type="number" dataKey="avg_rating" domain={[0, 10]} />
+                <YAxis dataKey="name" type="category" width={70} className="text-[12px]" />
+                <Tooltip
+                  formatter={(value, name, props) => [`${value}`, `${props.payload.name}`]}
+                />
+                <Bar dataKey="avg_rating" fill="#8884d8" />
               </BarChart>
             </ChartCard>
-
-            <ChartCard
-              title="Category Averages"
-              description="Average ratings by category"
-              loading={isLoading}
-            >
+            <ChartCard title="Category Averages" description="Average ratings by category">
               <BarChart
-                data={analyticsData.categoryAverages}
+                data={averageRatingByCategoryData}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis dataKey="category" className="text-[12px]" />
                 <YAxis domain={[0, 10]} />
-                <Tooltip />
-                <Bar dataKey="average" fill="#82ca9d" />
+                <Tooltip
+                  formatter={(value, name, props) => [`${value}`, `${props.payload.category}`]}
+                />
+                <Bar dataKey="avg_rating" fill="#82ca9d" />
               </BarChart>
             </ChartCard>
-
-            <ChartCard
-              title="Rating Trends"
-              description="Average ratings over time"
-              loading={isLoading}
-            >
+            <ChartCard title="Rating Trends" description="Average ratings over time">
               <LineChart
-                data={analyticsData.trendData}
+                data={ratingsOverTimeData.map((data) => ({
+                  month: new Date(data.month).toLocaleString("en-US", { month: "long" }),
+                  avg_rating: data?.avg_rating,
+                }))}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis domain={[7, 10]} />
-                <Tooltip />
-                <Line type="monotone" dataKey="rating" stroke="#8884d8" activeDot={{ r: 8 }} />
+                <XAxis dataKey="month" className="text-[12px]" />
+                <YAxis domain={[0, 10]} className="text-[10px]" />
+                <Tooltip
+                  formatter={(value, name, props) => [`${value}`, `${props.payload.month}`]}
+                />
+                <Line type="monotone" dataKey="avg_rating" stroke="#8884d8" activeDot={{ r: 8 }} />
               </LineChart>
-            </ChartCard>
+            </ChartCard>{" "}
           </div>
         </TabsContent>
 
         <TabsContent value="role-based">
-          <RoleBasedAnalytics />
+          <RoleBasedAnalytics attributeData={attributeData} />
         </TabsContent>
 
         <TabsContent value="battler">
           <div className="mb-6 flex justify-end">
-            <Select value={selectedBattler} onValueChange={setSelectedBattler}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Select battler" />
-              </SelectTrigger>
-              <SelectContent>
-                {battlers.map((battler) => (
-                  <SelectItem key={battler.id} value={battler.id}>
-                    {battler.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <AutoComplete
+              placeholderText={selectedBattler?.name || "Select battler..."}
+              options={battlersData as Battlers[]}
+              setSearchQuery={setSearchQuery}
+              searchQuery={searchQuery}
+              selectedOption={selectedBattler as Battlers}
+              setSelectedOption={(value) => setSelectedBattler(value as Battlers)}
+            />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -164,14 +176,22 @@ const AnalyticsContentPage = () => {
               className="lg:col-span-2"
             >
               <BarChart
-                data={attributeBreakdownData}
+                data={filterBattlerAnalytics}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis
+                  dataKey="name"
+                  className="text-[10px]"
+                  angle={-15}
+                  textAnchor="end"
+                  domain={attributeData?.map((data) => data?.name)}
+                />
                 <YAxis domain={[0, 10]} />
-                <Tooltip />
-                <Bar dataKey="rating" fill="#8884d8" />
+                <Tooltip
+                  formatter={(value, name, props) => [`${value}`, `${props.payload.name}`]}
+                />
+                <Bar dataKey="score" fill="#8884d8" />
               </BarChart>
             </ChartCard>
 
@@ -182,14 +202,16 @@ const AnalyticsContentPage = () => {
             >
               <BarChart
                 layout="vertical"
-                data={mostCommonPositiveBadgesData}
+                data={topPositiveBadges}
                 margin={{ top: 20, right: 30, left: 80, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
-                <YAxis dataKey="name" type="category" />
-                <Tooltip />
-                <Bar dataKey="count" fill="#82ca9d" />
+                <YAxis dataKey="badge_name" type="category" className="text-[12px]" />
+                <Tooltip
+                  formatter={(value, name, props) => [`${value}`, `${props.payload.badge_name}`]}
+                />
+                <Bar dataKey="times_assigned" fill="#82ca9d" />
               </BarChart>
             </ChartCard>
 
@@ -200,14 +222,16 @@ const AnalyticsContentPage = () => {
             >
               <BarChart
                 layout="vertical"
-                data={mostCommonNegativeBadgesData}
+                data={topNegativeBadges}
                 margin={{ top: 20, right: 30, left: 80, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
-                <YAxis dataKey="name" type="category" />
-                <Tooltip />
-                <Bar dataKey="count" fill="#ff8042" />
+                <YAxis dataKey="badge_name" type="category" className="text-[12px]" />
+                <Tooltip
+                  formatter={(value, name, props) => [`${value}`, `${props.payload.badge_name}`]}
+                />
+                <Bar dataKey="times_assigned" fill="#ff8042" />
               </BarChart>
             </ChartCard>
           </div>
@@ -221,15 +245,19 @@ const AnalyticsContentPage = () => {
               height="400px"
               className="md:col-span-2"
             >
-              <BarChart data={communityData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <BarChart
+                data={filterRatingDistribution}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="rating" />
+                <XAxis dataKey="bucket" />
                 <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#8884d8" />
+                <Tooltip
+                  formatter={(value, name, props) => [`${value}`, `${props.payload.bucket}`]}
+                />
+                <Bar dataKey="rating_count" fill="#8884d8" />
               </BarChart>
             </ChartCard>
-
             <ChartCard
               title="Most Valued Attributes"
               description="Attributes with highest average ratings"
@@ -237,14 +265,19 @@ const AnalyticsContentPage = () => {
             >
               <BarChart
                 layout="vertical"
-                data={mostValuedAttributesData}
+                data={mostValuesAttributes}
                 margin={{ top: 20, right: 30, left: 80, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" domain={[0, 10]} />
-                <YAxis dataKey="name" type="category" />
-                <Tooltip />
-                <Bar dataKey="average" fill="#82ca9d" />
+                <YAxis dataKey="attribute_name" type="category" className="text-[12px]" />
+                <Tooltip
+                  formatter={(value, name, props) => [
+                    `${value}`,
+                    `${props.payload.attribute_name}`,
+                  ]}
+                />
+                <Bar dataKey="avg_rating" fill="#82ca9d" />
               </BarChart>
             </ChartCard>
 
@@ -254,17 +287,23 @@ const AnalyticsContentPage = () => {
               height="300px"
             >
               <LineChart
-                data={ratingTrendsData}
+                data={trendOverTimeByCategory}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis domain={[7, 10]} />
+                <XAxis dataKey="month" className="text-[10px]" />
+                <YAxis domain={[0, 10]} dataKey="avg_rating" />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="writing" stroke="#8884d8" activeDot={{ r: 8 }} />
-                <Line type="monotone" dataKey="performance" stroke="#82ca9d" />
-                <Line type="monotone" dataKey="personal" stroke="#ffc658" />
+                <Line
+                  type="monotone"
+                  dataKey="writing"
+                  name="Writing"
+                  stroke="#8884d8"
+                  activeDot={{ r: 8 }}
+                />
+                <Line type="monotone" dataKey="performance" name="Performance" stroke="#82ca9d" />
+                <Line type="monotone" dataKey="personal" name="Personal" stroke="#ffc658" />
               </LineChart>
             </ChartCard>
           </div>
@@ -273,5 +312,4 @@ const AnalyticsContentPage = () => {
     </div>
   );
 };
-
 export default AnalyticsContentPage;

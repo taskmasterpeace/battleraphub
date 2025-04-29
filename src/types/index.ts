@@ -166,14 +166,16 @@ export interface BattlerRating {
 
 export interface RoleWeight {
   role: RoleKey;
+  role_id: number;
   weight: number;
   displayName: string;
   description: string;
   color: string;
+  backgroundColor: string;
 }
 
 export interface BattlerAttribute {
-  battlerId: string;
+  battler_id: string;
   category?: string;
   attribute?: string;
   overallAverage: number;
@@ -181,10 +183,10 @@ export interface BattlerAttribute {
   mediaAverage: number;
   battlerAverage: number;
   leagueOwnerAverage: number;
-  battlerName?: string;
+  name?: string;
   battlerImage?: string;
   battlerLocation?: string;
-  rating?: number;
+  average_score?: number;
 }
 
 export interface LeaderboardCommunityStats {
