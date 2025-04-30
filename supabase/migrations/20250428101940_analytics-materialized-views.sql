@@ -213,9 +213,9 @@ RETURNS TABLE (
   battler_id UUID,
   average_score NUMERIC,
   name TEXT
-)
-LANGUAGE SQL
-AS $$
+) AS $$
+BEGIN
+  RETURN QUERY
   SELECT 
     br.battler_id,
     AVG(br.score) AS average_score,
@@ -234,5 +234,6 @@ AS $$
   ORDER BY 
     average_score DESC
   LIMIT 10;
-$$;
+END;
+$$ LANGUAGE plpgsql;
 
