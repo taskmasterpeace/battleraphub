@@ -34,9 +34,12 @@ export default function AttributeSlider({
 
   // Debounced onChange handler
   const debouncedOnChange = useCallback(
-    debounce((value: number) => {
-      onChange(value);
-    }, 500),
+    (value: number) => {
+      const debouncedFn = debounce((val: number) => {
+        onChange(val);
+      }, 500);
+      debouncedFn(value);
+    },
     [onChange],
   );
 

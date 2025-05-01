@@ -468,3 +468,24 @@ export const ratingRoleWeightsActions = async (formData: FormData) => {
     return errorResponse("An unexpected error occurred while updating weights.");
   }
 };
+
+// Analytics role based on battler rating
+export const topBattlerByRatingAction = async (
+  selectedRole: number,
+  selectedCategory: string,
+  selectedAttribute: number | string,
+) => {
+  const supabase = await protectedCreateClient();
+  const { data: topBattler, error: rpcError } = await supabase.rpc("get_top_battlers_by_rating", {
+    p_role_id: selectedRole,
+    p_category: selectedCategory.toLowerCase(),
+    p_attribute_id: selectedAttribute === "All" ? null : Number(selectedAttribute),
+  });
+
+  if (rpcError) {
+    console.error("Error fetching top battlers:", rpcError);
+    return errorResponse("Failed to fetch top battlers");
+  }
+
+  return topBattler;
+};

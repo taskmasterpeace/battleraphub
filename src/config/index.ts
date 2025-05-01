@@ -38,6 +38,7 @@ const MATERIALIZED_VIEWS = {
   AVERAGE_RATINGS_OVER_TIME: "average_ratings_over_time",
   COMMUNITY_RATING_DISTRIBUTION: "community_rating_distribution",
   MOST_VALUED_ATTRUBUTES: "most_valued_attributes",
+  MOST_ASSIGNED_BADGES: "most_assigned_badges",
   TOP_BATTLERS_UNWEIGHTED: "top_battlers_unweighted",
   COMMUNITY_STATS: "leaderboard_community_stats",
   RATING_DISTRIBUTION: "leaderboard_rating_distribution",

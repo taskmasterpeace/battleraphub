@@ -113,7 +113,11 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <XAxis type="number" dataKey="avg_rating" domain={[0, 10]} />
                 <YAxis dataKey="name" type="category" width={70} className="text-[12px]" />
                 <Tooltip
-                  formatter={(value, name, props) => [`${value}`, `${props.payload.name}`]}
+                  content={({ payload, label }) => (
+                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
+                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    </div>
+                  )}
                 />
                 <Bar dataKey="avg_rating" fill="#8884d8" />
               </BarChart>
@@ -127,7 +131,11 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <XAxis dataKey="category" className="text-[12px]" />
                 <YAxis domain={[0, 10]} />
                 <Tooltip
-                  formatter={(value, name, props) => [`${value}`, `${props.payload.category}`]}
+                  content={({ payload, label }) => (
+                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
+                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    </div>
+                  )}
                 />
                 <Bar dataKey="avg_rating" fill="#82ca9d" />
               </BarChart>
@@ -144,7 +152,11 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <XAxis dataKey="month" className="text-[12px]" />
                 <YAxis domain={[0, 10]} className="text-[10px]" />
                 <Tooltip
-                  formatter={(value, name, props) => [`${value}`, `${props.payload.month}`]}
+                  content={({ payload, label }) => (
+                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
+                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    </div>
+                  )}
                 />
                 <Line type="monotone" dataKey="avg_rating" stroke="#8884d8" activeDot={{ r: 8 }} />
               </LineChart>
@@ -189,7 +201,11 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 />
                 <YAxis domain={[0, 10]} />
                 <Tooltip
-                  formatter={(value, name, props) => [`${value}`, `${props.payload.name}`]}
+                  content={({ payload, label }) => (
+                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
+                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    </div>
+                  )}
                 />
                 <Bar dataKey="score" fill="#8884d8" />
               </BarChart>
@@ -209,7 +225,11 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <XAxis type="number" />
                 <YAxis dataKey="badge_name" type="category" className="text-[12px]" />
                 <Tooltip
-                  formatter={(value, name, props) => [`${value}`, `${props.payload.badge_name}`]}
+                  content={({ payload, label }) => (
+                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
+                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    </div>
+                  )}
                 />
                 <Bar dataKey="times_assigned" fill="#82ca9d" />
               </BarChart>
@@ -229,7 +249,11 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <XAxis type="number" />
                 <YAxis dataKey="badge_name" type="category" className="text-[12px]" />
                 <Tooltip
-                  formatter={(value, name, props) => [`${value}`, `${props.payload.badge_name}`]}
+                  content={({ payload, label }) => (
+                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
+                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    </div>
+                  )}
                 />
                 <Bar dataKey="times_assigned" fill="#ff8042" />
               </BarChart>
@@ -253,7 +277,11 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <XAxis dataKey="bucket" />
                 <YAxis />
                 <Tooltip
-                  formatter={(value, name, props) => [`${value}`, `${props.payload.bucket}`]}
+                  content={({ payload, label }) => (
+                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
+                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    </div>
+                  )}
                 />
                 <Bar dataKey="rating_count" fill="#8884d8" />
               </BarChart>
@@ -272,10 +300,11 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <XAxis type="number" domain={[0, 10]} />
                 <YAxis dataKey="attribute_name" type="category" className="text-[12px]" />
                 <Tooltip
-                  formatter={(value, name, props) => [
-                    `${value}`,
-                    `${props.payload.attribute_name}`,
-                  ]}
+                  content={({ payload, label }) => (
+                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
+                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    </div>
+                  )}
                 />
                 <Bar dataKey="avg_rating" fill="#82ca9d" />
               </BarChart>

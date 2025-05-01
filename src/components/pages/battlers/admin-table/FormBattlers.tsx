@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { formBattlerSchema } from "@/lib/schema/formBattlerSchema";
+import { formBattlerCreateSchema, formBattlerUpdateSchema } from "@/lib/schema/formBattlerSchema";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useEffect, useState } from "react";
@@ -24,7 +24,8 @@ import { Battlers, TagsOption } from "@/types";
 import { createBattlersAction, editBattlersAction } from "@/app/actions";
 import ImageUploader from "@/components/pages/battlers/admin-table/ImageUploader";
 
-type FormDataType = z.infer<typeof formBattlerSchema>;
+type FormCreateDataType = z.infer<typeof formBattlerCreateSchema>;
+type FormUpdateDataType = z.infer<typeof formBattlerUpdateSchema>;
 
 interface FormBattlersProps {
   createBattler?: boolean;
@@ -51,8 +52,9 @@ const FormBattlers = ({
   const [currentBanner, setCurrentBanner] = useState<string>("");
 
   const selectedTagIds = battlerData?.battler_tags?.map((tag) => tag.tags?.id.toString());
-  const form = useForm<FormDataType>({
-    resolver: zodResolver(formBattlerSchema),
+
+  const form = useForm<FormCreateDataType | FormUpdateDataType>({
+    resolver: zodResolver(createBattler ? formBattlerCreateSchema : formBattlerUpdateSchema),
     defaultValues: {
       name: "",
       tags: [],
@@ -102,7 +104,7 @@ const FormBattlers = ({
     value: tag.id.toString(),
   }));
 
-  const onSubmit = async (data: FormDataType) => {
+  const onSubmit = async (data: FormCreateDataType | FormUpdateDataType) => {
     try {
       const formData = new FormData();
 

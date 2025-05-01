@@ -6,17 +6,22 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Star } from "lucide-react";
-import { trendingBattlers } from "@/__mocks__/landing";
-import { Battler } from "@/types";
+import { useHome } from "@/contexts/home.context";
 
 export default function TrendingBattlers() {
-  const [battlers, setBattlers] = useState<Battler[]>([]);
+  const { topBattlersUnweightedData: battlers } = useHome();
+  const [activeTagId, setActiveTagId] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setBattlers(trendingBattlers as Battler[]);
     setIsLoading(false);
   }, []);
+
+  const handleBadgeClick = (e: React.MouseEvent, battlerId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setActiveTagId(activeTagId === battlerId ? "" : battlerId);
+  };
 
   return (
     <div>
@@ -34,57 +39,66 @@ export default function TrendingBattlers() {
                   <CardContent className="p-4 h-64"></CardContent>
                 </Card>
               ))
-          : battlers.map((battler) => (
-              <Link key={battler.id} href={`/battlers/${battler.id}`} className="group">
-                <Card className="bg-gray-900 border-gray-800 overflow-hidden hover:border-blue-500 transition-all hover:shadow-lg hover:shadow-blue-900/20 group-hover:transform group-hover:translate-y-[-5px] duration-300">
-                  <CardContent className="p-0">
-                    <div className="relative aspect-square">
-                      <Image
-                        src={battler.image || "/placeholder.svg"}
-                        alt={battler.name}
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute top-2 right-2">
-                        <Badge
-                          className={`${
-                            battler.change && battler.change > 0
-                              ? "bg-green-900/60 text-green-400"
-                              : "bg-red-900/60 text-red-400"
-                          }`}
-                        >
-                          {battler.change && battler.change > 0 ? "+" : ""}
-                          {battler.change?.toFixed(1)}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className="font-medium text-lg">{battler.name}</h3>
-                          <p className="text-sm text-gray-400">{battler.location}</p>
-                        </div>
-                        <div className="flex items-center">
-                          <Star className="w-4 h-4 text-blue-500 fill-blue-500 mr-1" />
-                          <span className="font-bold">{battler?.rating?.toFixed(1)}</span>
+          : battlers.map((battler) => {
+              const validTags = battler.assigned_badges?.filter((tag) => tag.name) || [];
+              const isExpanded = activeTagId === battler.battler_id;
+              const shouldCollapse = validTags.length > 4;
+              const displayTags = shouldCollapse && !isExpanded ? validTags.slice(0, 3) : validTags;
+              return (
+                <Link
+                  key={battler.battler_id}
+                  href={`/battlers/${battler.battler_id}`}
+                  className="group h-full"
+                >
+                  <Card className="bg-gray-900 border-gray-800 overflow-hidden hover:border-blue-500 transition-all hover:shadow-lg hover:shadow-blue-900/20 group-hover:transform group-hover:translate-y-[-5px] duration-300 h-full">
+                    <CardContent className="p-0 h-full flex flex-col">
+                      <div className="relative aspect-square">
+                        <Image
+                          src={battler.avatar || "/placeholder.svg"}
+                          alt={battler.name}
+                          fill
+                          className="object-cover w-full"
+                        />
+                        <div className="absolute top-2 right-2">
+                          <Badge className={"bg-green-900/60 text-green-400"}>+ 0.5</Badge>
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-1 mt-3">
-                        {battler?.spotlightBadges?.map((badge) => (
-                          <Badge
-                            key={badge}
-                            variant="outline"
-                            className="bg-blue-900/20 border-blue-700"
-                          >
-                            {badge}
-                          </Badge>
-                        ))}
+                      <div className="p-4 flex-1 flex flex-col">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h3 className="font-medium text-lg">{battler.name}</h3>
+                            <p className="text-sm text-gray-400">{battler.location}</p>
+                          </div>
+                          <div className="flex items-center">
+                            <Star className="w-4 h-4 text-blue-500 fill-blue-500 mr-1" />
+                            <span className="font-bold">{battler?.avg_rating?.toFixed(1)}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mt-3">
+                          <div className="flex flex-wrap gap-2">
+                            {displayTags.map((tag, index) => (
+                              <Badge key={index} variant="secondary" className="rounded-md h-6">
+                                {tag.name}
+                              </Badge>
+                            ))}
+
+                            {shouldCollapse && (
+                              <Badge
+                                variant="outline"
+                                className="rounded-md cursor-pointer h-6"
+                                onClick={(e) => handleBadgeClick(e, battler.battler_id)}
+                              >
+                                {isExpanded ? "Show less" : `+${validTags.length - 3} more`}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
       </div>
     </div>
   );

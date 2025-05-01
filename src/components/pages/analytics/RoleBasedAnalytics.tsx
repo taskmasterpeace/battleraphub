@@ -18,11 +18,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "@/components/ui/chart";
-import Image from "next/image";
 import Link from "next/link";
 import { BattlerAttribute, Attribute } from "@/types";
 import { categories, defaultRoleWeights } from "@/__mocks__/analytics";
-import { supabase } from "@/utils/supabase/client";
+import { topBattlerByRatingAction } from "@/app/actions";
 import { Loader, CircleUser } from "lucide-react";
 
 interface RoleBasedAnalyticsProps {
@@ -40,19 +39,13 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
     const fetchTopBattlers = async () => {
       setIsLoading(true);
       try {
-        const { data: topBattler, error: rpcError } = await supabase.rpc(
-          "get_top_battlers_by_rating",
-          {
-            p_role_id: selectedRole,
-            p_category: selectedCategory.toLowerCase(),
-            p_attribute_id: selectedAttribute === "All" ? null : Number(selectedAttribute),
-          },
+        const data = await topBattlerByRatingAction(
+          selectedRole,
+          selectedCategory,
+          selectedAttribute,
         );
-        if (rpcError) {
-          console.error("Error fetching top battlers:", rpcError);
-          setTopBattlers([]);
-        }
-        setTopBattlers(topBattler || []);
+        console.log("");
+        setTopBattlers(data || []);
       } catch (error) {
         console.error("Error fetching top battlers:", error);
         setTopBattlers([]);
@@ -168,12 +161,11 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
                       className="text-xs"
                     />
                     <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#1F2937",
-                        borderColor: "#374151",
-                        color: "#ffc658",
-                      }}
-                      formatter={(value, name, props) => [`${value}`, `${props.payload.name}`]}
+                      content={({ payload, label }) => (
+                        <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
+                          <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                        </div>
+                      )}
                     />
                     <Bar
                       dataKey="average_score"
@@ -195,20 +187,20 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                           <div className="relative w-12 h-12 rounded-full overflow-hidden">
-                            {battler?.battlerImage ? (
+                            {/* {battler?.battlerImage ? (
                               <Image
                                 src={battler?.battlerImage || "/defaultAvatar.jpeg"}
                                 alt={battler?.name || "Battler Image"}
                                 fill
                                 className="object-cover"
                               />
-                            ) : (
-                              <CircleUser className="w-full h-full" />
-                            )}
+                            ) : ( */}
+                            <CircleUser className="w-full h-full" />
+                            {/* )} */}
                           </div>
                           <div className="flex-1">
                             <h3 className="font-medium">{battler?.name}</h3>
-                            <p className="text-sm text-gray-400">{battler?.battlerLocation}</p>
+                            {/* <p className="text-sm text-gray-400">{battler?.battlerLocation}</p> */}
                           </div>
                           <div
                             className={`px-3 py-2 rounded-full bg-${getRoleColor(selectedRole)}-900/30 text-${getRoleColor(selectedRole)}-400 font-bold`}
