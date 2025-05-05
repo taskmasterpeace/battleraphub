@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { protectedCreateClient } from "@/utils/supabase/protected-server";
-import { DB_TABLES, PAGES, PERMISSIONS } from "@/config";
+import { DB_TABLES, PAGES, PERMISSIONS, RPC_FUNCTIONS } from "@/config";
 import {
   successResponse,
   errorResponse,
@@ -476,11 +476,14 @@ export const topBattlerByRatingAction = async (
   selectedAttribute: number | string,
 ) => {
   const supabase = await protectedCreateClient();
-  const { data: topBattler, error: rpcError } = await supabase.rpc("get_top_battlers_by_rating", {
-    p_role_id: selectedRole,
-    p_category: selectedCategory.toLowerCase(),
-    p_attribute_id: selectedAttribute === "All" ? null : Number(selectedAttribute),
-  });
+  const { data: topBattler, error: rpcError } = await supabase.rpc(
+    RPC_FUNCTIONS.GET_TOP_BATTLERS_BY_RATING,
+    {
+      p_role_id: selectedRole,
+      p_category: selectedCategory.toLowerCase(),
+      p_attribute_id: selectedAttribute === "All" ? null : Number(selectedAttribute),
+    },
+  );
 
   if (rpcError) {
     console.error("Error fetching top battlers:", rpcError);
@@ -488,4 +491,68 @@ export const topBattlerByRatingAction = async (
   }
 
   return topBattler;
+};
+
+export const updateUserProfileAction = async (formData: FormData) => {
+  const supabase = await protectedCreateClient();
+
+  const name = formData.get("name") as string;
+  const userId = formData.get("userId") as string;
+  const email = formData.get("email") as string;
+  const avatar = formData.get("avatar") as File;
+  const instagram = formData.get("instagram") as string;
+  const twitter = formData.get("twitter") as string;
+  const youtube = formData.get("youtube") as string;
+  const bio = formData.get("bio") as string;
+
+  try {
+    // Fetch current battler to get current image URLs
+    const { data: currentUser, error: fetchError } = await supabase
+      .from(DB_TABLES.USERS)
+      .select("avatar")
+      .eq("id", userId)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching user:", fetchError);
+      return errorResponse("Failed to fetch user data");
+    }
+
+    let avatarUrl = currentUser?.avatar;
+
+    if (avatar && avatar.size > 0) {
+      const avatarUpload = await uploadFileToStorage(
+        supabase,
+        avatar,
+        "users/avatars",
+        currentUser?.avatar,
+      );
+
+      if (avatarUpload.error) return errorResponse(avatarUpload.error);
+      avatarUrl = avatarUpload.publicUrl;
+    }
+
+    const { error: updateError } = await supabase
+      .from(DB_TABLES.USERS)
+      .update({
+        name,
+        email,
+        instagram,
+        twitter,
+        youtube,
+        bio,
+        ...(avatarUrl && { avatar: avatarUrl }),
+      })
+      .eq("id", userId);
+
+    if (updateError) {
+      console.error("Error updating user profile:", updateError);
+      return errorResponse("Failed to update user profile");
+    }
+
+    return successResponse("User profile updated successfully");
+  } catch (error) {
+    console.error("Unexpected error in updateUserProfile:", error);
+    return errorResponse("An unexpected error occurred while updating profile");
+  }
 };

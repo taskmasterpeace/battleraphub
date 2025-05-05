@@ -19,6 +19,12 @@ type HomeContextType = {
   communityStats: CommunityStatCards | null;
   ratingsOverTimeData: AvgRatingsOverTime[];
   topBattlersUnweightedData: TopBattlersUnweighted[];
+  recentBattlerLoading: boolean;
+  mostValuedAttributesLoading: boolean;
+  mostAssignBadgesLoading: boolean;
+  communityStatsLoading: boolean;
+  avgRatingOverTimeLoading: boolean;
+  battlerUnweightedLoading: boolean;
 };
 
 const HomeContext = createContext<HomeContextType>({
@@ -28,6 +34,12 @@ const HomeContext = createContext<HomeContextType>({
   communityStats: null,
   ratingsOverTimeData: [],
   topBattlersUnweightedData: [],
+  recentBattlerLoading: false,
+  mostValuedAttributesLoading: false,
+  mostAssignBadgesLoading: false,
+  communityStatsLoading: false,
+  avgRatingOverTimeLoading: false,
+  battlerUnweightedLoading: false,
 });
 
 export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -39,9 +51,15 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
   const [topBattlersUnweightedData, setTopBattlersUnweightedData] = useState<
     TopBattlersUnweighted[]
   >([]);
-
+  const [recentBattlerLoading, setRecentBattlerLoading] = useState<boolean>(false);
+  const [mostValuedAttributesLoading, setMostValuedAttributesLoading] = useState<boolean>(false);
+  const [mostAssignBadgesLoading, setMostAssignBadgesLoading] = useState<boolean>(false);
+  const [communityStatsLoading, setCommunityStatsLoading] = useState<boolean>(false);
+  const [avgRatingOverTimeLoading, setAvgRatingOverTimeLoading] = useState<boolean>(false);
+  const [battlerUnweightedLoading, setBattlerUnweightedLoading] = useState<boolean>(false);
   // Fetch recent battlers
   const fetchRecentBattlers = async () => {
+    setRecentBattlerLoading(true);
     try {
       const { data: recentBattlersData, error } = await supabase
         .from(DB_TABLES.BATTLERS)
@@ -56,64 +74,102 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (error) {
       console.error("Error fetching recent battlers:", error);
+    } finally {
+      setRecentBattlerLoading(false);
     }
   };
 
   // Fetch most valued attributes
   const fetchMostValuedAttributes = async () => {
-    const { data, error } = await supabase
-      .from(MATERIALIZED_VIEWS.MOST_VALUED_ATTRUBUTES)
-      .select("*");
-    if (error) {
+    setMostValuedAttributesLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.MOST_VALUED_ATTRUBUTES)
+        .select("*");
+      if (error) {
+        console.error("Error fetching most valued attributes:", error);
+      }
+      setMostValuesAttributes(data || []);
+    } catch (error) {
       console.error("Error fetching most valued attributes:", error);
+    } finally {
+      setMostValuedAttributesLoading(false);
     }
-    setMostValuesAttributes(data || []);
   };
 
   // Fetch most assigned badges
   const fetchMostAssignBadges = async () => {
-    const { data, error } = await supabase
-      .from(MATERIALIZED_VIEWS.MOST_ASSIGNED_BADGES)
-      .select("*");
-    if (error) {
+    setMostAssignBadgesLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.MOST_ASSIGNED_BADGES)
+        .select("*");
+      if (error) {
+        console.error("Error fetching most valued attributes:", error);
+      }
+      setMostAssignBadges(data || []);
+    } catch (error) {
       console.error("Error fetching most valued attributes:", error);
+    } finally {
+      setMostAssignBadgesLoading(false);
     }
-    setMostAssignBadges(data || []);
   };
 
   // Fetch community stats
   const fetchCommunityStats = async () => {
-    const { data, error } = await supabase.from(MATERIALIZED_VIEWS.COMMUNITY_STATS).select("*");
-    if (error) {
+    setCommunityStatsLoading(true);
+    try {
+      const { data, error } = await supabase.from(MATERIALIZED_VIEWS.COMMUNITY_STATS).select("*");
+      if (error) {
+        console.error("Error fetching community stats", error);
+      }
+      setCommunityStats(data?.[0] as CommunityStatCards);
+    } catch (error) {
       console.error("Error fetching community stats", error);
+    } finally {
+      setCommunityStatsLoading(false);
     }
-    setCommunityStats(data?.[0] as CommunityStatCards);
   };
 
   // Fetch average ratings over time
   const fetchAvgRatingsOverTime = async () => {
-    const { data, error } = await supabase
-      .from(MATERIALIZED_VIEWS.AVERAGE_RATINGS_OVER_TIME)
-      .select("*");
-    if (error) {
+    setAvgRatingOverTimeLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.AVERAGE_RATINGS_OVER_TIME)
+        .select("*");
+      if (error) {
+        console.error("Error fetching average ratings over time data:", error);
+      }
+      setRatingsOverTimeData(data || []);
+    } catch (error) {
       console.error("Error fetching average ratings over time data:", error);
+    } finally {
+      setAvgRatingOverTimeLoading(false);
     }
-    setRatingsOverTimeData(data || []);
   };
 
   //Fetch top battlers
   const fetchTopBattlersUnweighted = async () => {
-    const { data, error } = await supabase
-      .from(MATERIALIZED_VIEWS.TOP_BATTLERS_UNWEIGHTED)
-      .select("*");
+    setBattlerUnweightedLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.TOP_BATTLERS_UNWEIGHTED)
+        .select("*");
 
-    if (error) {
-      console.error("Error fetching top battlers unweighted data:", error);
-      return;
+      if (error) {
+        console.error("Error fetching top battlers unweighted data:", error);
+        return;
+      }
+
+      setTopBattlersUnweightedData(data || []);
+    } catch (error) {
+      console.error("Error fetching top battlers:", error);
+    } finally {
+      setBattlerUnweightedLoading(false);
     }
-
-    setTopBattlersUnweightedData(data || []);
   };
+
   useEffect(() => {
     fetchRecentBattlers();
     fetchMostValuedAttributes();
@@ -130,6 +186,12 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
         communityStats,
         mostValuesAttributes,
         mostAssignBadges,
+        recentBattlerLoading,
+        mostValuedAttributesLoading,
+        mostAssignBadgesLoading,
+        communityStatsLoading,
+        avgRatingOverTimeLoading,
+        battlerUnweightedLoading,
         ratingsOverTimeData,
         topBattlersUnweightedData,
       }}

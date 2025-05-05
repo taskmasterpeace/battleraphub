@@ -18,22 +18,44 @@ import { useHome } from "@/contexts/home.context";
 
 export default function CommunityPulse() {
   const [stats, setStats] = useState<CommunityStatCards | null>(null);
-  const { communityStats, mostAssignBadges, ratingsOverTimeData } = useHome();
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    communityStats,
+    communityStatsLoading,
+    mostAssignBadgesLoading,
+    mostAssignBadges,
+    ratingsOverTimeData,
+  } = useHome();
 
   useEffect(() => {
-    setStats(communityStats);
-    setIsLoading(false);
-  }, [communityStats]);
+    if (!communityStatsLoading) {
+      setStats(communityStats);
+    }
+  }, [communityStats, communityStatsLoading]);
 
-  if (isLoading) {
+  if (communityStatsLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-pulse">
         <Card className="bg-gray-900 border-gray-800">
-          <CardContent className="p-4 h-64"></CardContent>
+          <CardHeader>
+            <div className="bg-gray-700 w-32 h-6 rounded-md mb-4 animate-pulse"></div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <div className="bg-gray-700 w-6 h-6 rounded-full mr-2 animate-pulse"></div>
+                  <div className="bg-gray-700 w-24 h-4 rounded-md animate-pulse"></div>
+                </div>
+                <div className="bg-gray-700 w-16 h-4 rounded-md animate-pulse"></div>
+              </div>
+            ))}
+          </CardContent>
         </Card>
+
         <Card className="bg-gray-900 border-gray-800 md:col-span-2">
-          <CardContent className="p-4 h-64"></CardContent>
+          <CardContent className="p-4 h-64">
+            <div className="bg-gray-700 w-full h-full rounded-md animate-pulse"></div>
+          </CardContent>
         </Card>
       </div>
     );
@@ -86,11 +108,15 @@ export default function CommunityPulse() {
                 <span>Top Badges</span>
               </div>
               <div className="flex flex-wrap gap-1">
-                {mostAssignBadges?.slice(0, 5)?.map((item, index) => (
-                  <Badge key={index} className="bg-gray-800 text-gray-300">
-                    {item.badge_name} ({item.assigned_count})
-                  </Badge>
-                ))}
+                {mostAssignBadgesLoading
+                  ? Array.from({ length: 5 }).map((_, index) => (
+                      <Badge key={index} className="bg-gray-800 text-gray-300"></Badge>
+                    ))
+                  : mostAssignBadges?.slice(0, 5)?.map((item, index) => (
+                      <Badge key={index} className="bg-gray-800 text-gray-300">
+                        {item.badge_name} ({item.assigned_count})
+                      </Badge>
+                    ))}
               </div>
             </div>
           </CardContent>

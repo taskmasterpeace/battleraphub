@@ -230,14 +230,18 @@ CREATE OR REPLACE FUNCTION get_top_battlers_by_rating(
 RETURNS TABLE (
   battler_id UUID,
   average_score NUMERIC,
-  name TEXT
+  name TEXT,
+  avatar TEXT,
+  location TEXT
 ) AS $$
 BEGIN
   RETURN QUERY
   SELECT 
     br.battler_id,
     AVG(br.score) AS average_score,
-    b.name
+    b.name,
+    MAX(b.avatar) as avatar,
+    MAX(b.location) as location
   FROM 
     battler_ratings br
   JOIN users u ON br.user_id = u.id

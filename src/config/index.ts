@@ -45,6 +45,13 @@ const MATERIALIZED_VIEWS = {
   ACTIVE_ROLES_BY_RATINGS: "leaderboard_active_roles_by_ratings",
 };
 
+const RPC_FUNCTIONS = {
+  GET_TOP_BATTLERS_BY_RATING: "get_top_battlers_by_rating",
+  BATTLER_FILTER: "battler_filter",
+  BATTLER_FILTER_COUNT: "battler_filter_count",
+  ALL_MY_RATINGS_BATTLERS: "all_my_ratings_battlers",
+};
+
 const BUCKET_NAME = "battleraprank";
 
 const PERMISSION = {
@@ -83,6 +90,8 @@ const PAGES = {
   MEDIA: "/media",
   ANALYTICS: "/analytics",
   DIAGNOSTICS: "/diagnostics",
+  MY_RATINGS: "/my-ratings",
+  PROFILE: "/profile",
 };
 
 const CATEGORY_TYPES = {
@@ -99,6 +108,7 @@ export {
   DB_TABLES,
   PERMISSION,
   MATERIALIZED_VIEWS,
+  RPC_FUNCTIONS,
   ATTRIBUTE_CATEGORIES,
   BUCKET_NAME,
   PERMISSIONS,

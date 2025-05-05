@@ -81,16 +81,17 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  user_permissions: {
+  user_permissions?: {
     user_id: string;
   }[];
+  bio?: string;
   avatar: string;
-  role_id: number;
+  role_id?: number;
   youtube: string;
   twitter: string;
   instagram: string;
-  verified: boolean;
-  added_by: string;
+  verified?: boolean;
+  added_by?: string;
 }
 
 export interface Battlers {
@@ -178,6 +179,8 @@ export interface BattlerAttribute {
   battler_id: string;
   name?: string;
   average_score?: number;
+  avatar: string;
+  location: string;
 }
 
 export interface LeaderboardCommunityStats {
@@ -294,4 +297,16 @@ export type RatingDistribution = {
 export type TrendOverTimeByCategory = {
   month: string;
   [key: string]: string | number;
+};
+
+export type MyRating = {
+  avatar: string;
+  name: string;
+  assigned_badges: {
+    name: string;
+    is_positive: boolean;
+  }[];
+  battler_id: string;
+  average_score: number;
+  created_at: string;
 };

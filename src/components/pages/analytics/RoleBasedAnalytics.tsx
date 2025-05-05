@@ -23,6 +23,7 @@ import { BattlerAttribute, Attribute } from "@/types";
 import { categories, defaultRoleWeights } from "@/__mocks__/analytics";
 import { topBattlerByRatingAction } from "@/app/actions";
 import { Loader, CircleUser } from "lucide-react";
+import Image from "next/image";
 
 interface RoleBasedAnalyticsProps {
   attributeData: Attribute[];
@@ -163,7 +164,7 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
                     <Tooltip
                       content={({ payload, label }) => (
                         <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
-                          <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                          <p className="text-sm text-white">{`${label} : ${typeof payload?.[0]?.value === "number" ? payload[0].value.toFixed(2) : payload?.[0]?.value}`}</p>
                         </div>
                       )}
                     />
@@ -187,20 +188,20 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                           <div className="relative w-12 h-12 rounded-full overflow-hidden">
-                            {/* {battler?.battlerImage ? (
+                            {battler?.avatar ? (
                               <Image
-                                src={battler?.battlerImage || "/defaultAvatar.jpeg"}
+                                src={battler?.avatar || "/defaultAvatar.jpeg"}
                                 alt={battler?.name || "Battler Image"}
                                 fill
                                 className="object-cover"
                               />
-                            ) : ( */}
-                            <CircleUser className="w-full h-full" />
-                            {/* )} */}
+                            ) : (
+                              <CircleUser className="w-full h-full" />
+                            )}
                           </div>
                           <div className="flex-1">
                             <h3 className="font-medium">{battler?.name}</h3>
-                            {/* <p className="text-sm text-gray-400">{battler?.battlerLocation}</p> */}
+                            <p className="text-sm text-gray-400">{battler?.location}</p>
                           </div>
                           <div
                             className={`px-3 py-2 rounded-full bg-${getRoleColor(selectedRole)}-900/30 text-${getRoleColor(selectedRole)}-400 font-bold`}

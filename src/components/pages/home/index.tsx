@@ -12,7 +12,7 @@ import HeroSection from "@/components/pages/landing/HeroSection";
 import { useHome } from "@/contexts/home.context";
 
 const HomePage = () => {
-  const { recentBattlers } = useHome();
+  const { recentBattlers, recentBattlerLoading } = useHome();
 
   return (
     <div className="container mx-auto px-4 py-4 md:py-8">
@@ -43,26 +43,44 @@ const HomePage = () => {
           </Button>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
-          {recentBattlers.slice(0, 6).map((battler) => (
-            <Link
-              key={battler.id}
-              href={`/battlers/${battler.id}`}
-              className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-amber-500 transition-all hover:shadow-lg hover:shadow-amber-900/20"
-            >
-              <div className="aspect-square relative">
-                <Image
-                  src={battler.avatar || "/image/default-avatar-img.jpg"}
-                  alt={battler.name || "Battler Avatar"}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-3">
-                <h3 className="font-medium text-sm sm:text-base">{battler.name}</h3>
-                <p className="text-xs sm:text-sm text-gray-400">{battler.location}</p>
-              </div>
-            </Link>
-          ))}
+          {recentBattlerLoading
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 animate-pulse"
+                >
+                  <div className="aspect-square relative bg-gray-800" />
+                  <div className="p-3">
+                    <div className="h-4 bg-gray-700 rounded w-3/4 mb-2" />
+                    <div className="h-3 bg-gray-700 rounded w-1/2 mb-4" />
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {[...Array(3)].map((_, i) => (
+                        <span key={i} className="h-4 w-12 bg-gray-700 rounded" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))
+            : recentBattlers.slice(0, 6).map((battler) => (
+                <Link
+                  key={battler.id}
+                  href={`/battlers/${battler.id}`}
+                  className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-amber-500 transition-all hover:shadow-lg hover:shadow-amber-900/20"
+                >
+                  <div className="aspect-square relative">
+                    <Image
+                      src={battler.avatar || "/image/default-avatar-img.jpg"}
+                      alt={battler.name || "Battler Avatar"}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-3">
+                    <h3 className="font-medium text-sm sm:text-base">{battler.name}</h3>
+                    <p className="text-xs sm:text-sm text-gray-400">{battler.location}</p>
+                  </div>
+                </Link>
+              ))}
         </div>
         <div className="mt-4 flex sm:hidden justify-center">
           <Button asChild variant="outline" className="w-full">

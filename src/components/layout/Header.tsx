@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import MobileNavbar from "./MobileNavbar";
 // import NotificationCenter from "@/components/notifications/NotificationCenter"
-// import KeyboardShortcutsHelper from "@/components/KeyboardShortcutsHelper"
+import KeyboardShortcutsHelper from "@/components/KeyboardShortcutsHelper";
 import { ROLE } from "@/config";
 import { filterNavList, NAV_LINKS } from "@/lib/navigation-links";
 
@@ -88,7 +88,7 @@ export default function Header() {
             })}
           </nav>
 
-          {/* <KeyboardShortcutsHelper /> */}
+          <KeyboardShortcutsHelper />
 
           {user ? (
             <>
@@ -104,7 +104,7 @@ export default function Header() {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href={`/profile/${user.email?.split("@")[0]}`}>Profile</Link>
+                    <Link href="/profile">Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/my-ratings">My Ratings</Link>

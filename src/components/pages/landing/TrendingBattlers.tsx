@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,13 +9,8 @@ import { TrendingUp, Star } from "lucide-react";
 import { useHome } from "@/contexts/home.context";
 
 export default function TrendingBattlers() {
-  const { topBattlersUnweightedData: battlers } = useHome();
+  const { topBattlersUnweightedData: battlers, battlerUnweightedLoading } = useHome();
   const [activeTagId, setActiveTagId] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setIsLoading(false);
-  }, []);
 
   const handleBadgeClick = (e: React.MouseEvent, battlerId: string) => {
     e.preventDefault();
@@ -31,7 +26,7 @@ export default function TrendingBattlers() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {isLoading
+        {battlerUnweightedLoading
           ? Array(4)
               .fill(0)
               .map((_, index) => (
