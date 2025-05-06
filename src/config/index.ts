@@ -38,10 +38,18 @@ const MATERIALIZED_VIEWS = {
   AVERAGE_RATINGS_OVER_TIME: "average_ratings_over_time",
   COMMUNITY_RATING_DISTRIBUTION: "community_rating_distribution",
   MOST_VALUED_ATTRUBUTES: "most_valued_attributes",
+  MOST_ASSIGNED_BADGES: "most_assigned_badges",
   TOP_BATTLERS_UNWEIGHTED: "top_battlers_unweighted",
-  COMMUNITY_STATS: "community_stats_mv",
-  RATING_DISTRIBUTION: "rating_distribution_mv",
-  ACTIVE_ROLES_BY_RATINGS: "active_roles_by_ratings_mv",
+  COMMUNITY_STATS: "leaderboard_community_stats",
+  RATING_DISTRIBUTION: "leaderboard_rating_distribution",
+  ACTIVE_ROLES_BY_RATINGS: "leaderboard_active_roles_by_ratings",
+};
+
+const RPC_FUNCTIONS = {
+  GET_TOP_BATTLERS_BY_RATING: "get_top_battlers_by_rating",
+  BATTLER_FILTER: "battler_filter",
+  BATTLER_FILTER_COUNT: "battler_filter_count",
+  ALL_MY_RATINGS_BATTLERS: "all_my_ratings_battlers",
 };
 
 const BUCKET_NAME = "battleraprank";
@@ -82,6 +90,8 @@ const PAGES = {
   MEDIA: "/media",
   ANALYTICS: "/analytics",
   DIAGNOSTICS: "/diagnostics",
+  MY_RATINGS: "/my-ratings",
+  PROFILE: "/profile",
 };
 
 const CATEGORY_TYPES = {
@@ -98,6 +108,7 @@ export {
   DB_TABLES,
   PERMISSION,
   MATERIALIZED_VIEWS,
+  RPC_FUNCTIONS,
   ATTRIBUTE_CATEGORIES,
   BUCKET_NAME,
   PERMISSIONS,

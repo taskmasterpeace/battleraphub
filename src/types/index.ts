@@ -81,16 +81,17 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  user_permissions: {
+  user_permissions?: {
     user_id: string;
   }[];
+  bio?: string;
   avatar: string;
-  role_id: number;
+  role_id?: number;
   youtube: string;
   twitter: string;
   instagram: string;
-  verified: boolean;
-  added_by: string;
+  verified?: boolean;
+  added_by?: string;
 }
 
 export interface Battlers {
@@ -176,17 +177,10 @@ export interface RoleWeight {
 
 export interface BattlerAttribute {
   battler_id: string;
-  category?: string;
-  attribute?: string;
-  overallAverage: number;
-  fanAverage: number;
-  mediaAverage: number;
-  battlerAverage: number;
-  leagueOwnerAverage: number;
   name?: string;
-  battlerImage?: string;
-  battlerLocation?: string;
   average_score?: number;
+  avatar: string;
+  location: string;
 }
 
 export interface LeaderboardCommunityStats {
@@ -233,3 +227,86 @@ export interface LeaderboardEntry {
   influence: number;
   rank: number;
 }
+
+export type CommunityStatCards = {
+  total_users: number;
+  new_users_this_week: number;
+  total_ratings: number;
+  new_ratings_this_week: number;
+  avg_rating: number;
+  active_users_last_30_days: number;
+  recentBattles?: number;
+  topBadges?: {
+    badge: string;
+    count: number;
+  }[];
+};
+
+export type MostValuedAttributes = {
+  attribute_id: string;
+  attribute_name: string;
+  category: string;
+  avg_rating: number;
+  rating_count: number;
+};
+
+export type MostAssignedBadges = {
+  badge_id: string;
+  badge_name: string;
+  description: string;
+  category: string;
+  assigned_count: number;
+};
+
+export type AvgRatingsOverTime = {
+  month: string;
+  avg_rating?: number;
+  total_ratings?: number;
+};
+
+export type TopBattlersUnweighted = {
+  battler_id: string;
+  assigned_badges: {
+    name: string;
+    is_positive: boolean;
+  }[];
+  avg_rating: number;
+  name: string;
+  avatar: string;
+  location: string;
+  score: number;
+};
+
+export type AverageRatingByCategory = {
+  category: string;
+  avg_rating: number;
+};
+
+export type TopBadges = {
+  badge_id: string;
+  badge_name: string;
+  description: string;
+  times_assigned: number;
+};
+
+export type RatingDistribution = {
+  bucket: string;
+  rating_count: number;
+};
+
+export type TrendOverTimeByCategory = {
+  month: string;
+  [key: string]: string | number;
+};
+
+export type MyRating = {
+  avatar: string;
+  name: string;
+  assigned_badges: {
+    name: string;
+    is_positive: boolean;
+  }[];
+  battler_id: string;
+  average_score: number;
+  created_at: string;
+};

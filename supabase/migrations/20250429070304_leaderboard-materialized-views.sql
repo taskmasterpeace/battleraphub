@@ -57,6 +57,64 @@ WHERE br.created_at >= NOW() - INTERVAL '30 days'
 GROUP BY u.role_id
 ORDER BY ratings_count DESC;
 
+-- Top 10 most assigned badges
+
+DROP MATERIALIZED VIEW IF EXISTS most_assigned_badges;
+
+CREATE MATERIALIZED VIEW most_assigned_badges AS
+SELECT
+  bb.badge_id,
+  b.name AS badge_name,
+  b.description,
+  b.category,
+  COUNT(*) AS assigned_count
+FROM battler_badges bb
+JOIN badges b ON bb.badge_id = b.id
+GROUP BY bb.badge_id, b.name, b.description, b.category
+ORDER BY assigned_count DESC
+LIMIT 10;
+
+
+-- RPC function for my-ratings
+
+DROP FUNCTION IF EXISTS battler_ratings_by_user;
+
+CREATE OR REPLACE FUNCTION battler_ratings_by_user(
+  p_user_id UUID
+)
+RETURNS TABLE (
+  battler_id UUID,
+  average_score NUMERIC,
+  name TEXT,
+  avatar TEXT,
+  assigned_badges JSONB[],
+  created_at TIMESTAMPTZ
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    br.battler_id, 
+    AVG(br.score) AS avg_score,
+    b.name,
+    MAX(b.avatar) as avatar,
+    COALESCE(
+      array_agg(
+        DISTINCT jsonb_build_object(
+          'name', ba.name,
+          'is_positive', ba.is_positive
+        )
+      ) FILTER (WHERE ba.name IS NOT NULL),
+      '{}'
+    ) AS assigned_badges,
+    MAX(br.created_at) AS created_at
+  FROM battler_ratings br
+  JOIN battlers b ON b.id = br.battler_id
+  LEFT JOIN battler_badges bb ON bb.battler_id = b.id AND bb.user_id = br.user_id
+  LEFT JOIN badges ba ON bb.badge_id = ba.id
+  WHERE br.user_id = p_user_id
+  GROUP BY br.battler_id, b.name;
+END;
+$$ LANGUAGE plpgsql;
 
 -- Schedule cron jobs to refresh materialized views
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,38 +15,67 @@ import {
 import { BarChartIcon as ChartSquare } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { spotlightAnalytics } from "@/__mocks__/landing";
-import { AnalyticsData } from "@/types";
+import { useHome } from "@/contexts/home.context";
 
 export default function SpotlightAnalytics() {
-  const [analytics, setAnalytics] = useState<AnalyticsData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const { mostValuesAttributes, mostAssignBadges } = useHome();
+  const [activeIndex, setActiveIndex] = useState<number>(0);
 
-  useEffect(() => {
-    setAnalytics(spotlightAnalytics);
-    setIsLoading(false);
-  }, []);
+  const spotlightAnalytics = useMemo(
+    () => [
+      {
+        title: "Top Performing Attributes",
+        description: "Highest rated attributes across all battlers",
+        chartData:
+          mostValuesAttributes.slice(0, 5).map((item) => ({
+            name: item.attribute_name,
+            value: item.avg_rating,
+          })) || [],
+        xDataKey: "name",
+        dataKey: "value",
+        color: "#8B5CF6",
+      },
+      {
+        title: "Most Improved Battlers",
+        description: "Battlers with the biggest rating increases",
+        chartData: [
+          { name: "Geechi Gotti", value: 0.8 },
+          { name: "Tay Roc", value: 0.6 },
+          { name: "Chess", value: 0.5 },
+          { name: "Rum Nitty", value: 0.4 },
+          { name: "JC", value: 0.3 },
+        ],
+        xDataKey: "name",
+        dataKey: "value",
+        color: "#10B981",
+      },
+      {
+        title: "Most Assigned Badges",
+        description: "Most frequently assigned badges by the community",
+        chartData:
+          mostAssignBadges.slice(0, 5).map((item) => ({
+            name: item.badge_name,
+            value: item.assigned_count,
+          })) || [],
+        xDataKey: "name",
+        dataKey: "value",
+        color: "#F59E0B",
+      },
+    ],
+    [mostValuesAttributes, mostAssignBadges],
+  );
 
   const nextAnalytic = () => {
-    setActiveIndex((prev) => (prev + 1) % analytics.length);
+    setActiveIndex((prev) => (prev + 1) % spotlightAnalytics.length);
   };
 
   const prevAnalytic = () => {
-    setActiveIndex((prev) => (prev - 1 + analytics.length) % analytics.length);
+    setActiveIndex((prev) => (prev - 1 + spotlightAnalytics.length) % spotlightAnalytics.length);
   };
 
-  if (isLoading) {
-    return (
-      <Card className="bg-gray-900 border-gray-800 animate-pulse">
-        <CardContent className="p-4 h-96"></CardContent>
-      </Card>
-    );
-  }
+  if (spotlightAnalytics.length === 0) return null;
 
-  if (analytics.length === 0) return null;
-
-  const currentAnalytic = analytics[activeIndex];
+  const currentAnalytic = spotlightAnalytics[activeIndex];
 
   return (
     <div>
@@ -73,7 +102,7 @@ export default function SpotlightAnalytics() {
               <p className="text-sm text-gray-400 mt-1">{currentAnalytic.description}</p>
             </div>
             <Badge variant="outline" className="bg-gray-800">
-              {activeIndex + 1} / {analytics.length}
+              {activeIndex + 1} / {spotlightAnalytics.length}
             </Badge>
           </div>
         </CardHeader>
@@ -82,14 +111,18 @@ export default function SpotlightAnalytics() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={currentAnalytic.chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="name" stroke="#9CA3AF" />
+                <XAxis
+                  dataKey={currentAnalytic.xDataKey}
+                  stroke="#9CA3AF"
+                  className="text-[12px]"
+                />
                 <YAxis stroke="#9CA3AF" />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#1F2937",
-                    borderColor: "#374151",
-                    color: "#E5E7EB",
-                  }}
+                  content={({ payload, label }) => (
+                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
+                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    </div>
+                  )}
                 />
                 <Bar
                   dataKey={currentAnalytic.dataKey}

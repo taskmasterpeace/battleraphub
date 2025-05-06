@@ -7,16 +7,33 @@ DROP MATERIALIZED VIEW IF EXISTS top_battlers_unweighted;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS top_battlers_unweighted AS 
 SELECT 
+  b.id AS battler_id,
   b.name, 
   b.avatar, 
   b.location, 
-  ba.score as avg_rating 
+  ba.score AS avg_rating,
+  COALESCE(
+    array_agg(
+      DISTINCT jsonb_build_object(
+        'name', bd.name,
+        'is_positive', bd.is_positive
+      )
+    ) FILTER (WHERE bd.name IS NOT NULL),
+    '{}'
+  ) AS assigned_badges
 FROM 
   battler_analytics ba 
-  left join battlers b on ba.battler_id = b.id 
-where type = 1 AND attribute_id = 0 
-order by score desc
-limit 10;
+  LEFT JOIN battlers b ON ba.battler_id = b.id
+  LEFT JOIN battler_badges bb ON bb.battler_id = b.id
+  LEFT JOIN badges bd ON bd.id = bb.badge_id
+WHERE 
+  ba.type = 1 
+  AND ba.attribute_id = 0 
+GROUP BY 
+  b.id, b.name, b.avatar, b.location, ba.score
+ORDER BY 
+  ba.score DESC
+LIMIT 10;
 
 -- Average ratings by category
 
@@ -40,7 +57,8 @@ DROP MATERIALIZED VIEW IF EXISTS average_ratings_over_time;
 CREATE MATERIALIZED VIEW IF NOT EXISTS average_ratings_over_time AS
 SELECT
     date_trunc('month', br.updated_at) AS month,
-    AVG(br.score::float)::decimal(16,2) AS avg_rating
+    AVG(br.score::float)::decimal(16,2) AS avg_rating,
+    count(*) as total_ratings
 FROM
     battler_ratings br
 WHERE
@@ -212,14 +230,18 @@ CREATE OR REPLACE FUNCTION get_top_battlers_by_rating(
 RETURNS TABLE (
   battler_id UUID,
   average_score NUMERIC,
-  name TEXT
-)
-LANGUAGE SQL
-AS $$
+  name TEXT,
+  avatar TEXT,
+  location TEXT
+) AS $$
+BEGIN
+  RETURN QUERY
   SELECT 
     br.battler_id,
     AVG(br.score) AS average_score,
-    b.name
+    b.name,
+    MAX(b.avatar) as avatar,
+    MAX(b.location) as location
   FROM 
     battler_ratings br
   JOIN users u ON br.user_id = u.id
@@ -234,5 +256,6 @@ AS $$
   ORDER BY 
     average_score DESC
   LIMIT 10;
-$$;
+END;
+$$ LANGUAGE plpgsql;
 

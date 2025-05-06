@@ -14,6 +14,10 @@ CREATE TABLE IF NOT EXISTS battler_analytics (
 );
 
 
+-- Drop existing index
+DROP INDEX IF EXISTS idx_battler_analytics_battler_id;
+DROP INDEX IF EXISTS idx_battler_analytics_score;
+
 -- Create index for faster lookups
 CREATE INDEX IF NOT EXISTS idx_battler_analytics_battler_id ON battler_analytics(battler_id);
 CREATE INDEX IF NOT EXISTS idx_battler_analytics_score ON battler_analytics(score);
@@ -62,13 +66,13 @@ SELECT cron.schedule(
 -- Add RLS policies
 ALTER TABLE battler_analytics ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies applied to battler_analytics
+DROP POLICY IF EXISTS "Enable read access to public user" ON battler_analytics;
+
+-- Create new policy
 CREATE POLICY "Enable read access to public user" ON battler_analytics AS PERMISSIVE FOR
 SELECT
     TO public USING (true);
-
-CREATE POLICY "Enable read access to authenticated user" ON battler_analytics AS PERMISSIVE FOR
-SELECT
-    TO authenticated USING (true);
 
 -- Grant necessary permissions
 GRANT SELECT ON battler_analytics TO public;

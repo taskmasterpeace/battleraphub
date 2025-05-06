@@ -13,26 +13,49 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "@/components/ui/chart";
-import { communityStats } from "@/__mocks__/landing";
-import { CommunityStats } from "@/types";
+import { CommunityStatCards } from "@/types";
+import { useHome } from "@/contexts/home.context";
 
 export default function CommunityPulse() {
-  const [stats, setStats] = useState<CommunityStats | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState<CommunityStatCards | null>(null);
+  const {
+    communityStats,
+    communityStatsLoading,
+    mostAssignBadgesLoading,
+    mostAssignBadges,
+    ratingsOverTimeData,
+  } = useHome();
 
   useEffect(() => {
-    setStats(communityStats);
-    setIsLoading(false);
-  }, []);
+    if (!communityStatsLoading) {
+      setStats(communityStats);
+    }
+  }, [communityStats, communityStatsLoading]);
 
-  if (isLoading) {
+  if (communityStatsLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-pulse">
         <Card className="bg-gray-900 border-gray-800">
-          <CardContent className="p-4 h-64"></CardContent>
+          <CardHeader>
+            <div className="bg-gray-700 w-32 h-6 rounded-md mb-4 animate-pulse"></div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <div className="bg-gray-700 w-6 h-6 rounded-full mr-2 animate-pulse"></div>
+                  <div className="bg-gray-700 w-24 h-4 rounded-md animate-pulse"></div>
+                </div>
+                <div className="bg-gray-700 w-16 h-4 rounded-md animate-pulse"></div>
+              </div>
+            ))}
+          </CardContent>
         </Card>
+
         <Card className="bg-gray-900 border-gray-800 md:col-span-2">
-          <CardContent className="p-4 h-64"></CardContent>
+          <CardContent className="p-4 h-64">
+            <div className="bg-gray-700 w-full h-full rounded-md animate-pulse"></div>
+          </CardContent>
         </Card>
       </div>
     );
@@ -58,7 +81,7 @@ export default function CommunityPulse() {
                 <MessageSquare className="w-4 h-4 mr-2 text-purple-400" />
                 <span>Total Ratings</span>
               </div>
-              <span className="font-bold">{stats.totalRatings.toLocaleString()}</span>
+              <span className="font-bold">{stats?.total_ratings?.toLocaleString() || "0"}</span>
             </div>
 
             <div className="flex justify-between items-center">
@@ -66,7 +89,9 @@ export default function CommunityPulse() {
                 <Users className="w-4 h-4 mr-2 text-blue-400" />
                 <span>Active Users</span>
               </div>
-              <span className="font-bold">{stats.activeUsers.toLocaleString()}</span>
+              <span className="font-bold">
+                {stats?.active_users_last_30_days?.toLocaleString() || "0"}
+              </span>
             </div>
 
             <div className="flex justify-between items-center">
@@ -74,7 +99,7 @@ export default function CommunityPulse() {
                 <TrendingUp className="w-4 h-4 mr-2 text-green-400" />
                 <span>Recent Battles</span>
               </div>
-              <span className="font-bold">{stats.recentBattles}</span>
+              <span className="font-bold">-</span>
             </div>
 
             <div className="pt-2">
@@ -83,11 +108,15 @@ export default function CommunityPulse() {
                 <span>Top Badges</span>
               </div>
               <div className="flex flex-wrap gap-1">
-                {stats.topBadges.map((item) => (
-                  <Badge key={item.badge} className="bg-gray-800 text-gray-300">
-                    {item.badge} ({item.count})
-                  </Badge>
-                ))}
+                {mostAssignBadgesLoading
+                  ? Array.from({ length: 5 }).map((_, index) => (
+                      <Badge key={index} className="bg-gray-800 text-gray-300"></Badge>
+                    ))
+                  : mostAssignBadges?.slice(0, 5)?.map((item, index) => (
+                      <Badge key={index} className="bg-gray-800 text-gray-300">
+                        {item.badge_name} ({item.assigned_count})
+                      </Badge>
+                    ))}
               </div>
             </div>
           </CardContent>
@@ -100,20 +129,26 @@ export default function CommunityPulse() {
           <CardContent>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={stats.activityData}>
+                <LineChart
+                  data={ratingsOverTimeData.map((data) => ({
+                    month: new Date(data.month).toLocaleString("en-US", { month: "long" }),
+                    avg_rating: data?.avg_rating,
+                    total_ratings: data?.total_ratings,
+                  }))}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="date" stroke="#9CA3AF" />
+                  <XAxis dataKey="month" stroke="#9CA3AF" />
                   <YAxis stroke="#9CA3AF" />
                   <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#1F2937",
-                      borderColor: "#374151",
-                      color: "#E5E7EB",
-                    }}
+                    content={({ payload, label }) => (
+                      <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
+                        <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                      </div>
+                    )}
                   />
                   <Line
                     type="monotone"
-                    dataKey="ratings"
+                    dataKey="total_ratings"
                     stroke="#8B5CF6"
                     strokeWidth={2}
                     activeDot={{ r: 8 }}

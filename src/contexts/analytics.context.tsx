@@ -2,51 +2,19 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
-import { BattlerAnalytics, Battlers } from "@/types";
+import {
+  AverageRatingByCategory,
+  AvgRatingsOverTime,
+  BattlerAnalytics,
+  Battlers,
+  MostValuedAttributes,
+  RatingDistribution,
+  TopBadges,
+  TopBattlersUnweighted,
+  TrendOverTimeByCategory,
+} from "@/types";
 import { DB_TABLES, MATERIALIZED_VIEWS } from "@/config";
 import debounce from "lodash.debounce";
-
-type TopBattlersUnweighted = {
-  name: string;
-  avatar: string;
-  location: string;
-  score: number;
-};
-
-type AverageRatingByCategory = {
-  category: string;
-  avg_rating: number;
-};
-
-type AvgRatingsOverTime = {
-  month: string;
-  avg_rating: number;
-};
-
-type TopBadges = {
-  badge_id: string;
-  badge_name: string;
-  description: string;
-  times_assigned: number;
-};
-
-type RatingDistribution = {
-  bucket: string;
-  rating_count: number;
-};
-
-type MostValuedAttributes = {
-  attribute_id: string;
-  attribute_name: string;
-  category: string;
-  avg_rating: number;
-  rating_count: number;
-};
-
-type TrendOverTimeByCategory = {
-  month: string;
-  [key: string]: string | number;
-};
 
 type AnalyticsContextType = {
   topBattlersUnweightedData: TopBattlersUnweighted[];

@@ -34,7 +34,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   return (
     <>
       <FormItem>
-        <FormLabel>{label}</FormLabel>
+        <FormLabel className="text-sm">
+          {label} {label === "Avatar" && <span className="text-xs">(320 x 320)</span>}{" "}
+          {label === "Banner" && <span className="text-xs">(1200 x 300)</span>}
+        </FormLabel>{" "}
         <FormControl>
           <div>
             {!createMode && (preview || currentImage) && (
