@@ -25,9 +25,20 @@ export const optionalImageSchema = z
 
 export const formProfileSchema = z.object({
   avatar: optionalImageSchema.optional(),
-  email: z.string().min(1, "Email is required").email("Invalid email").trim().toLowerCase(),
+  image: optionalImageSchema.optional(),
   name: z.string().min(3, "Name is required").max(100, "Name cannot exceed 100 characters"),
   bio: z.string().max(1000, "Bio cannot exceed 1000 characters").optional(),
+  website: z
+    .string()
+    .url("Invalid WEBSITE URL")
+    .startsWith("https://", "Must be a valid URL")
+    .or(z.string().startsWith("https://", "Must be a valid website URL"))
+    .optional()
+    .or(z.literal("")),
+  location: z.string().max(100, "Location cannot exceed 100 characters").optional(),
+});
+
+export const socialMediaLinksSchema = z.object({
   twitter: z
     .string()
     .url("Invalid Platform X URL")
@@ -48,6 +59,13 @@ export const formProfileSchema = z.object({
     .url("Invalid Instagram URL")
     .startsWith("https://instagram.com/", "Must be a valid Instagram URL")
     .or(z.string().startsWith("https://www.instagram.com/", "Must be a valid Instagram URL"))
+    .optional()
+    .or(z.literal("")),
+  website: z
+    .string()
+    .url("Invalid WEBSITE URL")
+    .startsWith("https://", "Must be a valid URL")
+    .or(z.string().startsWith("https://", "Must be a valid website URL"))
     .optional()
     .or(z.literal("")),
 });

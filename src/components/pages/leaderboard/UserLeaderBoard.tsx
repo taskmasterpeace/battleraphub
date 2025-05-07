@@ -9,45 +9,64 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LeaderboardSection from "@/components/pages/leaderboard/LeaderboardSection";
-import { LeaderboardEntry } from "@/types";
-import { leaderboardMockData } from "@/__mocks__/leaderboard";
+import { useLeaderboard } from "@/contexts/leaderboard.context";
+import { FilteredData } from "@/types";
+import Link from "next/link";
+import { LEADERBOARD_TAB_TYPE } from "@/config";
 
-export default function UserLeaderboard() {
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [filteredLeaderboard, setFilteredLeaderboard] = useState<LeaderboardEntry[]>([]);
+export default function UserLeaderboard({
+  tabType,
+}: {
+  tabType: "most-ratings" | "most-accurate" | "most-followed";
+}) {
+  const {
+    topRaterBattlerLoading,
+    mostConsistentUsersLoading,
+    mostInfluentialUsersLoading,
+    topRatersBattler,
+    mostConsistentUsers,
+    mostInfluentialUsers,
+    mostAccurateUsers,
+    mostAccurateUsersLoading,
+  } = useLeaderboard();
+  const [activeTab, setActiveTab] = useState("overall");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchLeaderboard = async () => {
-      try {
-        setLeaderboard(leaderboardMockData);
-        setFilteredLeaderboard(leaderboardMockData);
-      } catch (error) {
-        console.error("Error fetching leaderboard:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLeaderboard();
-  }, []);
+  const [filteredData, setFilteredData] = useState<FilteredData[]>([]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-
-    if (query.trim() === "") {
-      setFilteredLeaderboard(leaderboard);
-    } else {
-      const filtered = leaderboard.filter(
-        (entry) =>
-          entry.displayName.toLowerCase().includes(query.toLowerCase()) ||
-          entry.username.toLowerCase().includes(query.toLowerCase()),
-      );
-      setFilteredLeaderboard(filtered);
-    }
+    setSearchQuery(e.target.value);
   };
+
+  useEffect(() => {
+    const getDataForTab = {
+      overall:
+        tabType === LEADERBOARD_TAB_TYPE.MOST_RATINGS
+          ? topRatersBattler
+          : tabType === LEADERBOARD_TAB_TYPE.MOST_ACCURATE
+            ? mostAccurateUsers
+            : [],
+      consistency: tabType === LEADERBOARD_TAB_TYPE.MOST_RATINGS ? mostConsistentUsers : [],
+      influence: tabType === LEADERBOARD_TAB_TYPE.MOST_RATINGS ? mostInfluentialUsers : [],
+    };
+
+    const currentData = getDataForTab[activeTab as keyof typeof getDataForTab] || [];
+    const filtered =
+      searchQuery.trim() === ""
+        ? currentData
+        : currentData.filter((entry) =>
+            entry?.name?.toLowerCase().includes(searchQuery.toLowerCase()),
+          );
+
+    setFilteredData(filtered as FilteredData[]);
+  }, [
+    searchQuery,
+    tabType,
+    activeTab,
+    topRatersBattler,
+    mostConsistentUsers,
+    mostInfluentialUsers,
+    mostAccurateUsers,
+  ]);
 
   return (
     <Card>
@@ -72,7 +91,7 @@ export default function UserLeaderboard() {
         </div>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="overall" className="space-y-4">
+        <Tabs defaultValue="overall" className="space-y-4" onValueChange={setActiveTab}>
           <TabsList className="bg-gray-900 border border-gray-800">
             <TabsTrigger value="overall">
               <Trophy className="h-4 w-4 mr-2" />
@@ -89,62 +108,65 @@ export default function UserLeaderboard() {
           </TabsList>
 
           <TabsContent value="overall" className="space-y-4">
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            {topRaterBattlerLoading || mostAccurateUsersLoading ? (
+              <div className="space-y-2">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <SkeletonLoader key={index} />
+                ))}
               </div>
-            ) : filteredLeaderboard.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">No users found</div>
+            ) : filteredData.length === 0 ? (
+              <div className="text-center py-8 text-gray-400">No Data Found</div>
             ) : (
               <LeaderboardSection
-                data={filteredLeaderboard}
-                sortKey="rank"
+                data={filteredData}
+                sortKey="battlers_rated"
                 sortDirection="asc"
-                valueKey="totalRatings"
+                valueKey={
+                  tabType === LEADERBOARD_TAB_TYPE.MOST_RATINGS
+                    ? "battlers_rated"
+                    : tabType === LEADERBOARD_TAB_TYPE.MOST_ACCURATE
+                      ? "accuracy_score"
+                      : "accuracy_score"
+                }
                 valueLabel="Ratings"
-                useIndex={false}
               />
             )}
 
             <div className="flex justify-center pt-2">
-              <Button variant="outline" size="sm">
-                View All Rankings
+              <Button asChild variant="outline" size="sm">
+                <Link href="/my-ratings">View All Rankings</Link>
               </Button>
             </div>
           </TabsContent>
 
           <TabsContent value="consistency" className="space-y-4">
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-              </div>
-            ) : filteredLeaderboard.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">No users found</div>
+            {mostConsistentUsersLoading ? (
+              <SkeletonLoader />
+            ) : filteredData.length === 0 ? (
+              <div className="text-center py-8 text-gray-400">No Data Found</div>
             ) : (
               <LeaderboardSection
-                data={filteredLeaderboard}
-                sortKey="consistency"
-                valueKey="consistency"
+                data={filteredData}
+                sortKey="ratings_given"
+                sortDirection="asc"
+                valueKey="ratings_given"
                 valueLabel="Consistency"
               />
             )}
           </TabsContent>
 
           <TabsContent value="influence" className="space-y-4">
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-              </div>
-            ) : filteredLeaderboard.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">No users found</div>
+            {mostInfluentialUsersLoading ? (
+              <SkeletonLoader />
+            ) : filteredData.length === 0 ? (
+              <div className="text-center py-8 text-gray-400">No Data Found</div>
             ) : (
               <LeaderboardSection
-                data={filteredLeaderboard}
-                sortKey="rank"
+                data={filteredData}
+                sortKey="ratings_given"
                 sortDirection="asc"
-                valueKey="totalRatings"
+                valueKey="ratings_given"
                 valueLabel="Ratings"
-                useIndex={false}
               />
             )}
           </TabsContent>
@@ -153,3 +175,24 @@ export default function UserLeaderboard() {
     </Card>
   );
 }
+
+const SkeletonLoader: React.FC = () => {
+  return (
+    <div className="flex items-center justify-between p-3 rounded-lg bg-gray-900 border border-gray-800 animate-pulse">
+      <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-800 text-sm font-semibold text-gray-700">
+          #
+        </div>
+        <div className="w-10 h-10 rounded-full bg-gray-800" />
+        <div>
+          <div className="w-24 h-4 bg-gray-800 rounded mb-1" />
+          <div className="w-20 h-3 bg-gray-800 rounded" />
+        </div>
+      </div>
+      <div className="text-right">
+        <div className="w-12 h-4 bg-gray-800 rounded mb-1" />
+        <div className="w-16 h-3 bg-gray-800 rounded" />
+      </div>
+    </div>
+  );
+};

@@ -11,6 +11,7 @@ import {
   encodedRedirect,
 } from "@/utils/response";
 import { uploadFileToStorage } from "@/lib/uploadFileToStorage";
+import { MyRating, User, UserBadge } from "@/types";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -498,18 +499,20 @@ export const updateUserProfileAction = async (formData: FormData) => {
 
   const name = formData.get("name") as string;
   const userId = formData.get("userId") as string;
-  const email = formData.get("email") as string;
   const avatar = formData.get("avatar") as File;
-  const instagram = formData.get("instagram") as string;
-  const twitter = formData.get("twitter") as string;
-  const youtube = formData.get("youtube") as string;
   const bio = formData.get("bio") as string;
+  const image = formData.get("image") as File;
+  const website = formData.get("website") as string;
+  const location = formData.get("location") as string;
+  const twitter = formData.get("twitter") as string;
+  const instagram = formData.get("instagram") as string;
+  const youtube = formData.get("youtube") as string;
 
   try {
     // Fetch current battler to get current image URLs
     const { data: currentUser, error: fetchError } = await supabase
       .from(DB_TABLES.USERS)
-      .select("avatar")
+      .select("avatar, image")
       .eq("id", userId)
       .single();
 
@@ -519,6 +522,7 @@ export const updateUserProfileAction = async (formData: FormData) => {
     }
 
     let avatarUrl = currentUser?.avatar;
+    let imageUrl = currentUser?.image;
 
     if (avatar && avatar.size > 0) {
       const avatarUpload = await uploadFileToStorage(
@@ -532,16 +536,30 @@ export const updateUserProfileAction = async (formData: FormData) => {
       avatarUrl = avatarUpload.publicUrl;
     }
 
+    if (image && image.size > 0) {
+      const imageUpload = await uploadFileToStorage(
+        supabase,
+        image,
+        "users/banners",
+        currentUser?.image,
+      );
+
+      if (imageUpload.error) return errorResponse(imageUpload.error);
+      imageUrl = imageUpload.publicUrl;
+    }
+
     const { error: updateError } = await supabase
       .from(DB_TABLES.USERS)
       .update({
-        name,
-        email,
-        instagram,
-        twitter,
-        youtube,
-        bio,
+        ...(name && { name }),
+        ...(bio && { bio }),
+        ...(website && { website }),
+        ...(location && { location }),
         ...(avatarUrl && { avatar: avatarUrl }),
+        ...(imageUrl && { image: imageUrl }),
+        ...(twitter && { twitter }),
+        ...(instagram && { instagram }),
+        ...(youtube && { youtube }),
       })
       .eq("id", userId);
 
@@ -556,3 +574,81 @@ export const updateUserProfileAction = async (formData: FormData) => {
     return errorResponse("An unexpected error occurred while updating profile");
   }
 };
+
+export async function getUserByUsername(username: string): Promise<User | null> {
+  // In a real app, this would query your database
+  const supabase = await protectedCreateClient();
+  const { data: userProfiles, error: userError } = await supabase
+    .from(DB_TABLES.USERS)
+    .select(
+      `
+      *,
+      user_permissions!user_id (
+        permission
+      )
+    `,
+    )
+    .eq("id", username);
+  // .eq("name", username);
+
+  if (userError) {
+    console.error("Error fetching user:", userError);
+    return null;
+  }
+
+  if (!userProfiles || userProfiles.length === 0) {
+    return null;
+  }
+
+  const user = userProfiles[0];
+  return user;
+}
+
+export async function getUserRatings(userId: string): Promise<MyRating[]> {
+  const supabase = await protectedCreateClient();
+  const { data } = await supabase.rpc(RPC_FUNCTIONS.ALL_MY_RATINGS_BATTLERS, {
+    p_user_id: userId,
+  });
+
+  if (!data) {
+    throw new Error("Failed to fetch user profiles");
+  }
+
+  return data.sort(
+    (a: { created_at: string }, b: { created_at: string }) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  );
+}
+
+export async function getUserBadges(userId: string): Promise<UserBadge[]> {
+  const supabase = await protectedCreateClient();
+
+  const { data: userBadges, error: userBadgesError } = await supabase
+    .from(DB_TABLES.BATTLER_BADGES)
+    .select(
+      `
+      id,
+      user_id,
+      battler_id,
+      badge_id,
+      badges (
+        id,
+        name,
+        description,
+        is_positive,
+        category
+      )
+    `,
+    )
+    .eq("user_id", userId);
+
+  if (userBadgesError) {
+    console.error("Error fetching user badges:", userBadgesError);
+    return [];
+  }
+
+  return userBadges.map((badge) => ({
+    ...badge,
+    badges: Array.isArray(badge.badges) ? badge.badges[0] : badge.badges,
+  }));
+}

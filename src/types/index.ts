@@ -62,11 +62,12 @@ export interface Attribute {
 }
 
 export interface CommunityStats {
-  totalRatings: number;
-  activeUsers: number;
-  recentBattles: number;
-  topBadges: { badge: string; count: number }[];
-  activityData: { date: string; ratings: number }[];
+  total_users: number;
+  total_ratings: number;
+  new_users_this_week: number;
+  new_ratings_this_week: number;
+  avg_rating: number;
+  active_users_last_30_days: number;
 }
 
 export interface AnalyticsData {
@@ -82,7 +83,8 @@ export interface User {
   name: string;
   email: string;
   user_permissions?: {
-    user_id: string;
+    user_id?: string;
+    permission?: string;
   }[];
   bio?: string;
   avatar: string;
@@ -92,6 +94,10 @@ export interface User {
   instagram: string;
   verified?: boolean;
   added_by?: string;
+  image?: string;
+  created_at?: string;
+  location?: string;
+  website?: string;
 }
 
 export interface Battlers {
@@ -112,6 +118,7 @@ export interface Battlers {
   users?: {
     added_by: string;
   };
+  created_at?: string;
 }
 
 export interface TagsOption {
@@ -168,9 +175,7 @@ export interface BattlerRating {
 export interface RoleWeight {
   role: RoleKey;
   role_id: number;
-  weight: number;
   displayName: string;
-  description: string;
   color: string;
   backgroundColor: string;
 }
@@ -183,30 +188,6 @@ export interface BattlerAttribute {
   location: string;
 }
 
-export interface LeaderboardCommunityStats {
-  totalUsers: number;
-  newUsersThisWeek: number;
-  totalRatings: number;
-  newRatingsThisWeek: number;
-  averageRating: number;
-  battlersCovered?: number;
-  consistency: number;
-  influence: number;
-  recentActivity: string;
-  contributionStreak: number;
-  topGenres: string[];
-  favoriteRappers: string[];
-  activeUsers: number;
-  roleBreakdown: {
-    role: string;
-    percentage: number;
-  }[];
-  ratingDistribution: {
-    range: string;
-    percentage: number;
-  }[];
-}
-
 export interface TopContributor {
   userId: string;
   username: string;
@@ -215,17 +196,6 @@ export interface TopContributor {
   contribution: string;
   score: number;
   description: string;
-}
-
-export interface LeaderboardEntry {
-  userId: string;
-  username: string;
-  displayName: string;
-  profileImage?: string;
-  totalRatings: number;
-  consistency: number;
-  influence: number;
-  rank: number;
 }
 
 export type CommunityStatCards = {
@@ -289,7 +259,7 @@ export type TopBadges = {
   times_assigned: number;
 };
 
-export type RatingDistribution = {
+export type RatingCommunityDistribution = {
   bucket: string;
   rating_count: number;
 };
@@ -310,3 +280,88 @@ export type MyRating = {
   average_score: number;
   created_at: string;
 };
+
+export interface UserBadge {
+  id: string;
+  user_id: string;
+  battler_id: string;
+  badge_id: string;
+  badges: Badge;
+}
+
+export interface VideoStatistics {
+  viewCount?: string;
+  likeCount?: string;
+  commentCount?: string;
+}
+
+export interface YoutubeSearchResponse {
+  items: {
+    id: { videoId: string };
+    snippet: {
+      title: string;
+      description: string;
+      publishedAt: string;
+      thumbnails: { high: { url: string } };
+    };
+  }[];
+}
+
+export interface YoutubeVideoStatsResponse {
+  items: {
+    id: string;
+    statistics: VideoStatistics;
+  }[];
+}
+
+export interface RatingDistribution {
+  bucket: string;
+  percentage: number;
+  count: number;
+}
+
+export interface ActiveRolesByRatings {
+  role_id: number;
+  rating_count: number;
+  percentage: number;
+}
+
+export interface TopRaterBattler {
+  user_id?: string;
+  avatar?: string;
+  name?: string;
+  battlers_rated: number;
+}
+
+export interface MostConsistentUsers {
+  user_id: string;
+  name: string;
+  avatar: string;
+  ratings_given: number;
+  average_rating: number;
+  ratting_stddev: number;
+}
+
+export interface MostInfluentialUsers {
+  user_id: string;
+  name: string;
+  avatar: string;
+  ratings_given: number;
+  avg_diff_from_community: number;
+}
+
+export interface MostAccurateUsers {
+  user_id?: string;
+  rating_stddev: number;
+  avg_diff_from_community: number;
+  accuracy_score: number;
+  name: string;
+}
+
+export interface FilteredData {
+  name: string;
+  avatar: string;
+  ratings_given: number;
+  battlers_rated: number;
+  accuracy_score: number;
+}

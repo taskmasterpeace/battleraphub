@@ -19,12 +19,14 @@ type HomeContextType = {
   communityStats: CommunityStatCards | null;
   ratingsOverTimeData: AvgRatingsOverTime[];
   topBattlersUnweightedData: TopBattlersUnweighted[];
+  topBattlersWeightedData: TopBattlersUnweighted[];
   recentBattlerLoading: boolean;
   mostValuedAttributesLoading: boolean;
   mostAssignBadgesLoading: boolean;
   communityStatsLoading: boolean;
   avgRatingOverTimeLoading: boolean;
   battlerUnweightedLoading: boolean;
+  battlerWeightedLoading: boolean;
 };
 
 const HomeContext = createContext<HomeContextType>({
@@ -34,12 +36,14 @@ const HomeContext = createContext<HomeContextType>({
   communityStats: null,
   ratingsOverTimeData: [],
   topBattlersUnweightedData: [],
+  topBattlersWeightedData: [],
   recentBattlerLoading: false,
   mostValuedAttributesLoading: false,
   mostAssignBadgesLoading: false,
   communityStatsLoading: false,
   avgRatingOverTimeLoading: false,
   battlerUnweightedLoading: false,
+  battlerWeightedLoading: false,
 });
 
 export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -51,12 +55,16 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
   const [topBattlersUnweightedData, setTopBattlersUnweightedData] = useState<
     TopBattlersUnweighted[]
   >([]);
+  const [topBattlersWeightedData, setTopBattlersWeightedData] = useState<TopBattlersUnweighted[]>(
+    [],
+  );
   const [recentBattlerLoading, setRecentBattlerLoading] = useState<boolean>(false);
   const [mostValuedAttributesLoading, setMostValuedAttributesLoading] = useState<boolean>(false);
   const [mostAssignBadgesLoading, setMostAssignBadgesLoading] = useState<boolean>(false);
   const [communityStatsLoading, setCommunityStatsLoading] = useState<boolean>(false);
   const [avgRatingOverTimeLoading, setAvgRatingOverTimeLoading] = useState<boolean>(false);
   const [battlerUnweightedLoading, setBattlerUnweightedLoading] = useState<boolean>(false);
+  const [battlerWeightedLoading, setBattlerWeightedLoading] = useState<boolean>(false);
   // Fetch recent battlers
   const fetchRecentBattlers = async () => {
     setRecentBattlerLoading(true);
@@ -149,7 +157,7 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  //Fetch top battlers
+  //Fetch top battlers unweighted
   const fetchTopBattlersUnweighted = async () => {
     setBattlerUnweightedLoading(true);
     try {
@@ -164,9 +172,30 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
 
       setTopBattlersUnweightedData(data || []);
     } catch (error) {
-      console.error("Error fetching top battlers:", error);
+      console.error("Error fetching top battlers unweighted data:", error);
     } finally {
       setBattlerUnweightedLoading(false);
+    }
+  };
+
+  //Fetch top battlers weighted
+  const fetchTopBattlersWeighted = async () => {
+    setBattlerWeightedLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.TOP_BATTLER_WEIGHTED)
+        .select("*");
+
+      if (error) {
+        console.error("Error fetching top battlers weighted data:", error);
+        return;
+      }
+
+      setTopBattlersWeightedData(data || []);
+    } catch (error) {
+      console.error("Error fetching top battlers weighted:", error);
+    } finally {
+      setBattlerWeightedLoading(false);
     }
   };
 
@@ -177,6 +206,7 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
     fetchCommunityStats();
     fetchAvgRatingsOverTime();
     fetchTopBattlersUnweighted();
+    fetchTopBattlersWeighted();
   }, []);
 
   return (
@@ -192,8 +222,10 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
         communityStatsLoading,
         avgRatingOverTimeLoading,
         battlerUnweightedLoading,
+        battlerWeightedLoading,
         ratingsOverTimeData,
         topBattlersUnweightedData,
+        topBattlersWeightedData,
       }}
     >
       {children}

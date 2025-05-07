@@ -52,4 +52,11 @@ export interface Video {
   videoId: string;
   thumbnail: string;
   order: number;
+  channelId?: string;
+  id: string;
+  description?: string;
+  publishedAt?: string;
+  views?: number;
+  likes?: number;
+  comments?: number;
 }

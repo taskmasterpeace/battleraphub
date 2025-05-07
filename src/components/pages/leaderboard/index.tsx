@@ -48,7 +48,7 @@ const LeaderBoard = () => {
               <CardDescription>Users who have rated the most battlers</CardDescription>
             </CardHeader>
             <CardContent>
-              <UserLeaderboard />
+              <UserLeaderboard tabType="most-ratings" />
             </CardContent>
           </Card>
         </TabsContent>
@@ -62,7 +62,7 @@ const LeaderBoard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <UserLeaderboard />
+              <UserLeaderboard tabType="most-accurate" />
             </CardContent>
           </Card>
         </TabsContent>
@@ -74,7 +74,7 @@ const LeaderBoard = () => {
               <CardDescription>Users with the most followers in the community</CardDescription>
             </CardHeader>
             <CardContent>
-              <UserLeaderboard />
+              <UserLeaderboard tabType="most-followed" />
             </CardContent>
           </Card>
         </TabsContent>

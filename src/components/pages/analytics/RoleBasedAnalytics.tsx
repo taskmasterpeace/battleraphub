@@ -20,14 +20,17 @@ import {
 } from "@/components/ui/chart";
 import Link from "next/link";
 import { BattlerAttribute, Attribute } from "@/types";
-import { categories, defaultRoleWeights } from "@/__mocks__/analytics";
+import { defaultRoleWeights } from "@/__mocks__/analytics";
 import { topBattlerByRatingAction } from "@/app/actions";
 import { Loader, CircleUser } from "lucide-react";
 import Image from "next/image";
+import { CATEGORY_TYPES } from "@/config";
 
 interface RoleBasedAnalyticsProps {
   attributeData: Attribute[];
 }
+
+const categories = Object.values(CATEGORY_TYPES);
 
 export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalyticsProps) {
   const [selectedRole, setSelectedRole] = useState<number>(4);
