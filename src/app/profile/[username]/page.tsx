@@ -1,11 +1,14 @@
 import { notFound } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, User } from "lucide-react";
+import { Trophy, User, Video, Youtube } from "lucide-react";
 import UserProfileHeader from "@/components/pages/profile/UserProfileHeader";
 import UserRatingsSection from "@/components/pages/profile/UserRatingsSection";
 import UserBadgesSection from "@/components/pages/profile/UserBadgesSection";
 import SocialLinksSection from "@/components/pages/profile/SocialLinksSection";
 import { getUserByUsername } from "@/app/actions";
+import YouTubeVideoSection from "@/components/pages/profile/YoutubeVideoSection";
+import { ROLE } from "@/config";
+import MediaContentSection from "@/components/pages/profile/MediaContentSection";
 
 type UserProfileParams = Promise<{ username: string }>;
 
@@ -17,11 +20,27 @@ export default async function UserProfilePage({ params }: { params: UserProfileP
     notFound();
   }
 
+  const isMediaUser = userDetails.role_id === ROLE.MEDIA;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <UserProfileHeader user={userDetails} />
       <Tabs defaultValue="about" className="mt-12">
-        <TabsList className="mb-6 bg-gray-900 border border-gray-800">
+        <TabsList className="mb-6">
+          {isMediaUser && (
+            <>
+              <TabsTrigger value="videos">
+                <Youtube className="h-4 w-4 mr-2" />
+                YouTube Videos
+              </TabsTrigger>
+
+              <TabsTrigger value="content">
+                <Video className="h-4 w-4 mr-2" />
+                Media Content
+              </TabsTrigger>
+            </>
+          )}
+
           <TabsTrigger value="ratings">
             <Trophy className="h-4 w-4 mr-2" />
             Ratings
@@ -38,6 +57,18 @@ export default async function UserProfilePage({ params }: { params: UserProfileP
           </TabsTrigger>
         </TabsList>
 
+        {isMediaUser && (
+          <>
+            <TabsContent value="videos">
+              <YouTubeVideoSection youtubeHandleUrl={userDetails?.youtube} />
+            </TabsContent>
+
+            <TabsContent value="content">
+              <MediaContentSection userId={userDetails.id} username={username} />
+            </TabsContent>
+          </>
+        )}
+
         <TabsContent value="ratings">
           <UserRatingsSection userId={userDetails.id} />
         </TabsContent>
@@ -49,9 +80,9 @@ export default async function UserProfilePage({ params }: { params: UserProfileP
         <TabsContent value="about">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2 space-y-6">
-              <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+              <div className="bg-background rounded-lg p-6 border border-border">
                 <h3 className="text-xl font-semibold mb-4">About</h3>
-                <p className="text-gray-300">{userDetails.bio || "No bio provided."}</p>
+                <p className="text-muted-foreground">{userDetails.bio || "No bio provided."}</p>
               </div>
             </div>
 

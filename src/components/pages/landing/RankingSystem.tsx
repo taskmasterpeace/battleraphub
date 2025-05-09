@@ -68,13 +68,13 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-20 bg-gray-800 animate-pulse rounded-md"></div>
+                <div key={i} className="h-20 bg-muted animate-pulse rounded-md"></div>
               ))}
             </div>
           ) : (
             <div className="space-y-4">
               {battlers.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
+                <div className="text-center py-8 text-muted-foreground">
                   No battlers match your current filters
                 </div>
               ) : (
@@ -84,8 +84,8 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
                     href={`/battlers/${battler.battler_id}`}
                     className="block"
                   >
-                    <div className="flex items-center gap-4 p-4 bg-gray-900 rounded-lg border border-gray-800 hover:border-blue-500 transition-all">
-                      <div className="flex-shrink-0 w-8 text-center font-bold text-lg text-gray-400">
+                    <div className="flex items-center gap-4 p-4 bg-background rounded-lg border border-border hover:border-blue-500 transition-all">
+                      <div className="flex-shrink-0 w-8 text-center font-bold text-lg text-muted-foreground">
                         #{index + 1}
                       </div>
                       <div className="relative w-12 h-12 rounded-full overflow-hidden">
@@ -100,7 +100,7 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
                         <div className="flex flex-wrap items-center gap-2">
                           <h3 className="font-medium">{battler.name}</h3>
                         </div>
-                        <p className="text-sm text-gray-400">{battler.location}</p>
+                        <p className="text-sm text-muted-foreground">{battler.location}</p>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold">
@@ -108,7 +108,7 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
                             ? battler?.avg_rating?.toFixed(1)
                             : battler?.avg_rating?.toFixed(1)}
                         </div>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-muted-foreground">
                           {rankingType === RANKING_TYPE.WEIGHTED
                             ? "Weighted Rating"
                             : "Unweighted Rating"}
@@ -118,10 +118,10 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
                         <div
                           className={`flex items-center justify-center ${
                             battler.change && battler.change > 0
-                              ? "text-green-500"
+                              ? "text-success"
                               : battler.change && battler.change < 0
-                                ? "text-red-500"
-                                : "text-gray-400"
+                                ? "text-destructive"
+                                : "text-muted-foreground"
                           }`}
                         >
                           {battler.change && battler.change > 0 ? (
@@ -136,7 +136,7 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
                             {battler.change?.toFixed(1) || "0.0"}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-400">{battler.updated_at}</p>
+                        <p className="text-xs text-muted-foreground">{battler.updated_at}</p>
                       </div> */}
                     </div>
                   </Link>

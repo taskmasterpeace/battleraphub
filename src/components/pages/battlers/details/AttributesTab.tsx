@@ -216,7 +216,7 @@ export default function AttributesTab({
   return (
     <div>
       <Tabs defaultValue="writing">
-        <TabsList className="mb-6 bg-gray-900 border border-gray-800">
+        <TabsList className="mb-6">
           <TabsTrigger value="writing">Writing</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="personal">Personal</TabsTrigger>

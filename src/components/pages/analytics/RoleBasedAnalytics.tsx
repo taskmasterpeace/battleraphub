@@ -34,7 +34,7 @@ const categories = Object.values(CATEGORY_TYPES);
 
 export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalyticsProps) {
   const [selectedRole, setSelectedRole] = useState<number>(4);
-  const [selectedCategory, setSelectedCategory] = useState<string>("Writing");
+  const [selectedCategory, setSelectedCategory] = useState<string>("writing");
   const [selectedAttribute, setSelectedAttribute] = useState<number | string>("All");
   const [topBattlers, setTopBattlers] = useState<BattlerAttribute[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -161,13 +161,12 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
                       type="category"
                       width={150}
                       stroke="#9CA3AF"
-                      tick={{ fill: "#E5E7EB" }}
-                      className="text-xs"
+                      className="text-sm"
                     />
                     <Tooltip
                       content={({ payload, label }) => (
-                        <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
-                          <p className="text-sm text-white">{`${label} : ${typeof payload?.[0]?.value === "number" ? payload[0].value.toFixed(2) : payload?.[0]?.value}`}</p>
+                        <div className="bg-muted text-foreground rounded-md p-3">
+                          <p className="text-sm">{`${label} : ${typeof payload?.[0]?.value === "number" ? payload[0].value.toFixed(2) : payload?.[0]?.value}`}</p>
                         </div>
                       )}
                     />
@@ -187,7 +186,7 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
                     href={`/battlers/${battler.battler_id}`}
                     className="block"
                   >
-                    <Card className="hover:border-purple-500 transition-colors">
+                    <Card className="hover:border-primary transition-colors">
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                           <div className="relative w-12 h-12 rounded-full overflow-hidden">
@@ -204,7 +203,7 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
                           </div>
                           <div className="flex-1">
                             <h3 className="font-medium">{battler?.name}</h3>
-                            <p className="text-sm text-gray-400">{battler?.location}</p>
+                            <p className="text-sm text-muted-foreground">{battler?.location}</p>
                           </div>
                           <div
                             className={`px-3 py-2 rounded-full bg-${getRoleColor(selectedRole)}-900/30 text-${getRoleColor(selectedRole)}-400 font-bold`}

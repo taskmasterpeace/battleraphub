@@ -25,11 +25,18 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
     const badges = [];
 
     if (user.role_id === ROLE.ADMIN)
-      badges.push({ label: "Admin", color: "bg-red-900/30 text-red-400 border-red-700" });
+      badges.push({
+        label: "Admin",
+        color:
+          "bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive",
+      });
     if (user?.role_id === ROLE.MEDIA)
-      badges.push({ label: "Media", color: "bg-purple-900/30 text-purple-400 border-purple-700" });
+      badges.push({ label: "Media", color: "bg-primary/30 text-purple-400 border-purple-700" });
     if (user?.role_id === ROLE.BATTLE)
-      badges.push({ label: "Battler", color: "bg-green-900/30 text-green-400 border-green-700" });
+      badges.push({
+        label: "Battler",
+        color: "bg-success-foreground dark:bg-success/20 text-success border-success",
+      });
     if (user.role_id === ROLE.LEAGUE_OWNER_INVESTOR)
       badges.push({
         label: "League Owner",
@@ -52,14 +59,14 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
           className="object-cover"
           unoptimized
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent"></div>
       </div>
 
       {/* Profile info */}
       <div className="relative -mt-20 px-4 md:px-8">
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* Avatar */}
-          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-gray-900 relative">
+          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-border relative">
             <Image
               src={user.avatar || "/placeholder.svg?height=400&width=400"}
               alt={user.name}
@@ -73,7 +80,7 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
           <div className="flex-1">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold">{user.name}</h1>
+                <h1 className="text-3xl font-bold text-white">{user.name}</h1>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {getRoleBadges().map((badge, index) => (
                     <Badge key={index} className={badge.color}>
@@ -85,7 +92,7 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
                   )}
                 </div>
 
-                <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
+                <div className="flex flex-wrap gap-4 mt-3 text-sm text-muted-foreground">
                   {user.location && (
                     <div className="flex items-center">
                       <MapPin className="w-4 h-4 mr-1" />
@@ -103,7 +110,7 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
                       href={user.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center hover:text-gray-300"
+                      className="flex items-center hover:text-muted-foreground"
                     >
                       <ExternalLink className="w-4 h-4 mr-1" />
                       Website

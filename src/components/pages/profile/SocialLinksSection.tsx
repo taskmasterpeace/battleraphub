@@ -80,7 +80,7 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
   };
 
   return (
-    <div className="bg-gray-900 rounded-lg p-6 border border-gray-800">
+    <div className="bg-background rounded-lg p-6 border border-border">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-semibold">Social Links</h3>
         {isOwnProfile && !isEditing && (
@@ -102,12 +102,12 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center">
-                      <Youtube className="w-4 h-4 mr-2 text-red-500" />
+                      <Youtube className="w-4 h-4 mr-2 text-destructive" />
                       Youtube
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className="text-sm md:text-base bg-gray-800 border-gray-700"
+                        className="text-sm md:text-base bg-background border-border"
                         placeholder="https://youtube.com/@yourchannel"
                         {...field}
                       />
@@ -130,7 +130,7 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className="text-sm md:text-base bg-gray-800 border-gray-700"
+                        className="text-sm md:text-base bg-background border-border"
                         placeholder="https://twitter.com/yourusername"
                         {...field}
                       />
@@ -153,7 +153,7 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className="text-sm md:text-base bg-gray-800 border-gray-700"
+                        className="text-sm md:text-base bg-background border-border"
                         placeholder="https://instagram.com/yourusername"
                         {...field}
                       />
@@ -171,12 +171,12 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center">
-                      <LinkIcon className="w-4 h-4 mr-2 text-gray-400" />
+                      <LinkIcon className="w-4 h-4 mr-2 text-muted-foreground" />
                       Website
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-gray-800 border-gray-700 text-sm md:text-base"
+                        className="bg-background border-border text-sm md:text-base"
                         placeholder="https://yourwebsite.com"
                         {...field}
                       />
@@ -212,14 +212,14 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
               href={watch("youtube")}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center text-gray-300 hover:text-red-400 transition-colors"
+              className="flex items-center text-muted-foreground hover:text-destructive transition-colors"
             >
-              <Youtube className="w-5 h-5 mr-3 text-red-500" />
+              <Youtube className="w-5 h-5 mr-3 text-destructive" />
               YouTube Channel
             </a>
           ) : isOwnProfile ? (
-            <div className="flex items-center text-gray-500">
-              <Youtube className="w-5 h-5 mr-3 text-gray-500" />
+            <div className="flex items-center text-muted-foreground">
+              <Youtube className="w-5 h-5 mr-3 text-muted-foreground" />
               Add your YouTube channel
             </div>
           ) : null}
@@ -228,14 +228,14 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
               href={watch("twitter")}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center text-gray-300 hover:text-blue-400 transition-colors"
+              className="flex items-center text-muted-foreground hover:text-blue-400 transition-colors"
             >
               <Twitter className="w-5 h-5 mr-3 text-blue-400" />
               Twitter
             </a>
           ) : isOwnProfile ? (
-            <div className="flex items-center text-gray-500">
-              <Twitter className="w-5 h-5 mr-3 text-gray-500" />
+            <div className="flex items-center text-muted-foreground">
+              <Twitter className="w-5 h-5 mr-3 text-muted-foreground" />
               Add your Twitter
             </div>
           ) : null}
@@ -244,14 +244,14 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
               href={watch("instagram")}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center text-gray-300 hover:text-pink-400 transition-colors"
+              className="flex items-center text-muted-foreground hover:text-pink-400 transition-colors"
             >
               <Instagram className="w-5 h-5 mr-3 text-pink-500" />
               Instagram
             </a>
           ) : isOwnProfile ? (
-            <div className="flex items-center text-gray-500">
-              <Instagram className="w-5 h-5 mr-3 text-gray-500" />
+            <div className="flex items-center text-muted-foreground">
+              <Instagram className="w-5 h-5 mr-3 text-muted-foreground" />
               Add your Instagram
             </div>
           ) : null}
@@ -260,14 +260,14 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
               href={watch("website")}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center text-gray-300 hover:text-gray-100 transition-colors"
+              className="flex items-center text-muted-foreground hover:text-muted-foreground transition-colors"
             >
-              <LinkIcon className="w-5 h-5 mr-3 text-gray-400" />
+              <LinkIcon className="w-5 h-5 mr-3 text-muted-foreground" />
               Website
             </a>
           ) : isOwnProfile ? (
-            <div className="flex items-center text-gray-500">
-              <LinkIcon className="w-5 h-5 mr-3 text-gray-500" />
+            <div className="flex items-center text-muted-foreground">
+              <LinkIcon className="w-5 h-5 mr-3 text-muted-foreground" />
               Add your website
             </div>
           ) : null}
@@ -275,7 +275,9 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
             !watch("twitter") &&
             !watch("instagram") &&
             !watch("website") &&
-            !isOwnProfile && <p className="text-gray-500 italic">No social links provided</p>}{" "}
+            !isOwnProfile && (
+              <p className="text-muted-foreground italic">No social links provided</p>
+            )}{" "}
         </div>
       )}
     </div>

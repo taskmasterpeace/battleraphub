@@ -32,18 +32,18 @@ export default function TopContributorCards() {
         {[...Array(3)].map((_, i) => (
           <Card key={i} className="animate-pulse">
             <CardHeader className="pb-2">
-              <div className="h-6 bg-gray-800 rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-gray-800 rounded w-1/2"></div>
+              <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-gray-800"></div>
+                <div className="w-16 h-16 rounded-full bg-muted"></div>
                 <div className="space-y-2">
-                  <div className="h-5 bg-gray-800 rounded w-24"></div>
-                  <div className="h-4 bg-gray-800 rounded w-20"></div>
+                  <div className="h-5 bg-muted rounded w-24"></div>
+                  <div className="h-4 bg-muted rounded w-20"></div>
                 </div>
               </div>
-              <div className="h-4 bg-gray-800 rounded w-full mt-4"></div>
+              <div className="h-4 bg-muted rounded w-full mt-4"></div>
             </CardContent>
           </Card>
         ))}
@@ -54,7 +54,7 @@ export default function TopContributorCards() {
   const getIcon = (index: number) => {
     const icons = [
       <BarChart2 key="chart" className="h-5 w-5 text-blue-500" />,
-      <TrendingUp key="trend" className="h-5 w-5 text-green-500" />,
+      <TrendingUp key="trend" className="h-5 w-5 text-success" />,
       <Award key="award" className="h-5 w-5 text-purple-500" />,
     ];
     return icons[index % icons.length];
@@ -88,10 +88,10 @@ export default function TopContributorCards() {
                 >
                   {contributor.displayName}
                 </Link>
-                <p className="text-sm text-gray-400">@{contributor.username}</p>
+                <p className="text-sm text-muted-foreground">@{contributor.username}</p>
                 <div className="mt-1 text-sm">
                   <span className="font-semibold">{contributor.score}</span>{" "}
-                  <span className="text-gray-400">
+                  <span className="text-muted-foreground">
                     {index === 0
                       ? "consistency score"
                       : index === 1

@@ -54,23 +54,23 @@ export default function UserBadgesSection({ userId }: UserBadgesSectionProps) {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="bg-gray-900 border-gray-800">
-              <CardContent className="p-0 h-48 animate-pulse"></CardContent>
+            <Card key={i}>
+              <CardContent className="p-0 h-48 bg-muted animate-pulse"></CardContent>
             </Card>
           ))}
         </div>
       ) : Object.keys(groupedBadges).length === 0 ? (
-        <div className="text-center py-12 text-gray-400">No badges yet</div>
+        <div className="text-center py-12 text-muted-foreground">No badges yet</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Object.entries(groupedBadges).map(([category, { positive, negative }]) => (
-            <Card key={category} className="bg-gray-900 border-gray-800">
+            <Card key={category}>
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold mb-4">{category}</h3>
 
                 {positive.length > 0 && (
                   <div className="mb-4">
-                    <h4 className="text-sm font-medium text-green-400 flex items-center mb-2">
+                    <h4 className="text-sm font-medium text-success flex items-center mb-2">
                       <CheckCircle className="w-4 h-4 mr-1" />
                       Positive
                     </h4>
@@ -78,7 +78,7 @@ export default function UserBadgesSection({ userId }: UserBadgesSectionProps) {
                       {positive.map((badge) => (
                         <Badge
                           key={badge.id}
-                          className="bg-green-900/30 text-green-400 border-green-700"
+                          className="bg-success-foreground dark:bg-success/20 text-success border-success"
                           title={badge.badges.description}
                         >
                           {badge.badges.name}
@@ -90,7 +90,7 @@ export default function UserBadgesSection({ userId }: UserBadgesSectionProps) {
 
                 {negative.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-red-400 flex items-center mb-2">
+                    <h4 className="text-sm font-medium text-destructive flex items-center mb-2">
                       <XCircle className="w-4 h-4 mr-1" />
                       Negative
                     </h4>
@@ -98,7 +98,7 @@ export default function UserBadgesSection({ userId }: UserBadgesSectionProps) {
                       {negative.map((badge) => (
                         <Badge
                           key={badge.id}
-                          className="bg-red-900/30 text-red-400 border-red-700"
+                          className="bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive"
                           title={badge.badges.description}
                         >
                           {badge.badges.name}

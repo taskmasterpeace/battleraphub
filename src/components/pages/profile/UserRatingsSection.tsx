@@ -44,20 +44,17 @@ export default function UserRatingsSection({ userId }: UserRatingsSectionProps) 
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="bg-gray-900 border-gray-800">
-              <CardContent className="p-0 h-32 animate-pulse"></CardContent>
+            <Card key={i}>
+              <CardContent className="p-0 h-32 bg-muted animate-pulse"></CardContent>
             </Card>
           ))}
         </div>
       ) : ratings.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">No ratings yet</div>
+        <div className="text-center py-12 text-muted-foreground">No ratings yet</div>
       ) : (
         <div className="space-y-4">
           {ratings.map((rating, index) => (
-            <Card
-              key={index}
-              className="bg-gray-900 border-gray-800 overflow-hidden hover:border-amber-500 transition-all"
-            >
+            <Card key={index} className="overflow-hidden hover:border-amber-500 transition-all">
               <CardContent className="p-4">
                 <div className="flex items-center gap-4">
                   <Link
@@ -82,7 +79,7 @@ export default function UserRatingsSection({ userId }: UserRatingsSectionProps) 
                         >
                           {rating.name}
                         </Link>
-                        <div className="flex items-center text-sm text-gray-400 mt-1">
+                        <div className="flex items-center text-sm text-muted-foreground mt-1">
                           <Calendar className="w-4 h-4 mr-1" />
                           {formatDate(rating.created_at)}
                         </div>
@@ -102,10 +99,10 @@ export default function UserRatingsSection({ userId }: UserRatingsSectionProps) 
                           index: number,
                         ) => {
                           const positiveCount = acc.filter((item) =>
-                            item.props.className.includes("bg-green-900"),
+                            item.props.className.includes("bg-success"),
                           ).length;
                           const negativeCount = acc.filter((item) =>
-                            item.props.className.includes("bg-red-900"),
+                            item.props.className.includes("bg-destructive"),
                           ).length;
 
                           if (
@@ -121,8 +118,8 @@ export default function UserRatingsSection({ userId }: UserRatingsSectionProps) 
                               key={index}
                               className={`${
                                 badge?.is_positive
-                                  ? "bg-green-900/30 text-green-400 border-green-700 hover:bg-green-900/30"
-                                  : "bg-red-900/30 text-red-400 border-red-700 hover:bg-red-900/30"
+                                  ? "bg-success-foreground dark:bg-success/20 text-success border-success"
+                                  : "bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive"
                               } flex items-center`}
                             >
                               {badge?.is_positive ? (

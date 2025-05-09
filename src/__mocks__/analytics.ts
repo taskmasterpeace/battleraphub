@@ -17,14 +17,14 @@ export const defaultRoleWeights: RoleWeight[] = [
     role_id: ROLE.MEDIA,
     displayName: ROLES_NAME[ROLE.MEDIA],
     color: "purple",
-    backgroundColor: "bg-purple-500",
+    backgroundColor: "bg-primary",
   },
   {
     role: "battler",
     role_id: ROLE.BATTLE,
     displayName: ROLES_NAME[ROLE.BATTLE],
     color: "green",
-    backgroundColor: "bg-green-500",
+    backgroundColor: "bg-success",
   },
   {
     role: "league_owner",
@@ -38,6 +38,6 @@ export const defaultRoleWeights: RoleWeight[] = [
     role_id: ROLE.ADMIN,
     displayName: ROLES_NAME[ROLE.ADMIN],
     color: "red",
-    backgroundColor: "bg-red-500",
+    backgroundColor: "bg-destructive",
   },
 ];

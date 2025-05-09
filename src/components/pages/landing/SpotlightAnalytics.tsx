@@ -94,14 +94,14 @@ export default function SpotlightAnalytics() {
         </div>
       </div>
 
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
               <CardTitle>{currentAnalytic.title}</CardTitle>
-              <p className="text-sm text-gray-400 mt-1">{currentAnalytic.description}</p>
+              <p className="text-sm text-muted-foreground mt-1">{currentAnalytic.description}</p>
             </div>
-            <Badge variant="outline" className="bg-gray-800">
+            <Badge variant="outline" className="">
               {activeIndex + 1} / {spotlightAnalytics.length}
             </Badge>
           </div>
@@ -119,8 +119,8 @@ export default function SpotlightAnalytics() {
                 <YAxis stroke="#9CA3AF" />
                 <Tooltip
                   content={({ payload, label }) => (
-                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
-                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    <div className="bg-muted text-foreground rounded-md p-3">
+                      <p className="text-sm">{`${label} : ${payload?.[0]?.value}`}</p>
                     </div>
                   )}
                 />

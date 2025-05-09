@@ -20,7 +20,7 @@ export default function RoleSelector({ role, onChange }: RoleSelectorProps) {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-400 mb-4">
+      <p className="text-sm text-muted-foreground mb-4">
         Choose your role. You can update this later in your profile.
       </p>
 
@@ -52,7 +52,7 @@ export default function RoleSelector({ role, onChange }: RoleSelectorProps) {
         <RoleCard
           title={ROLES_NAME[ROLE.BATTLE]}
           description="Active battle rapper"
-          icon={<Mic className="h-5 w-5 text-green-400" />}
+          icon={<Mic className="h-5 w-5 text-success" />}
           value={ROLE.BATTLE}
           color="green"
           requiresVerification
@@ -62,7 +62,7 @@ export default function RoleSelector({ role, onChange }: RoleSelectorProps) {
         <RoleCard
           title={ROLES_NAME[ROLE.LEAGUE_OWNER_INVESTOR]}
           description="Owner or operator of a battle rap league"
-          icon={<Award className="h-5 w-5 text-red-400" />}
+          icon={<Award className="h-5 w-5 text-destructive" />}
           value={ROLE.LEAGUE_OWNER_INVESTOR}
           color="red"
           requiresVerification
@@ -96,7 +96,7 @@ function RoleCard({
 }: RoleCardProps) {
   return (
     <Card
-      className={`border border-gray-800 hover:border-${color}-500/70 transition-colors cursor-pointer`}
+      className={`border border-border hover:border-${color}-500/70 transition-colors cursor-pointer`}
     >
       <CardContent className="p-4">
         <div className="flex items-start space-x-3">
@@ -128,7 +128,7 @@ function RoleCard({
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 ml-2 text-gray-400" />
+                        <Info className="h-4 w-4 ml-2 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent>
                         <p className="text-xs">Requires verification by admins</p>
@@ -138,7 +138,7 @@ function RoleCard({
                 )}
               </Label>
             </div>
-            <p className="text-sm text-gray-400 mt-1">{description}</p>
+            <p className="text-sm text-muted-foreground mt-1">{description}</p>
           </div>
         </div>
       </CardContent>

@@ -28,7 +28,7 @@ export default function HeroSection() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-950 via-gray-950/80 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent"></div>
         </div>
 
         {/* Content */}
@@ -43,7 +43,7 @@ export default function HeroSection() {
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-amber-500 to-amber-300 bg-clip-text text-transparent">
                 ALGORITHM INSTITUTE OF BATTLE RAP
               </h1>
-              <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 md:mb-8 max-w-xl">
+              <p className="text-base sm:text-lg md:text-xl text-foreground/70 mb-6 md:mb-8 max-w-xl">
                 The Premier Platform for Battle Rap Analysis. Rate, analyze, and discover the
                 metrics behind battle rap performances.
               </p>
@@ -75,7 +75,7 @@ export default function HeroSection() {
                 animate={{ opacity: isLoaded ? 1 : 0, scale: isLoaded ? 1 : 0.95 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                <div className="aspect-video w-full bg-black/30 backdrop-blur-sm rounded-lg border border-gray-800">
+                <div className="aspect-video w-full bg-background/30 backdrop-blur-sm rounded-lg border border-border">
                   <YouTubeFeature />
                 </div>
               </motion.div>
@@ -92,7 +92,7 @@ export default function HeroSection() {
           animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-          <div className="aspect-video w-full bg-black/30 backdrop-blur-sm rounded-lg border border-gray-800">
+          <div className="aspect-video w-full bg-background backdrop-blur-sm rounded-lg border border-border">
             <YouTubeFeature />
           </div>
         </motion.div>

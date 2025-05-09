@@ -20,7 +20,7 @@ const HomePage = () => {
       <HeroSection />
 
       {/* Highlighted Battler and Rankings side by side */}
-      <section className="py-6 md:py-8 border-t border-gray-800">
+      <section className="py-6 md:py-8 border-t border-border">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
           {/* Highlighted Battler */}
           <div className="flex flex-col h-full min-h-[600px]">
@@ -35,7 +35,7 @@ const HomePage = () => {
       </section>
 
       {/* Recent Battlers Section */}
-      <section className="py-6 md:py-8 border-t border-gray-800">
+      <section className="py-6 md:py-8 border-t border-border">
         <div className="flex justify-between items-center mb-6 md:mb-8">
           <h2 className="text-xl md:text-2xl font-bold">Recently Added Battlers</h2>
           <Button asChild variant="outline" size="sm" className="hidden sm:flex">
@@ -47,15 +47,15 @@ const HomePage = () => {
             ? Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 animate-pulse"
+                  className="bg-background rounded-lg overflow-hidden border border-border animate-pulse"
                 >
-                  <div className="aspect-square relative bg-gray-800" />
+                  <div className="aspect-square relative bg-background/80" />
                   <div className="p-3">
-                    <div className="h-4 bg-gray-700 rounded w-3/4 mb-2" />
-                    <div className="h-3 bg-gray-700 rounded w-1/2 mb-4" />
+                    <div className="h-4 bg-background/70 rounded w-3/4 mb-2" />
+                    <div className="h-3 bg-background/70 rounded w-1/2 mb-4" />
                     <div className="flex flex-wrap gap-1 mt-2">
                       {[...Array(3)].map((_, i) => (
-                        <span key={i} className="h-4 w-12 bg-gray-700 rounded" />
+                        <span key={i} className="h-4 w-12 bg-background/70 rounded" />
                       ))}
                     </div>
                   </div>
@@ -65,7 +65,7 @@ const HomePage = () => {
                 <Link
                   key={battler.id}
                   href={`/battlers/${battler.id}`}
-                  className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-amber-500 transition-all hover:shadow-lg hover:shadow-amber-900/20"
+                  className="bg-background rounded-lg overflow-hidden border border-border hover:border-amber-500 transition-all hover:shadow-lg hover:shadow-amber-900/20"
                 >
                   <div className="aspect-square relative">
                     <Image
@@ -77,7 +77,7 @@ const HomePage = () => {
                   </div>
                   <div className="p-3">
                     <h3 className="font-medium text-sm sm:text-base">{battler.name}</h3>
-                    <p className="text-xs sm:text-sm text-gray-400">{battler.location}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{battler.location}</p>
                   </div>
                 </Link>
               ))}
@@ -90,46 +90,44 @@ const HomePage = () => {
       </section>
 
       {/* Media Highlight Section */}
-      <section className="py-6 md:py-8 border-t border-gray-800">
+      <section className="py-6 md:py-8 border-t border-border">
         <MediaHighlight />
       </section>
 
       {/* Trending Battlers Section */}
-      <section className="py-6 md:py-8 border-t border-gray-800">
+      <section className="py-6 md:py-8 border-t border-border">
         <TrendingBattlers />
       </section>
 
       {/* Spotlight Analytics Section */}
-      <section className="py-6 md:py-8 border-t border-gray-800">
+      <section className="py-6 md:py-8 border-t border-border">
         <SpotlightAnalytics />
       </section>
 
       {/* Community Pulse Section */}
-      <section className="py-6 md:py-8 border-t border-gray-800">
+      <section className="py-6 md:py-8 border-t border-border">
         <CommunityPulse />
       </section>
 
       {/* Features Section */}
-      <section className="py-6 md:py-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 border-t border-gray-800">
-        <div className="bg-gray-900 p-4 md:p-6 rounded-lg border border-gray-800">
+      <section className="py-6 md:py-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 border-t border-border">
+        <div className="bg-background p-4 md:p-6 rounded-lg border border-border">
           <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 text-amber-400">
             Rate Performances
           </h3>
-          <p className="text-sm md:text-base text-gray-300">
+          <p className="text-sm md:text-base text-foreground/50">
             Rate battlers on writing, performance, and personal attributes with detailed metrics
           </p>
         </div>
-        <div className="bg-gray-900 p-4 md:p-6 rounded-lg border border-gray-800">
+        <div className="bg-background p-4 md:p-6 rounded-lg border border-border">
           <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 text-blue-400">Assign Badges</h3>
-          <p className="text-sm md:text-base text-gray-300">
+          <p className="text-sm md:text-base text-foreground/50">
             Highlight strengths and weaknesses with specific badges that define a battler's style
           </p>
         </div>
-        <div className="bg-gray-900 p-4 md:p-6 rounded-lg border border-gray-800">
-          <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 text-purple-400">
-            View Analytics
-          </h3>
-          <p className="text-sm md:text-base text-gray-300">
+        <div className="bg-background p-4 md:p-6 rounded-lg border border-border">
+          <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 text-primary">View Analytics</h3>
+          <p className="text-sm md:text-base text-foreground/50">
             Compare your ratings with community averages and track battler progress over time
           </p>
         </div>

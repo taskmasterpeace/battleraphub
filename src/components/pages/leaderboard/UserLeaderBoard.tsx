@@ -80,10 +80,10 @@ export default function UserLeaderboard({
             <CardDescription>Top contributors ranked by ratings and influence</CardDescription>
           </div>
           <div className="relative w-full md:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search users..."
-              className="pl-8 bg-gray-800 border-gray-700"
+              className="pl-8"
               value={searchQuery}
               onChange={handleSearch}
             />
@@ -92,7 +92,7 @@ export default function UserLeaderboard({
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="overall" className="space-y-4" onValueChange={setActiveTab}>
-          <TabsList className="bg-gray-900 border border-gray-800">
+          <TabsList>
             <TabsTrigger value="overall">
               <Trophy className="h-4 w-4 mr-2" />
               Overall
@@ -115,7 +115,7 @@ export default function UserLeaderboard({
                 ))}
               </div>
             ) : filteredData.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">No Data Found</div>
+              <div className="text-center py-8 text-foreground">No Data Found</div>
             ) : (
               <LeaderboardSection
                 data={filteredData}
@@ -143,7 +143,7 @@ export default function UserLeaderboard({
             {mostConsistentUsersLoading ? (
               <SkeletonLoader />
             ) : filteredData.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">No Data Found</div>
+              <div className="text-center py-8 text-muted-foreground">No Data Found</div>
             ) : (
               <LeaderboardSection
                 data={filteredData}
@@ -159,7 +159,7 @@ export default function UserLeaderboard({
             {mostInfluentialUsersLoading ? (
               <SkeletonLoader />
             ) : filteredData.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">No Data Found</div>
+              <div className="text-center py-8 text-muted-foreground">No Data Found</div>
             ) : (
               <LeaderboardSection
                 data={filteredData}
@@ -178,20 +178,20 @@ export default function UserLeaderboard({
 
 const SkeletonLoader: React.FC = () => {
   return (
-    <div className="flex items-center justify-between p-3 rounded-lg bg-gray-900 border border-gray-800 animate-pulse">
+    <div className="flex items-center justify-between p-3 rounded-lg bg-background border border-border animate-pulse">
       <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-800 text-sm font-semibold text-gray-700">
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-sm font-semibold text-muted-foreground">
           #
         </div>
-        <div className="w-10 h-10 rounded-full bg-gray-800" />
+        <div className="w-10 h-10 rounded-full bg-muted" />
         <div>
-          <div className="w-24 h-4 bg-gray-800 rounded mb-1" />
-          <div className="w-20 h-3 bg-gray-800 rounded" />
+          <div className="w-24 h-4 bg-muted rounded mb-1" />
+          <div className="w-20 h-3 bg-muted rounded" />
         </div>
       </div>
       <div className="text-right">
-        <div className="w-12 h-4 bg-gray-800 rounded mb-1" />
-        <div className="w-16 h-3 bg-gray-800 rounded" />
+        <div className="w-12 h-4 bg-muted rounded mb-1" />
+        <div className="w-16 h-3 bg-muted rounded" />
       </div>
     </div>
   );

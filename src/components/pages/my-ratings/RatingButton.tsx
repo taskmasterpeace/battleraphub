@@ -36,7 +36,7 @@ export function RatingButton({
         {...rest}
         className={`
           inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors
-          ${variant === "outline" ? "border border-gray-700 hover:bg-gray-800" : "bg-purple-600 hover:bg-purple-700 text-white"}
+          ${variant === "outline" ? "border border-border hover:bg-muted" : "bg-primary hover:bg-primary/50 text-foreground"}
           ${size === "sm" ? "h-8 px-3 text-xs" : "h-10 px-4 py-2"}
         `}
       >
@@ -50,7 +50,7 @@ export function RatingButton({
       {...(props as ButtonAsButtonProps)}
       className={`
         inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors
-        ${variant === "outline" ? "border border-gray-700 hover:bg-gray-800" : "bg-purple-600 hover:bg-purple-700 text-white"}
+        ${variant === "outline" ? "border border-border hover:bg-muted" : "bg-primary hover:bg-primary/50 text-foreground"}
         ${size === "sm" ? "h-8 px-3 text-xs" : "h-10 px-4 py-2"}
       `}
     >

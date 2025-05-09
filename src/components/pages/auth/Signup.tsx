@@ -85,12 +85,12 @@ export default function Signup() {
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
-            <div className="p-3 text-sm bg-red-900/30 border border-red-800 text-red-400 rounded-md">
+            <div className="p-3 text-sm bg-destructive/20 border border-destructive text-destructive rounded-md">
               {error}
             </div>
           )}
           {success && (
-            <div className="p-3 text-sm bg-green-900/30 border border-green-800 text-green-400 rounded-md">
+            <div className="p-3 text-sm bg-success/20 border border-success text-success rounded-md">
               {success}
             </div>
           )}
@@ -99,7 +99,7 @@ export default function Signup() {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-700"></span>
+              <span className="w-full border-t border-border"></span>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
@@ -139,7 +139,9 @@ export default function Signup() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <p className="text-xs text-gray-400">Password must be at least 8 characters long</p>
+              <p className="text-xs text-muted-foreground">
+                Password must be at least 8 characters long
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -162,7 +164,7 @@ export default function Signup() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <p className="text-center text-sm text-gray-400">
+          <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link href="/auth/login" className="text-purple-400 hover:text-purple-300">
               Login

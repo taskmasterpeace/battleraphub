@@ -17,7 +17,7 @@ export const rolesWeightData: rolesWeights[] = [
     formKey: "media",
     key: ROLES_NAME[ROLE.MEDIA],
     label: "Media",
-    color: "bg-purple-500",
+    color: "bg-primary",
     description: "Battle rap journalists, bloggers, and content creators",
   },
   {
@@ -26,7 +26,7 @@ export const rolesWeightData: rolesWeights[] = [
     formKey: "battler",
     key: ROLES_NAME[ROLE.BATTLE],
     label: "Battler",
-    color: "bg-green-500",
+    color: "bg-success",
     description: "Active battle rappers",
   },
   {
@@ -44,7 +44,7 @@ export const rolesWeightData: rolesWeights[] = [
     formKey: "admin",
     key: ROLES_NAME[ROLE.ADMIN],
     label: "Admin",
-    color: "bg-red-500",
+    color: "bg-destructive",
     description: "Platform administrators",
   },
 ];

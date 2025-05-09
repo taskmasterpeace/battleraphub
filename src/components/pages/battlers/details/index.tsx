@@ -90,13 +90,13 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
       </div>
 
       <div className="container mx-auto px-4 -mt-20 relative z-10">
         {/* Profile header */}
         <div className="flex flex-col md:flex-row gap-6 mb-8">
-          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-gray-900 relative">
+          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-border relative">
             <Image
               src={battlerData?.avatar || "/image/default-avatar-img.jpg"}
               alt={battlerData?.name || "NA"}
@@ -123,13 +123,13 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
                         <div className="flex flex-col items-start">
                           <Button
                             variant="ghost"
-                            className="flex justify-start items-center px-2 py-2 hover:bg-gray-800 rounded-md my-1 w-full"
+                            className="flex justify-start items-center px-2 py-2 hover:bg-background rounded-md my-1 w-full"
                           >
                             Battler
                           </Button>
                           <Button
                             variant="ghost"
-                            className="flex justify-start px-2 py-2 hover:bg-gray-800 rounded-md w-full"
+                            className="flex justify-start px-2 py-2 hover:bg-background rounded-md w-full"
                           >
                             Users
                           </Button>
@@ -140,36 +140,33 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
                   </PopoverContent>
                 </Popover>
 
-                <p className="text-gray-400 flex items-center mt-1">
+                <p className="text-muted-foreground flex items-center mt-1">
                   <MapPin className="h-4 w-4 mr-1" />
                   {battlerData?.location}
                 </p>
                 <div className="flex flex-wrap gap-1 mt-3">
                   {battlerData?.battler_tags?.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded"
-                    >
+                    <Badge key={index} className="text-xs px-2 py-0.5 rounded">
                       {tag?.tags?.name}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               </div>
 
-              <div className="bg-gray-900 rounded-lg p-4 text-center">
-                <p className="text-sm text-gray-400">Total Rating</p>
-                <p className="text-3xl font-bold text-purple-400">{totalRatings.toFixed(1)}</p>
+              <div className="bg-background rounded-lg p-4 text-center">
+                <p className="text-sm text-muted-foreground">Total Rating</p>
+                <p className="text-3xl font-bold text-primary">{totalRatings.toFixed(1)}</p>
               </div>
             </div>
 
             {/* Selected badges */}
             {(selectedBadges.positive.length > 0 || selectedBadges.negative.length > 0) && (
               <div className="mt-6">
-                <h3 className="text-sm font-medium text-gray-400 mb-3">Selected Badges</h3>
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">Selected Badges</h3>
                 <div className="flex flex-wrap gap-3">
                   {selectedBadges.positive.map((badge, index) => (
                     <div key={`${badge}-${index}`}>
-                      <Badge className="px-3 py-2 text-base bg-green-900/30 text-green-400 border-green-700 hover:bg-green-900/30 flex items-center">
+                      <Badge className="px-3 py-2 text-base bg-success-foreground dark:bg-success/20 text-success border-success hover:bg-success-foreground flex items-center">
                         <CheckCircle className="w-4 h-4 mr-2" />
                         {badge}
                       </Badge>
@@ -177,7 +174,7 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
                   ))}
                   {selectedBadges.negative.map((badge, index) => (
                     <div key={`${badge}-${index}`}>
-                      <Badge className="px-3 py-2 text-base bg-red-900/30 text-red-400 border-red-700 hover:bg-red-900/30 flex items-center">
+                      <Badge className="px-3 py-2 text-base bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive hover:bg-destructive-foreground flex items-center">
                         <XCircle className="w-4 h-4 mr-2" />
                         {badge}
                       </Badge>
@@ -191,7 +188,7 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
 
         {/* Tabs */}
         <Tabs defaultValue="attributes" className="mb-12">
-          <TabsList className="mb-8 bg-gray-900 border border-gray-800">
+          <TabsList className="mb-8">
             <TabsTrigger value="attributes">Attributes</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>

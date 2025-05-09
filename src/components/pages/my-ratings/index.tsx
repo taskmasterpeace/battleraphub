@@ -65,7 +65,7 @@ const MyRatings = () => {
       <h1 className="text-3xl font-bold mb-8">My Ratings</h1>
 
       <Tabs defaultValue="all">
-        <TabsList className="mb-6 bg-gray-900 border border-gray-800">
+        <TabsList className="mb-6">
           <TabsTrigger value="all">All Ratings</TabsTrigger>
           <TabsTrigger value="recent">Recent</TabsTrigger>
           <TabsTrigger value="highest">Highest Rated</TabsTrigger>
@@ -79,12 +79,12 @@ const MyRatings = () => {
                   <CardContent className="p-6">
                     <div className="flex flex-col md:flex-row gap-6">
                       <div className="flex items-center gap-4">
-                        <div className="relative w-16 h-16 rounded-full bg-gray-800 animate-pulse"></div>
+                        <div className="relative w-16 h-16 rounded-full bg-muted animate-pulse"></div>
                         <div className="flex-1">
-                          <div className="h-6 bg-gray-800 w-32 mb-2 animate-pulse"></div>
+                          <div className="h-6 bg-muted w-32 mb-2 animate-pulse"></div>
                           <div className="flex items-center gap-2 mt-1">
-                            <div className="h-4 bg-gray-800 w-20 animate-pulse"></div>
-                            <div className="h-3 bg-gray-800 w-32 animate-pulse"></div>
+                            <div className="h-4 bg-muted w-20 animate-pulse"></div>
+                            <div className="h-3 bg-muted w-32 animate-pulse"></div>
                           </div>
                         </div>
                       </div>
@@ -94,15 +94,15 @@ const MyRatings = () => {
                           {[...Array(3)].map((_, index) => (
                             <div
                               key={index}
-                              className="w-24 h-8 bg-gray-800 animate-pulse rounded-lg"
+                              className="w-24 h-8 bg-muted animate-pulse rounded-lg"
                             ></div>
                           ))}
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2 mt-4 md:mt-0">
-                        <div className="w-24 h-8 bg-gray-800 animate-pulse rounded-lg"></div>
-                        <div className="w-24 h-8 bg-gray-800 animate-pulse rounded-lg"></div>
+                        <div className="w-24 h-8 bg-muted animate-pulse rounded-lg"></div>
+                        <div className="w-24 h-8 bg-muted animate-pulse rounded-lg"></div>
                       </div>
                     </div>
                   </CardContent>
@@ -113,7 +113,7 @@ const MyRatings = () => {
             ) : (
               <Card>
                 <CardContent className="pt-6">
-                  <p className="text-center text-gray-400">No Data Found</p>
+                  <p className="text-center text-muted-foreground">No Data Found</p>
                 </CardContent>
               </Card>
             )}

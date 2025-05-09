@@ -35,10 +35,10 @@ export default function LeaderboardSection<T extends FilteredData>({
       {sortedData.map((entry, index) => (
         <div
           key={index}
-          className="flex items-center justify-between p-3 rounded-lg bg-gray-900 border border-gray-800"
+          className="flex items-center justify-between p-3 rounded-lg bg-background border border-border"
         >
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-800 text-sm font-semibold">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-sm font-semibold">
               {index + 1}
             </div>
             <div className="relative w-10 h-10 rounded-full overflow-hidden">
@@ -53,14 +53,14 @@ export default function LeaderboardSection<T extends FilteredData>({
               <Link href={`/profile/${entry.name}`} className="font-medium hover:underline">
                 {entry.name}
               </Link>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 @{entry.name.toLowerCase().split(" ").join("")}
               </p>
             </div>
           </div>
           <div className="text-right">
             <div className="font-semibold">{String(entry[valueKey])}</div>
-            <div className="text-sm text-gray-400">{valueLabel}</div>
+            <div className="text-sm text-muted-foreground">{valueLabel}</div>
           </div>
         </div>
       ))}{" "}

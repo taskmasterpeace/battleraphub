@@ -91,7 +91,7 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
       <h1 className="text-3xl font-bold mb-8">Analytics Dashboard</h1>
 
       <Tabs defaultValue="overview">
-        <TabsList className="mb-8 bg-gray-900 border border-gray-800">
+        <TabsList className="mb-8">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="role-based">Role-Based</TabsTrigger>
           <TabsTrigger value="battler">Battler Analysis</TabsTrigger>
@@ -114,8 +114,8 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <YAxis dataKey="name" type="category" width={70} className="text-[12px]" />
                 <Tooltip
                   content={({ payload, label }) => (
-                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
-                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    <div className="bg-muted text-foreground rounded-md p-3">
+                      <p className="text-sm">{`${label} : ${payload?.[0]?.value}`}</p>
                     </div>
                   )}
                 />
@@ -132,8 +132,8 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <YAxis domain={[0, 10]} />
                 <Tooltip
                   content={({ payload, label }) => (
-                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
-                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    <div className="bg-muted text-foreground rounded-md p-3">
+                      <p className="text-sm">{`${label} : ${payload?.[0]?.value}`}</p>
                     </div>
                   )}
                 />
@@ -150,11 +150,11 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" className="text-[12px]" />
-                <YAxis domain={[0, 10]} className="text-[10px]" />
+                <YAxis domain={[0, 10]} />
                 <Tooltip
                   content={({ payload, label }) => (
-                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
-                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    <div className="bg-muted text-foreground rounded-md p-3">
+                      <p className="text-sm">{`${label} : ${payload?.[0]?.value}`}</p>
                     </div>
                   )}
                 />
@@ -202,8 +202,8 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <YAxis domain={[0, 10]} />
                 <Tooltip
                   content={({ payload, label }) => (
-                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
-                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    <div className="bg-muted text-foreground rounded-md p-3">
+                      <p className="text-sm ">{`${label} : ${payload?.[0]?.value}`}</p>
                     </div>
                   )}
                 />
@@ -226,8 +226,8 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <YAxis dataKey="badge_name" type="category" className="text-[12px]" />
                 <Tooltip
                   content={({ payload, label }) => (
-                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
-                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    <div className="bg-muted text-foreground rounded-md p-3">
+                      <p className="text-sm">{`${label} : ${payload?.[0]?.value}`}</p>
                     </div>
                   )}
                 />
@@ -250,8 +250,8 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <YAxis dataKey="badge_name" type="category" className="text-[12px]" />
                 <Tooltip
                   content={({ payload, label }) => (
-                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
-                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    <div className="bg-muted text-foreground rounded-md p-3">
+                      <p className="text-sm">{`${label} : ${payload?.[0]?.value}`}</p>
                     </div>
                   )}
                 />
@@ -278,8 +278,8 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <YAxis />
                 <Tooltip
                   content={({ payload, label }) => (
-                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
-                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    <div className="bg-muted text-foreground rounded-md p-3">
+                      <p className="text-sm">{`${label} : ${payload?.[0]?.value}`}</p>
                     </div>
                   )}
                 />
@@ -301,8 +301,8 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <YAxis dataKey="attribute_name" type="category" className="text-[12px]" />
                 <Tooltip
                   content={({ payload, label }) => (
-                    <div className="bg-gray-700 border border-gray-400 rounded-md p-3">
-                      <p className="text-sm text-white">{`${label} : ${payload?.[0]?.value}`}</p>
+                    <div className="bg-muted text-foreground rounded-md p-3">
+                      <p className="text-sm">{`${label} : ${payload?.[0]?.value}`}</p>
                     </div>
                   )}
                 />

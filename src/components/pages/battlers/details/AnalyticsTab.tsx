@@ -137,7 +137,7 @@ export default function AnalyticsTab({ battlerData, attributeData }: AnalyticsTa
       </div>
 
       <Tabs defaultValue="my-ratings">
-        <TabsList className="mb-6 bg-gray-900 border border-gray-800">
+        <TabsList className="mb-6">
           <TabsTrigger value="my-ratings">My Ratings</TabsTrigger>
           <TabsTrigger value="community">Community Ratings</TabsTrigger>
           <TabsTrigger value="comparison">Comparison</TabsTrigger>

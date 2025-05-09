@@ -109,7 +109,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-gray-900 border-gray-800">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
@@ -146,7 +146,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                   )}
                 />
                 <Input type="hidden" name="currentImage" value={currentImage || ""} />
-                <div className="flex border border-gray-800 my-2 h-28 object-cover rounded-lg overflow-hidden relative justify-center md:justify-start">
+                <div className="flex border border-border my-2 h-28 object-cover rounded-lg overflow-hidden relative justify-center md:justify-start">
                   <div
                     className="cursor-pointer w-full h-full"
                     onClick={() => imageRef.current?.click()}
@@ -158,8 +158,8 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                       className="object-cover w-full h-full"
                       unoptimized
                     />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity">
-                      <div className="flex items-center justify-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                    <div className="absolute inset-0 flex items-center justify-center bg-background/50 opacity-0 hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-center gap-2 bg-background text-foreground px-4 py-2 rounded-md hover:bg-background">
                         <Camera className="w-4 h-4" />
                         Change Banner
                       </div>
@@ -197,7 +197,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                     )}
                   />
                   <Input type="hidden" name="currentAvatar" value={currentAvatar || ""} />
-                  <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-800 flex justify-center md:justify-start">
+                  <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-border flex justify-center md:justify-start">
                     <div className="cursor-pointer" onClick={() => avatarRef.current?.click()}>
                       <Image
                         src={profilePreview || currentAvatar || "/placeholder.svg"}
@@ -206,8 +206,8 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                         fill
                         unoptimized
                       />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity">
-                        <div className="flex items-center justify-center gap-2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700">
+                      <div className="absolute inset-0 flex items-center justify-center bg-background/50 opacity-0 hover:opacity-100 transition-opacity">
+                        <div className="flex items-center justify-center gap-2 bg-background text-foreground p-2 rounded-full hover:bg-background">
                           <Camera className="w-4 h-4" />
                         </div>
                       </div>
@@ -240,11 +240,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                         <FormItem>
                           <FormLabel>Location</FormLabel>
                           <FormControl>
-                            <Input
-                              className="bg-gray-800 border-gray-700 text-sm "
-                              placeholder="City, State"
-                              {...field}
-                            />
+                            <Input className="text-sm " placeholder="City, State" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -262,7 +258,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                           <FormLabel>Website</FormLabel>
                           <FormControl>
                             <Input
-                              className="bg-gray-800 border-gray-700 text-sm"
+                              className="text-sm"
                               placeholder="https://yourwebsite.com"
                               {...field}
                             />
@@ -285,7 +281,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                       <FormLabel>Bio</FormLabel>
                       <FormControl>
                         <Textarea
-                          className="bg-gray-800 border-gray-700 min-h-[100px] text-sm py-2"
+                          className="min-h-[100px] text-sm py-2"
                           rows={3}
                           placeholder="Tell us about yourself..."
                           {...field}
@@ -301,7 +297,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                 <Button
                   type="button"
                   variant="outline"
-                  className="text-white px-4 py-3 rounded-sm"
+                  className="text-foreground px-4 py-3 rounded-sm"
                   onClick={() => onOpenChange(false)}
                 >
                   <X className="w-4 h-4 mr-2" />

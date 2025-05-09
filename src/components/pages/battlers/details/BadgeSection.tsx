@@ -31,19 +31,19 @@ export default function BadgeSection({
   const getColorScheme = (isSelected: boolean) => {
     if (isPositive) {
       return isSelected
-        ? "bg-green-600/30 text-green-300 border-green-500 shadow-md shadow-green-900/30"
-        : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-green-900/20 hover:border-green-700";
+        ? "bg-success-foreground/20 dark:bg-success/20 text-success border-success hover:bg-success-foreground shadow-md shadow-success-900/30"
+        : "bg-background text-muted-foreground border-border hover:bg-success/50 hover:border-success";
     } else {
       return isSelected
-        ? "bg-red-600/30 text-red-300 border-red-500 shadow-md shadow-red-900/30"
-        : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-red-900/20 hover:border-red-700";
+        ? "bg-destructive-foreground/20 dark:bg-destructive/20 text-destructive border-destructive hover:bg-destructive-foreground shadow-md shadow-destructive-900/30"
+        : "bg-background text-muted-foreground border-border hover:bg-destructive/50 hover:border-destructive";
     }
   };
 
   return (
     <div>
       <h3
-        className={`text-lg font-semibold mb-4 flex items-center ${isPositive ? "text-green-500" : "text-red-500"}`}
+        className={`text-lg font-semibold mb-4 flex items-center ${isPositive ? "text-success" : "text-destructive"}`}
       >
         {isPositive ? (
           <CheckCircle className="w-5 h-5 mr-2" />
@@ -78,7 +78,7 @@ export default function BadgeSection({
                       {/* Show a preview of description on hover */}
                       <div>
                         <p
-                          className={`text-xs text-gray-400 line-clamp-2 transition-opacity duration-200 ${isHovered ? "opacity-100" : "opacity-0"}`}
+                          className={`text-xs text-muted-foreground line-clamp-2 transition-opacity duration-200 ${isHovered ? "opacity-100" : "opacity-0"}`}
                         >
                           {badgeItem.description}
                         </p>
@@ -88,7 +88,7 @@ export default function BadgeSection({
                       {isSelected && (
                         <div
                           className={`absolute -top-2 -right-2 rounded-full p-1 
-                            ${isPositive ? "bg-green-500" : "bg-red-500"}`}
+                            ${isPositive ? "bg-success" : "bg-destructive"}`}
                         >
                           {isPositive ? (
                             <CheckCircle className="w-4 h-4 text-white" />
