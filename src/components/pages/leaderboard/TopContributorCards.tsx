@@ -1,54 +1,69 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Award, TrendingUp, BarChart2 } from "lucide-react";
-import { TopContributor } from "@/types";
-import { topContributors } from "@/__mocks__/leaderboard";
+import { useLeaderboard } from "@/contexts/leaderboard.context";
+import { Contributor } from "@/types";
 
 export default function TopContributorCards() {
-  const [contributors, setContributors] = useState<TopContributor[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    mostConsistentUsers,
+    mostInfluentialUsers,
+    mostAccurateUsers,
+    mostConsistentUsersLoading,
+    mostInfluentialUsersLoading,
+    mostAccurateUsersLoading,
+  } = useLeaderboard();
 
-  useEffect(() => {
-    const fetchContributors = async () => {
-      try {
-        setContributors(topContributors);
-      } catch (error) {
-        console.error("Error fetching top contributors:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const highestRatedData = useMemo(
+    () => [
+      {
+        title: "Most Consistent Ratings",
+        description: "Provides highly consistent ratings across all battlers",
+        data: mostConsistentUsers.slice(0, 1),
+      },
+      {
+        title: "Most Active Reviewer",
+        description: "Highest number of active reviews in the past month",
+        data: mostAccurateUsers.slice(0, 1),
+      },
+      {
+        title: "Community Influencer",
+        description: "Ratings that most closely align with community consensus",
+        data: mostInfluentialUsers.slice(0, 1),
+      },
+    ],
+    [mostAccurateUsers, mostConsistentUsers, mostInfluentialUsers],
+  );
 
-    fetchContributors();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[...Array(3)].map((_, i) => (
-          <Card key={i} className="animate-pulse">
-            <CardHeader className="pb-2">
-              <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-muted rounded w-1/2"></div>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-muted"></div>
-                <div className="space-y-2">
-                  <div className="h-5 bg-muted rounded w-24"></div>
-                  <div className="h-4 bg-muted rounded w-20"></div>
-                </div>
+  if (mostConsistentUsersLoading || mostInfluentialUsersLoading || mostAccurateUsersLoading) {
+    return [...Array(3)].map((_, i) => (
+      <div key={i} className="grid grid-cols-1 mb-4 w-full">
+        <Card className="w-full animate-pulse">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <div className="h-4 bg-muted rounded w-32 animate-pulse"></div>
+            </CardTitle>
+            <CardDescription>
+              <div className="h-3 bg-muted rounded w-48 animate-pulse"></div>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <div className="relative w-16 h-16 rounded-full overflow-hidden bg-muted animate-pulse"></div>
+              <div>
+                <div className="h-4 bg-muted rounded w-24 animate-pulse mb-1"></div>
+                <div className="h-3 bg-muted rounded w-20 animate-pulse mb-2"></div>
+                <div className="h-3 bg-muted rounded w-28 animate-pulse"></div>
               </div>
-              <div className="h-4 bg-muted rounded w-full mt-4"></div>
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    );
+    ));
   }
 
   const getIcon = (index: number) => {
@@ -62,48 +77,61 @@ export default function TopContributorCards() {
 
   return (
     <div className="grid grid-cols-1 gap-4">
-      {contributors.map((contributor, index) => (
-        <Card key={contributor.userId}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2">
-              {getIcon(index)}
-              {contributor.contribution}
-            </CardTitle>
-            <CardDescription>{contributor.description}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden">
-                <Image
-                  src={contributor.profileImage || "/placeholder.svg"}
-                  alt={contributor.displayName}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div>
-                <Link
-                  href={`/profile/${contributor.username}`}
-                  className="font-medium text-lg hover:underline"
-                >
-                  {contributor.displayName}
-                </Link>
-                <p className="text-sm text-muted-foreground">@{contributor.username}</p>
-                <div className="mt-1 text-sm">
-                  <span className="font-semibold">{contributor.score}</span>{" "}
-                  <span className="text-muted-foreground">
-                    {index === 0
-                      ? "consistency score"
-                      : index === 1
-                        ? "ratings"
-                        : "influence score"}
-                  </span>
+      {highestRatedData.map((contributor: Contributor, index: number) => {
+        const userData = contributor.data[0];
+        if (!userData) return null;
+
+        return (
+          <Card key={`${contributor.title}-${userData.user_id}`}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                {getIcon(index)}
+                {contributor.title}
+              </CardTitle>
+              <CardDescription>{contributor.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4">
+                <div className="relative w-16 h-16 rounded-full overflow-hidden">
+                  <Image
+                    src={userData.avatar || "/placeholder.svg"}
+                    alt={userData.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <Link
+                    href={`/profile/${userData?.user_id}`}
+                    className="font-medium text-lg hover:underline"
+                  >
+                    {userData.name}
+                  </Link>
+                  <p className="text-sm text-muted-foreground">
+                    @{userData.name.split(" ").join("").toLowerCase()}
+                  </p>
+                  <div className="mt-1 text-sm">
+                    <span className="font-semibold">
+                      {index === 0
+                        ? userData.average_rating?.toFixed(2)
+                        : index === 1
+                          ? userData.accuracy_score?.toFixed(2)
+                          : userData.avg_diff_from_community?.toFixed(2)}
+                    </span>{" "}
+                    <span className="text-muted-foreground">
+                      {index === 0
+                        ? "consistency score"
+                        : index === 1
+                          ? "accuracy score"
+                          : "influence score"}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        );
+      })}{" "}
     </div>
   );
 }

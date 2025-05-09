@@ -42,8 +42,8 @@ export const socialMediaLinksSchema = z.object({
   twitter: z
     .string()
     .url("Invalid Platform X URL")
-    .startsWith("https://x.com/", "Must be a valid Twitter URL")
-    .or(z.string().startsWith("https://x.com/", "Must be a valid Twitter URL"))
+    .startsWith("https://x.com/", "Must be a valid X URL")
+    .or(z.string().startsWith("https://x.com/", "Must be a valid X URL"))
     .optional()
     .or(z.literal("")),
   youtube: z

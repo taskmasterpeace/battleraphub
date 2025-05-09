@@ -1,49 +1,45 @@
-## Analytics calculation
+# 📊 Overview Tab – Analytics Dashboard
 
-There are 3 criteria
-1. Writing
-2. Performance
-3. Personal
+The **Overview** tab gives a summary of the top-performing battlers and how users rate across categories over time.
 
-There are different attributes in each criteria where user can give their rating for battlers
-which is stored in **battler_rating** table
+---
 
-Schema of battler_rating
-```
-id
-user_id
-battler_id
-score
-prev_score
-attribute_id
-created_at
-updated_at
-```
+## 🥇 Top Rated Battlers
 
-Questions:
-What do we need to store?
+- **What’s shown:** Battlers ranked by their overall average rating.
+- **Display:** Horizontal bar chart.
+- **How it's calculated:**  
+  Average of all ratings received by a battler across three categories: writing, performance, personal.
 
-Battlers:
-total_rating - (Sum of all rating / maximum rating user can get) * 10
-each attribute rating - (Sum of attribute / maximum rating for this attribute) * 10
+### Example:
+Ratings:
+- Writing: 8, 9, 7
+- Performance: 8, 9
+- Personal: 7, 6, 8  
+**Average Rating** = (8 + 9 + 7 + 8 + 9 + 7 + 6 + 8) / 8 = **7.75**
 
-<!-- Total users
-Total ratings?
-Avg. of total rating
-Active users based on last 30 days - Based on how many unique user have given rating in last 30 days?
+---
 
-Most active user roles? -->
+## 📚 Category Averages
 
-Data format
+- **What’s shown:** Average rating given per category by all users.
+- **Display:** Vertical bar chart.
+- **How it's calculated:**  
+  All scores in each category are averaged.
 
-battler_analytics:
+### Example:
+Writing scores = 9, 8, 7, 6  
+**Category Average** = (9 + 8 + 7 + 6) / 4 = **7.5**
 
-battler_id
-score
-attribute_id - Do not use joins for getting attribute name
-type - (0 - attribute, 1 - total_rating)
+---
 
-Action:
-How, where and when we can calculate this metrics?
+## 📈 Rating Trends
 
-Cron job running every 6 hours - It will be PostgreSQL (supbase) cron jobs
+- **What’s shown:** Monthly trend of all community ratings.
+- **Display:** Line graph over time.
+- **How it's calculated:**  
+  All ratings given in a month are averaged to show changes over time.
+
+### Example:
+- April: 260 total points from 40 ratings → **6.5**
+- May: 420 total points from 60 ratings → **7.0**

@@ -11,7 +11,7 @@ import {
   encodedRedirect,
 } from "@/utils/response";
 import { uploadFileToStorage } from "@/lib/uploadFileToStorage";
-import { MyRating, User, UserBadge } from "@/types";
+import { MediaContent, MyRating, User, UserBadge } from "@/types";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -652,3 +652,148 @@ export async function getUserBadges(userId: string): Promise<UserBadge[]> {
     badges: Array.isArray(badge.badges) ? badge.badges[0] : badge.badges,
   }));
 }
+
+export const getUserContentAction = async (userId: string): Promise<MediaContent[]> => {
+  const supabase = await protectedCreateClient();
+  const { data: mediaContent, error } = await supabase
+    .from(DB_TABLES.MEDIA_CONTENT)
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching media content:", error);
+    return [];
+  }
+  return mediaContent || [];
+};
+
+export const addUserContentAction = async (formData: FormData) => {
+  const supabase = await protectedCreateClient();
+  const supabaseClient = await createClient();
+  try {
+    const { data: userData } = await supabaseClient.auth.getUser();
+    if (!userData?.user) return errorResponse("User is not authorized");
+
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const link = formData.get("link") as string;
+    const type = formData.get("type") as string;
+    const thumbnail_img = formData.get("thumbnail_img") as File;
+    const userId = formData.get("userId") as string;
+    const date = formData.get("date") as string;
+
+    if (!thumbnail_img?.name) return errorResponse("Thumbnail is required");
+
+    const thumbnailUpload = await uploadFileToStorage(
+      supabase,
+      thumbnail_img,
+      "users/media-content",
+    );
+
+    if (thumbnailUpload.error) return errorResponse(thumbnailUpload.error);
+
+    const { data: mediaContentData, error: insertError } = await supabase
+      .from(DB_TABLES.MEDIA_CONTENT)
+      .insert({
+        title,
+        description,
+        link,
+        type,
+        thumbnail_img: thumbnailUpload.publicUrl,
+        user_id: userId,
+        date,
+      })
+      .select("*");
+
+    if (insertError || !mediaContentData) {
+      console.error("Insert error:", insertError);
+      return errorResponse("Error while saving media content");
+    }
+
+    return successResponse("Media content saved successfully");
+  } catch (error) {
+    console.error("Unexpected error in Add Media Content:", error);
+    return errorResponse("An unexpected error occurred while creating media content.");
+  }
+};
+
+export const editMediaContentAction = async (formData: FormData) => {
+  const supabase = await protectedCreateClient();
+  const supabaseClient = await createClient();
+
+  const { data: userData } = await supabaseClient.auth.getUser();
+  if (!userData?.user) return errorResponse("User not authenticated");
+
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const link = formData.get("link") as string;
+  const type = formData.get("type") as string;
+  const thumbnail_img = formData.get("thumbnail_img") as File;
+  const date = formData.get("date") as string;
+  const contentId = formData.get("contentId") as string;
+
+  try {
+    // Fetch current Content to get current image URLs
+    const { data: currentContent } = await supabase
+      .from(DB_TABLES.MEDIA_CONTENT)
+      .select("thumbnail_img")
+      .eq("id", contentId)
+      .single();
+
+    let thumbnailUrl = currentContent?.thumbnail_img;
+
+    // Upload thumbnail if provided
+    if (thumbnail_img && thumbnail_img.size > 0) {
+      const thumbnailUpload = await uploadFileToStorage(
+        supabase,
+        thumbnail_img,
+        "users/media-content",
+        currentContent?.thumbnail_img,
+      );
+      if (thumbnailUpload.error) return errorResponse(thumbnailUpload.error);
+      thumbnailUrl = thumbnailUpload.publicUrl;
+    }
+
+    // Update content
+    const { error: updateError } = await supabase
+      .from(DB_TABLES.MEDIA_CONTENT)
+      .update({
+        title,
+        description,
+        link,
+        type,
+        ...(thumbnailUrl && { thumbnail_img: thumbnailUrl }),
+        ...(date && { date }),
+      })
+      .eq("id", contentId);
+
+    if (updateError) {
+      console.error("Update error:", updateError);
+      return errorResponse("Error updating media content");
+    }
+
+    return successResponse("Media content updated successfully");
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+    return errorResponse(errorMessage);
+  }
+};
+
+export const deleteContentAction = async (contentId: string) => {
+  const supabase = await protectedCreateClient();
+  try {
+    const { error: deleteError } = await supabase
+      .from(DB_TABLES.MEDIA_CONTENT)
+      .delete()
+      .eq("id", contentId);
+    if (deleteError) {
+      console.error("Error deleting content:", deleteError);
+      return errorResponse("Error deleting content");
+    }
+    return successResponse("Content deleted successfully");
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+    return errorResponse(errorMessage);
+  }
+};

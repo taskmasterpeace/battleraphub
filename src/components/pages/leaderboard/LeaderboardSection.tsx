@@ -50,7 +50,7 @@ export default function LeaderboardSection<T extends FilteredData>({
               />
             </div>
             <div>
-              <Link href={`/profile/${entry.name}`} className="font-medium hover:underline">
+              <Link href={`/profile/${entry.user_id}`} className="font-medium hover:underline">
                 {entry.name}
               </Link>
               <p className="text-sm text-muted-foreground">
