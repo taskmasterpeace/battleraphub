@@ -30,7 +30,7 @@ export default function TrendingBattlers() {
           ? Array(4)
               .fill(0)
               .map((_, index) => (
-                <Card key={index} className="bg-gray-900 border-gray-800 animate-pulse">
+                <Card key={index} className="bg-foreground border-border animate-pulse">
                   <CardContent className="p-4 h-64"></CardContent>
                 </Card>
               ))
@@ -45,7 +45,7 @@ export default function TrendingBattlers() {
                   href={`/battlers/${battler.battler_id}`}
                   className="group h-full"
                 >
-                  <Card className="bg-gray-900 border-gray-800 overflow-hidden hover:border-blue-500 transition-all hover:shadow-lg hover:shadow-blue-900/20 group-hover:transform group-hover:translate-y-[-5px] duration-300 h-full">
+                  <Card className="overflow-hidden hover:border-blue-500 transition-all hover:shadow-lg hover:shadow-blue-900/20 group-hover:transform group-hover:translate-y-[-5px] duration-300 h-full">
                     <CardContent className="p-0 h-full flex flex-col">
                       <div className="relative aspect-square">
                         <Image
@@ -55,14 +55,20 @@ export default function TrendingBattlers() {
                           className="object-cover w-full"
                         />
                         <div className="absolute top-2 right-2">
-                          <Badge className={"bg-green-900/60 text-green-400"}>+ 0.5</Badge>
+                          <Badge
+                            className={
+                              "bg-success/20 dark:bg-success/30 border-success dark:border-none text-success"
+                            }
+                          >
+                            + 0.5
+                          </Badge>
                         </div>
                       </div>
                       <div className="p-4 flex-1 flex flex-col">
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-medium text-lg">{battler.name}</h3>
-                            <p className="text-sm text-gray-400">{battler.location}</p>
+                            <p className="text-sm text-muted-foreground">{battler.location}</p>
                           </div>
                           <div className="flex items-center">
                             <Star className="w-4 h-4 text-blue-500 fill-blue-500 mr-1" />

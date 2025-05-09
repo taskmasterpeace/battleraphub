@@ -8,7 +8,7 @@ import {
   BattlerAnalytics,
   Battlers,
   MostValuedAttributes,
-  RatingDistribution,
+  RatingCommunityDistribution,
   TopBadges,
   TopBattlersUnweighted,
   TrendOverTimeByCategory,
@@ -25,7 +25,7 @@ type AnalyticsContextType = {
   trendOverTimeByCategory: TrendOverTimeByCategory[];
   averageRatingByCategoryData: AverageRatingByCategory[];
   ratingsOverTimeData: AvgRatingsOverTime[];
-  ratingDistributionData: RatingDistribution[];
+  ratingDistributionData: RatingCommunityDistribution[];
   mostValuesAttributes: MostValuedAttributes[];
   totalRatings: number;
   fetchBattlerAnalytics: (store?: boolean) => Promise<BattlerAnalytics[]>;
@@ -62,7 +62,9 @@ export const AnalyticsProvider = ({ children }: { children: React.ReactNode }) =
     AverageRatingByCategory[]
   >([]);
   const [ratingsOverTimeData, setRatingsOverTimeData] = useState<AvgRatingsOverTime[]>([]);
-  const [ratingDistributionData, setRatingDistributionData] = useState<RatingDistribution[]>([]);
+  const [ratingDistributionData, setRatingDistributionData] = useState<
+    RatingCommunityDistribution[]
+  >([]);
   const [mostValuesAttributes, setMostValuesAttributes] = useState<MostValuedAttributes[]>([]);
   const [topBattlersUnweightedData, setTopBattlersUnweightedData] = useState<
     TopBattlersUnweighted[]

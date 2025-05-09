@@ -191,8 +191,8 @@ const BattlersListTable = () => {
                     <div className="truncate max-w-[300px]">
                       {battler?.users?.added_by ? (
                         <Badge
-                          variant={"default"}
-                          className="rounded-md text-medium capitalize text-xs"
+                          variant="default"
+                          className="rounded-md text-medium capitalize text-xs !text-white"
                         >
                           {battler.users.added_by}
                         </Badge>
@@ -210,7 +210,7 @@ const BattlersListTable = () => {
                     >
                       <PopoverTrigger asChild>
                         <Button variant="link">
-                          <EllipsisVertical className="text-gray-500" />
+                          <EllipsisVertical className="text-muted-foreground" />
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-full max-w-[190px]">

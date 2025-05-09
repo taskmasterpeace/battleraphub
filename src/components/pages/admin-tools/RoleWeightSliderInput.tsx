@@ -64,7 +64,7 @@ const RoleWeightSliderInput: React.FC<RoleWeightInputProps> = ({
               }
             }}
           />
-          <span className="text-sm text-gray-400">× weight</span>
+          <span className="text-sm text-muted-foreground">× weight</span>
         </div>
       </div>
       <Slider
@@ -73,9 +73,9 @@ const RoleWeightSliderInput: React.FC<RoleWeightInputProps> = ({
         step={1}
         value={[value]}
         onValueChange={(values) => debouncedOnChange(values[0])}
-        className="`bg-gradient-to-r from-gray-700"
+        className="`bg-gradient-to-r from-muted"
       />
-      <p className="text-sm text-gray-400">{description}</p>
+      <p className="text-sm text-muted-foreground">{description}</p>
     </div>
   );
 };

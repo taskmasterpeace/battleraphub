@@ -23,12 +23,12 @@ export default function MediaHighlight() {
   return (
     <div>
       <div className="flex items-center mb-4">
-        <Video className="w-5 h-5 mr-2 text-purple-500" />
+        <Video className="w-5 h-5 mr-2 text-primary" />
         <h2 className="text-2xl font-bold">Media Spotlight</h2>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6 bg-gray-900 border border-gray-800">
+        <TabsList className="mb-6">
           <TabsTrigger value="featured">Featured Media</TabsTrigger>
           <TabsTrigger value="trending">Trending Content</TabsTrigger>
         </TabsList>
@@ -39,17 +39,17 @@ export default function MediaHighlight() {
               ? Array(3)
                   .fill(0)
                   .map((_, i) => (
-                    <Card key={i} className="bg-gray-900 border-gray-800 animate-pulse">
-                      <CardContent className="p-0 h-80"></CardContent>
+                    <Card key={i} className="bg-muted animate-pulse">
+                      <CardContent className="p-0 bg-muted h-80"></CardContent>
                     </Card>
                   ))
               : mediaUsers.map((user) => (
                   <Card
                     key={user.id}
-                    className="bg-gray-900 border-gray-800 overflow-hidden hover:border-purple-500 transition-all"
+                    className="overflow-hidden hover:border-primary transition-all"
                   >
                     <CardContent className="p-0">
-                      <div className="p-4 flex items-center gap-4 border-b border-gray-800">
+                      <div className="p-4 flex items-center gap-4 border-b border-border">
                         <div className="relative w-16 h-16 rounded-full overflow-hidden">
                           <Image
                             src={user.image || "/placeholder.svg"}
@@ -60,15 +60,13 @@ export default function MediaHighlight() {
                         </div>
                         <div>
                           <h3 className="font-medium text-lg">{user.name}</h3>
-                          <Badge className="bg-purple-900/30 text-purple-400 border-purple-700">
-                            Media
-                          </Badge>
-                          <p className="text-sm text-gray-400 mt-1">{user.outlet}</p>
+                          <Badge className="bg-primary/30 text-primary border-primary">Media</Badge>
+                          <p className="text-sm text-muted-foreground mt-1">{user.outlet}</p>
                         </div>
                       </div>
 
                       <div className="p-4">
-                        <p className="text-sm text-gray-300 mb-4">{user.bio}</p>
+                        <p className="text-sm text-foreground/50 mb-4">{user.bio}</p>
 
                         <div className="flex gap-2 mb-4">
                           {user.socialLinks.youtube && (
@@ -76,7 +74,7 @@ export default function MediaHighlight() {
                               href={user.socialLinks.youtube}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-red-500 hover:text-red-400"
+                              className="text-destructive hover:text-destructive/70"
                             >
                               <svg
                                 className="w-5 h-5"
@@ -131,7 +129,7 @@ export default function MediaHighlight() {
                               href={user.socialLinks.website}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-400 hover:text-gray-300"
+                              className="text-muted-foreground hover:text-muted-foreground"
                             >
                               <ExternalLink className="w-5 h-5" />
                             </a>
@@ -146,7 +144,7 @@ export default function MediaHighlight() {
                               href={content.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="block hover:bg-gray-800 p-2 rounded-md transition-colors"
+                              className="block hover:bg-muted text-muted-foreground p-2 rounded-md transition-colors"
                             >
                               <div className="flex gap-3">
                                 {content.thumbnail && (
@@ -163,7 +161,7 @@ export default function MediaHighlight() {
                                   <p className="text-sm font-medium line-clamp-2">
                                     {content.title}
                                   </p>
-                                  <div className="flex items-center text-xs text-gray-400 mt-1">
+                                  <div className="flex items-center text-xs text-muted-foreground mt-1">
                                     <Badge variant="outline" className="text-xs mr-2">
                                       {content.type}
                                     </Badge>
@@ -197,7 +195,7 @@ export default function MediaHighlight() {
                   ? Array(5)
                       .fill(0)
                       .map((_, i) => (
-                        <div key={i} className="h-20 bg-gray-800 animate-pulse rounded-md"></div>
+                        <div key={i} className="h-20 bg-muted animate-pulse rounded-md"></div>
                       ))
                   : mediaUsers.flatMap((user) =>
                       user.recentContent.map((content, idx) => (
@@ -206,7 +204,7 @@ export default function MediaHighlight() {
                           href={content.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-4 p-4 bg-gray-900 rounded-lg border border-gray-800 hover:border-purple-500 transition-all"
+                          className="flex items-center gap-4 p-4 bg-background rounded-lg border border-border hover:border-primary transition-all"
                         >
                           {content.thumbnail ? (
                             <div className="relative w-20 h-20 flex-shrink-0">
@@ -218,13 +216,13 @@ export default function MediaHighlight() {
                               />
                             </div>
                           ) : (
-                            <div className="w-20 h-20 bg-gray-800 rounded-md flex items-center justify-center flex-shrink-0">
-                              <Video className="w-8 h-8 text-gray-600" />
+                            <div className="w-20 h-20 bg-muted rounded-md flex items-center justify-center flex-shrink-0">
+                              <Video className="w-8 h-8 text-muted-foreground" />
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <Badge className="bg-purple-900/30 text-purple-400 border-purple-700">
+                              <Badge className="bg-primary/30 text-primary border-primary">
                                 {user.name}
                               </Badge>
                               <Badge variant="outline" className="text-xs">
@@ -232,7 +230,7 @@ export default function MediaHighlight() {
                               </Badge>
                             </div>
                             <h3 className="font-medium mt-1">{content.title}</h3>
-                            <div className="flex items-center text-xs text-gray-400 mt-1">
+                            <div className="flex items-center text-xs text-muted-foreground mt-1">
                               <div className="flex items-center">
                                 <ThumbsUp className="w-3 h-3 mr-1" />
                                 {content.likes}

@@ -46,16 +46,16 @@ export default function YouTubeFeature() {
 
   if (isLoading) {
     return (
-      <div className="h-full w-full bg-gray-800 animate-pulse rounded-lg flex items-center justify-center">
-        <p className="text-gray-400">Loading video...</p>
+      <div className="h-full w-full bg-muted animate-pulse rounded-lg flex items-center justify-center">
+        <p className="text-foreground">Loading video...</p>
       </div>
     );
   }
 
   if (videos?.length === 0) {
     return (
-      <div className="h-full w-full bg-gray-800 rounded-lg flex items-center justify-center">
-        <p className="text-gray-400">No videos available</p>
+      <div className="h-full w-full bg-muted rounded-lg flex items-center justify-center">
+        <p className="text-foreground">No videos available</p>
       </div>
     );
   }
@@ -64,7 +64,7 @@ export default function YouTubeFeature() {
 
   return (
     <div className="relative h-full w-full">
-      <Card className="bg-gray-900/80 border-gray-800 overflow-hidden h-full">
+      <Card className="overflow-hidden h-full">
         <CardContent className="p-0 relative h-full">
           <div className="relative aspect-video h-full">
             <Image
@@ -77,43 +77,33 @@ export default function YouTubeFeature() {
               className="object-cover"
             />
             <div
-              className="absolute inset-0 bg-black/40 flex items-center justify-center cursor-pointer"
+              className="absolute inset-0 flex items-center justify-center cursor-pointer"
               onClick={() => openVideo(currentVideo?.videoId)}
             >
               <Button
                 variant="default"
                 size="lg"
-                className="rounded-xl bg-red-600 hover:bg-red-700"
+                className="rounded-xl bg-destructive hover:bg-destructive/20"
               >
                 <Play className="h-5 w-5 fill-current" />
               </Button>
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-            <h3 className="font-medium text-lg text-white mb-2">{currentVideo?.title}</h3>
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background to-transparent">
+            <h3 className="font-medium text-lg text-foreground mb-2">{currentVideo?.title}</h3>
             <div className="flex justify-between items-center">
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={prevSlide}
-                  className="h-8 w-8 p-0 bg-black/50 border-gray-600"
-                >
-                  <ChevronLeft className="h-4 w-4" />
+                <Button variant="outline" size="sm" onClick={prevSlide} className="h-8 w-8 p-0">
+                  <ChevronLeft className="h-4 w-4 text-foreground" />
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={nextSlide}
-                  className="h-8 w-8 p-0 bg-black/50 border-gray-600"
-                >
-                  <ChevronRight className="h-4 w-4" />
+                <Button variant="outline" size="sm" onClick={nextSlide} className="h-8 w-8 p-0">
+                  <ChevronRight className="h-4 w-4 text-foreground" />
                 </Button>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 px-3 text-xs bg-black/50 text-white hover:bg-red-600"
+                className="h-8 px-3 text-xs hover:bg-destructive"
                 onClick={() => openVideo(currentVideo?.videoId)}
               >
                 Watch on YouTube
@@ -128,7 +118,7 @@ export default function YouTubeFeature() {
           <button
             key={index}
             className={`h-2 w-2 rounded-full transition-colors ${
-              index === currentIndex ? "bg-red-500" : "bg-gray-600"
+              index === currentIndex ? "bg-destructive" : "bg-muted"
             }`}
             onClick={() => setCurrentIndex(index)}
             aria-label={`Go to video ${index + 1}`}
@@ -137,7 +127,7 @@ export default function YouTubeFeature() {
       </div>
 
       {error && (
-        <div className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-bl-md">
+        <div className="absolute top-0 right-0 bg-destructive text-white text-xs px-2 py-1 rounded-bl-md">
           {error}
         </div>
       )}

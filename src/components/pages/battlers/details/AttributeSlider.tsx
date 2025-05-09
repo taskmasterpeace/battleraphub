@@ -45,22 +45,22 @@ export default function AttributeSlider({
 
   // Get color based on value
   const getColor = () => {
-    if (localValue < 3) return "text-red-500";
+    if (localValue < 3) return "text-destructive";
     if (localValue < 5) return "text-orange-500";
     if (localValue < 7) return "text-yellow-500";
-    if (localValue < 9) return "text-green-500";
+    if (localValue < 9) return "text-success";
     return "text-emerald-500";
   };
 
   return (
-    <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+    <div className="bg-background rounded-lg p-4 border border-border">
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center">
           <h3 className="font-semibold mr-2">{title}</h3>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <Info className="w-4 h-4 text-gray-400" />
+                <Info className="w-4 h-4 text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{description}</p>
@@ -68,11 +68,11 @@ export default function AttributeSlider({
             </Tooltip>
           </TooltipProvider>
         </div>
-        <span className={`px-2 py-1 bg-gray-800 rounded-full text-sm font-medium ${getColor()}`}>
+        <span className={`px-2 py-1 bg-accent rounded-full text-sm font-medium ${getColor()}`}>
           {localValue.toFixed(1)}
         </span>
       </div>
-      <p className="text-sm text-gray-400 mb-3">{description}</p>
+      <p className="text-sm text-muted-foreground mb-3">{description}</p>
       <Slider
         min={0}
         max={10}

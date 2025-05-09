@@ -1,29 +1,17 @@
 "use client";
 
 import { MATERIALIZED_VIEWS } from "@/config";
+import {
+  ActiveRolesByRatings,
+  CommunityStats,
+  MostAccurateUsers,
+  MostConsistentUsers,
+  MostInfluentialUsers,
+  RatingDistribution,
+  TopRaterBattler,
+} from "@/types";
 import { supabase } from "@/utils/supabase/client";
 import { createContext, useContext, useEffect, useState } from "react";
-
-type CommunityStats = {
-  total_users: number;
-  new_users_this_week: number;
-  total_ratings: number;
-  new_ratings_this_week: number;
-  avg_rating: number;
-  active_users_last_30_days: number;
-};
-
-type RatingDistribution = {
-  bucket: string;
-  percentage: number;
-  count: number;
-};
-
-type ActiveRolesByRatings = {
-  role_id: number;
-  rating_count: number;
-  percentage: number;
-};
 
 type LeaderboardContextType = {
   communityStats: CommunityStats | null;
@@ -32,6 +20,14 @@ type LeaderboardContextType = {
   communityLoading: boolean;
   ratingDistributionLoading: boolean;
   activeRolesByRatingLoading: boolean;
+  topRaterBattlerLoading: boolean;
+  topRatersBattler: TopRaterBattler[];
+  mostInfluentialUsers: MostInfluentialUsers[];
+  mostInfluentialUsersLoading: boolean;
+  mostConsistentUsers: MostConsistentUsers[];
+  mostConsistentUsersLoading: boolean;
+  mostAccurateUsers: MostAccurateUsers[];
+  mostAccurateUsersLoading: boolean;
 };
 
 const LeaderboardContext = createContext<LeaderboardContextType>({
@@ -41,6 +37,14 @@ const LeaderboardContext = createContext<LeaderboardContextType>({
   communityLoading: false,
   ratingDistributionLoading: false,
   activeRolesByRatingLoading: false,
+  topRaterBattlerLoading: false,
+  topRatersBattler: [],
+  mostInfluentialUsers: [],
+  mostInfluentialUsersLoading: false,
+  mostConsistentUsers: [],
+  mostConsistentUsersLoading: false,
+  mostAccurateUsers: [],
+  mostAccurateUsersLoading: false,
 });
 
 export const LeaderboardProvider = ({ children }: { children: React.ReactNode }) => {
@@ -52,6 +56,15 @@ export const LeaderboardProvider = ({ children }: { children: React.ReactNode })
   const [activeRolesByRatings, setActiveRolesByRatings] = useState<ActiveRolesByRatings[] | null>(
     null,
   );
+  const [topRatersBattler, setTopRatersBattler] = useState<TopRaterBattler[]>([]);
+  const [topRaterBattlerLoading, setTopRaterBattlerLoading] = useState<boolean>(false);
+  const [mostConsistentUsers, setMostConsistentUsers] = useState<MostConsistentUsers[]>([]);
+  const [mostConsistentUsersLoading, setMostConsistentUsersLoading] = useState<boolean>(false);
+  const [mostInfluentialUsers, setMostInfluentialUsers] = useState<MostInfluentialUsers[]>([]);
+  const [mostInfluentialUsersLoading, setMostInfluentialUsersLoading] = useState<boolean>(false);
+  const [mostAccurateUsers, setMostAccurateUsers] = useState<MostAccurateUsers[]>([]);
+  const [mostAccurateUsersLoading, setMostAccurateUsersLoading] = useState<boolean>(false);
+
   const fetchCommunityStats = async () => {
     setCommunityLoading(true);
     try {
@@ -101,10 +114,80 @@ export const LeaderboardProvider = ({ children }: { children: React.ReactNode })
     }
   };
 
+  const fetchTopRaterBattlers = async () => {
+    setTopRaterBattlerLoading(true);
+    try {
+      const { data, error } = await supabase.from(MATERIALIZED_VIEWS.TOP_RATERS).select("*");
+      if (error) {
+        console.error("Error fetching top rater battlers", error);
+      }
+      setTopRatersBattler(data as TopRaterBattler[]);
+    } catch (error) {
+      console.error("Error fetching  top rater battlers", error);
+    } finally {
+      setTopRaterBattlerLoading(false);
+    }
+  };
+
+  const fetchMostConsistentUsers = async () => {
+    setMostConsistentUsersLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.MOST_CONSISTENT_USERS)
+        .select("*");
+      if (error) {
+        console.error("Error fetching most consistent users", error);
+      }
+      setMostConsistentUsers(data as MostConsistentUsers[]);
+    } catch (error) {
+      console.error("Error fetching most consistent users", error);
+    } finally {
+      setMostConsistentUsersLoading(false);
+    }
+  };
+
+  const fetchMostInfluentialUsers = async () => {
+    setMostInfluentialUsersLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.MOST_INFLUENCED_USERS)
+        .select("*");
+      if (error) {
+        console.error("Error fetching most influential users", error);
+      }
+      setMostInfluentialUsers(data as MostInfluentialUsers[]);
+    } catch (error) {
+      console.error("Error fetching most influential users", error);
+    } finally {
+      setMostInfluentialUsersLoading(false);
+    }
+  };
+
+  const fetchMostAccurateUsers = async () => {
+    setMostAccurateUsersLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.MOST_ACCURATE_USERS)
+        .select("*");
+      if (error) {
+        console.error("Error fetching most accurate users", error);
+      }
+      setMostAccurateUsers(data as MostAccurateUsers[]);
+    } catch (error) {
+      console.error("Error fetching most accurate users", error);
+    } finally {
+      setMostAccurateUsersLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchCommunityStats();
     fetchRatingDistribution();
     fetchActiveRolesByRatings();
+    fetchTopRaterBattlers();
+    fetchMostConsistentUsers();
+    fetchMostInfluentialUsers();
+    fetchMostAccurateUsers();
   }, []);
 
   return (
@@ -116,6 +199,14 @@ export const LeaderboardProvider = ({ children }: { children: React.ReactNode })
         ratingDistribution,
         activeRolesByRatingLoading,
         activeRolesByRatings,
+        topRatersBattler,
+        topRaterBattlerLoading,
+        mostInfluentialUsers,
+        mostInfluentialUsersLoading,
+        mostConsistentUsers,
+        mostConsistentUsersLoading,
+        mostAccurateUsers,
+        mostAccurateUsersLoading,
       }}
     >
       {children}

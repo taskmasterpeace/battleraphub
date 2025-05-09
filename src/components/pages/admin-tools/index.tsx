@@ -10,7 +10,7 @@ const AdminTools = () => {
       <h1 className="text-3xl font-bold mb-6">Admin Tools</h1>
 
       <Tabs defaultValue="weights">
-        <TabsList className="mb-6 bg-gray-900 border border-gray-800">
+        <TabsList className="mb-6">
           <TabsTrigger value="weights">Role Weights</TabsTrigger>
         </TabsList>
 

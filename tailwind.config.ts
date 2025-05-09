@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-require-imports: "off" */
 import type { Config } from "tailwindcss";
 
 const config = {
@@ -31,6 +32,10 @@ const config = {
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",

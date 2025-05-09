@@ -24,7 +24,7 @@ interface RatingCardProps {
 const CustomTooltip = ({ active, payload, label }: TooltipProps<string, string>) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-gray-900 text-white p-2 rounded-md">{`${label} : ${payload[0].value}`}</div>
+      <div className="bg-muted text-foreground p-2 rounded-md">{`${label} : ${payload[0].value}`}</div>
     );
   }
 

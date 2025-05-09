@@ -61,38 +61,38 @@ export default function MobileNavbar() {
             size="icon"
             className="md:hidden"
           >
-            <Menu className="h-6 w-6" />
+            <Menu className="h-6 w-6 text-foreground" />
             <span className="sr-only">Toggle menu</span>
           </Button>
         </SheetTrigger>
         <SheetContent
           side="left"
-          className="w-[300px] sm:w-[350px] bg-gray-900 border-gray-800 overflow-y-auto"
+          className="w-[300px] sm:w-[350px] bg-background border-border overflow-y-auto"
         >
-          <SheetHeader className="border-b border-gray-800 pb-4 mb-4" />
+          <SheetHeader className="border-b border-border pb-4 mb-4" />
 
           {/* User profile section */}
           <div className="mb-6">
             {user ? (
-              <div className="flex items-center p-4 bg-gray-800/50 rounded-lg">
+              <div className="flex items-center p-4 bg-muted text-foreground rounded-lg">
                 <Avatar className="h-10 w-10 mr-3">
                   <AvatarImage src="/placeholder.svg" alt={user.email?.split("@")[0]} />
                   <AvatarFallback>{user.email?.substring(0, 2).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <p className="font-medium">{user.email?.split("@")[0]}</p>
-                  <p className="text-xs text-gray-400">{user.email}</p>
+                  <p className="font-medium text-foreground">{user.email?.split("@")[0]}</p>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-400 hover:text-red-400"
+                  className="text-muted-foreground hover:text-destructive"
                   onClick={() => {
                     signOut();
                     setIsOpen(false);
                   }}
                 >
-                  <LogIn className="h-5 w-5 rotate-180" />
+                  <LogIn className="h-5 w-5 rotate-180 text-accent-foreground" />
                 </Button>
               </div>
             ) : (
@@ -117,7 +117,7 @@ export default function MobileNavbar() {
               <Input
                 type="search"
                 placeholder="Search battlers, battles..."
-                className="bg-gray-800 border-gray-700 pr-10"
+                className="pr-10"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -134,7 +134,7 @@ export default function MobileNavbar() {
 
           {/* Main navigation */}
           <div className="mb-6">
-            <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
               Main Navigation
             </h3>
             <div className="space-y-1">
@@ -145,7 +145,7 @@ export default function MobileNavbar() {
                     className={`flex items-center py-3 px-4 rounded-md transition-colors ${
                       isActive(item.href)
                         ? "bg-amber-900/20 text-amber-400"
-                        : "text-gray-300 hover:bg-gray-800 hover:text-amber-400"
+                        : "text-foreground hover:bg-muted hover:text-amber-400"
                     }`}
                   >
                     {item.icon}
@@ -158,7 +158,7 @@ export default function MobileNavbar() {
 
           {/* Secondary navigation */}
           <div className="mb-6">
-            <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
               Features
             </h3>
             <div className="space-y-1">
@@ -172,8 +172,8 @@ export default function MobileNavbar() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button
-                            className={`flex items-center py-3 px-4 rounded-md transition-colors hover:text-blue-400 ${
-                              isActive ? "text-blue-400" : "text-gray-300"
+                            className={`flex items-center py-3 px-4 rounded-md transition-colors hover:primary ${
+                              isActive ? "text-primary" : "text-foreground"
                             }`}
                           >
                             {item.icon}
@@ -198,7 +198,7 @@ export default function MobileNavbar() {
                       className={`flex items-center py-3 px-4 rounded-md transition-colors ${
                         isActive(item.href)
                           ? "bg-amber-900/20 text-amber-400"
-                          : "text-gray-300 hover:bg-gray-800 hover:text-amber-400"
+                          : "text-foreground hover:bg-muted hover:text-amber-400"
                       }`}
                     >
                       {item.icon}
@@ -213,14 +213,14 @@ export default function MobileNavbar() {
           {/* User account links */}
           {user && (
             <div className="mb-6">
-              <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              <h3 className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                 Your Account
               </h3>
               <div className="space-y-1">
                 <SheetClose asChild>
                   <Link
                     href="/profile"
-                    className="flex items-center py-3 px-4 rounded-md transition-colors text-gray-300 hover:bg-gray-800 hover:text-amber-400"
+                    className="flex items-center py-3 px-4 rounded-md transition-colors text-foreground hover:bg-muted hover:text-amber-400"
                   >
                     <User className="w-5 h-5 mr-3" />
                     Profile
@@ -229,7 +229,7 @@ export default function MobileNavbar() {
                 <SheetClose asChild>
                   <Link
                     href="/my-ratings"
-                    className="flex items-center py-3 px-4 rounded-md transition-colors text-gray-300 hover:bg-gray-800 hover:text-amber-400"
+                    className="flex items-center py-3 px-4 rounded-md transition-colors text-foreground hover:bg-muted hover:text-amber-400"
                   >
                     <Star className="w-5 h-5 mr-3" />
                     My Ratings
@@ -238,7 +238,7 @@ export default function MobileNavbar() {
                 <SheetClose asChild>
                   <Link
                     href="/notifications"
-                    className="flex items-center py-3 px-4 rounded-md transition-colors text-gray-300 hover:bg-gray-800 hover:text-amber-400"
+                    className="flex items-center py-3 px-4 rounded-md transition-colors text-foreground hover:bg-muted hover:text-amber-400"
                   >
                     <Bell className="w-5 h-5 mr-3" />
                     Notifications
@@ -250,7 +250,7 @@ export default function MobileNavbar() {
                 <SheetClose asChild>
                   <Link
                     href="/settings"
-                    className="flex items-center py-3 px-4 rounded-md transition-colors text-gray-300 hover:bg-gray-800 hover:text-amber-400"
+                    className="flex items-center py-3 px-4 rounded-md transition-colors text-foreground hover:bg-muted hover:text-amber-400"
                   >
                     <Settings className="w-5 h-5 mr-3" />
                     Settings
@@ -261,30 +261,30 @@ export default function MobileNavbar() {
           )}
 
           {/* Footer links */}
-          <div className="border-t border-gray-800 pt-4 mt-auto">
-            <div className="flex flex-wrap gap-3 px-4 text-sm text-gray-500">
+          <div className="border-t border-border pt-4 mt-auto">
+            <div className="flex flex-wrap gap-3 px-4 text-sm text-muted-foreground">
               <SheetClose asChild>
-                <Link href="/about" className="hover:text-gray-300">
+                <Link href="/about" className="hover:text-foreground">
                   About
                 </Link>
               </SheetClose>
               <SheetClose asChild>
-                <Link href="/contact" className="hover:text-gray-300">
+                <Link href="/contact" className="hover:text-foreground">
                   Contact
                 </Link>
               </SheetClose>
               <SheetClose asChild>
-                <Link href="/privacy" className="hover:text-gray-300">
+                <Link href="/privacy" className="hover:text-foreground">
                   Privacy
                 </Link>
               </SheetClose>
               <SheetClose asChild>
-                <Link href="/terms" className="hover:text-gray-300">
+                <Link href="/terms" className="hover:text-foreground">
                   Terms
                 </Link>
               </SheetClose>
             </div>
-            <div className="px-4 mt-4 text-xs text-gray-500">
+            <div className="px-4 mt-4 text-xs text-muted-foreground">
               © 2023 Algorithm Institute of Battle Rap
             </div>
           </div>

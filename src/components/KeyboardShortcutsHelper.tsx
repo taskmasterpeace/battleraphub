@@ -116,7 +116,7 @@ export default function KeyboardShortcutsHelper() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon" className="relative" aria-label="Keyboard shortcuts">
-          <Keyboard className="h-5 w-5 text-gray-400 hover:text-gray-100" />
+          <Keyboard className="h-5 w-5 text-muted-foreground" />
           <HelpCircle className="h-3 w-3 absolute bottom-0 right-0 text-blue-400" />
         </Button>
       </DialogTrigger>
@@ -130,7 +130,7 @@ export default function KeyboardShortcutsHelper() {
         <div className="space-y-6 py-4">
           {KEYBOARD_SHORTCUTS.map((category) => (
             <div key={category.name} className="space-y-2">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              <h3 className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
                 {category.name}
               </h3>
               <div className="rounded-md border">
@@ -141,12 +141,12 @@ export default function KeyboardShortcutsHelper() {
                       index !== category.shortcuts.length - 1 ? "border-b" : ""
                     }`}
                   >
-                    <span className="text-sm">{shortcut.description}</span>
+                    <span className="text-sm text-muted-foreground">{shortcut.description}</span>
                     <div className="flex gap-1">
                       {shortcut.keys.map((key, keyIndex) => (
                         <kbd
                           key={keyIndex}
-                          className="inline-flex h-5 items-center justify-center rounded border bg-gray-100 px-1.5 text-xs font-medium text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                          className="inline-flex h-5 items-center justify-center rounded border bg-muted px-1.5 text-xs font-medium text-muted-foreground dark:border-border dark:bg-background dark:text-foreground"
                         >
                           {key}
                         </kbd>
@@ -158,9 +158,9 @@ export default function KeyboardShortcutsHelper() {
             </div>
           ))}
         </div>
-        <div className="text-xs text-gray-500 mt-2">
+        <div className="text-xs text-muted-foreground mt-2">
           Press{" "}
-          <kbd className="px-1 py-0.5 rounded border bg-gray-100 text-xs dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+          <kbd className="px-1 py-0.5 rounded border bg-muted text-xs dark:border-background dark:bg-background dark:text-foreground">
             ?
           </kbd>{" "}
           anywhere to open this dialog

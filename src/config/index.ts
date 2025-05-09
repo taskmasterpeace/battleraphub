@@ -16,6 +16,16 @@ const ROLES_NAME = {
   [ROLE.LEAGUE_OWNER_INVESTOR]: "League Owner/Investor",
 };
 
+const LEADERBOARD_TAB_TYPE = {
+  MOST_RATINGS: "most-ratings",
+  MOST_ACCURATE: "most-accurate",
+  MOST_FOLLOWED: "most-followed",
+};
+
+const RANKING_TYPE = {
+  WEIGHTED: "weighted",
+  UNWEIGHTED: "unweighted",
+};
 const DB_TABLES = {
   USERS: "users",
   BATTLERS: "battlers",
@@ -43,6 +53,11 @@ const MATERIALIZED_VIEWS = {
   COMMUNITY_STATS: "leaderboard_community_stats",
   RATING_DISTRIBUTION: "leaderboard_rating_distribution",
   ACTIVE_ROLES_BY_RATINGS: "leaderboard_active_roles_by_ratings",
+  TOP_BATTLER_WEIGHTED: "top_battlers_weighted",
+  TOP_RATERS: "top_raters",
+  MOST_INFLUENCED_USERS: "most_influenced_users",
+  MOST_CONSISTENT_USERS: "most_consistent_users",
+  MOST_ACCURATE_USERS: "most_accurate_users",
 };
 
 const RPC_FUNCTIONS = {
@@ -110,6 +125,8 @@ export {
   MATERIALIZED_VIEWS,
   RPC_FUNCTIONS,
   ATTRIBUTE_CATEGORIES,
+  LEADERBOARD_TAB_TYPE,
+  RANKING_TYPE,
   BUCKET_NAME,
   PERMISSIONS,
   CATEGORY_TYPES,

@@ -195,7 +195,13 @@ const UserListTable = () => {
                     href={user.twitter || "#"}
                     className="flex items-center gap-2 text-blue-600"
                   >
-                    <Image src={PlatformX} width={14} height={14} alt="platform-x" />
+                    <Image
+                      src={PlatformX}
+                      width={14}
+                      height={14}
+                      alt="platform-x"
+                      className="filter brightness-0 dark:filter-none"
+                    />
                   </Link>
                 </TableCell>
                 <TableCell>
@@ -203,7 +209,13 @@ const UserListTable = () => {
                     href={user.instagram || "#"}
                     className="flex items-center gap-2 text-blue-600"
                   >
-                    <Image src={Instagram} width={22} height={22} alt="instagram" />
+                    <Image
+                      src={Instagram}
+                      width={22}
+                      height={22}
+                      alt="instagram"
+                      className="filter brightness-0 dark:filter-none"
+                    />
                   </Link>
                 </TableCell>
                 <TableCell>
@@ -212,7 +224,7 @@ const UserListTable = () => {
                 <TableCell className="text-right">
                   <Popover>
                     <PopoverTrigger>
-                      <EllipsisVertical className="text-gray-500" />
+                      <EllipsisVertical className="text-muted-foreground" />
                     </PopoverTrigger>
                     <PopoverContent className="w-[230px]">
                       <div className="flex flex-col items-start gap-3 w-full">

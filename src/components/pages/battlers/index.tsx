@@ -189,15 +189,15 @@ export default function Battlers({ tags }: { tags: TagsOption[] }) {
           ? Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 animate-pulse"
+                className="bg-background rounded-lg overflow-hidden border border-border animate-pulse"
               >
-                <div className="aspect-square relative bg-gray-800" />
+                <div className="aspect-square relative bg-muted" />
                 <div className="p-3">
-                  <div className="h-4 bg-gray-700 rounded w-3/4 mb-2" />
-                  <div className="h-3 bg-gray-700 rounded w-1/2 mb-4" />
+                  <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+                  <div className="h-3 bg-muted rounded w-1/2 mb-4" />
                   <div className="flex flex-wrap gap-1 mt-2">
                     {[...Array(3)].map((_, i) => (
-                      <span key={i} className="h-4 w-12 bg-gray-700 rounded" />
+                      <span key={i} className="h-4 w-12 bg-muted rounded" />
                     ))}
                   </div>
                 </div>
@@ -207,7 +207,7 @@ export default function Battlers({ tags }: { tags: TagsOption[] }) {
               <Link
                 key={battler.id}
                 href={`/battlers/${battler.id}`}
-                className="bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-purple-500 transition-all hover:shadow-lg hover:shadow-purple-900/20"
+                className="bg-background rounded-lg overflow-hidden border border-border hover:border-primary transition-all hover:shadow-lg hover:shadow-purple-900/20"
               >
                 <div className="aspect-square relative">
                   <Image
@@ -219,13 +219,10 @@ export default function Battlers({ tags }: { tags: TagsOption[] }) {
                 </div>
                 <div className="p-3">
                   <h3 className="font-medium">{battler.name}</h3>
-                  <p className="text-sm text-gray-400">{battler.location}</p>
+                  <p className="text-sm text-muted-foreground">{battler.location}</p>
                   <div className="flex flex-wrap gap-1 mt-2">
                     {battler?.battler_tags?.map((tag) => (
-                      <span
-                        key={tag.tags.id}
-                        className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded"
-                      >
+                      <span key={tag.tags.id} className="text-xs bg-muted px-2 py-0.5 rounded">
                         {tag.tags.name}
                       </span>
                     ))}

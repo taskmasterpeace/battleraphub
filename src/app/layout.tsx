@@ -28,7 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={geistSans.className} suppressHydrationWarning>
-      <body className={`${inter.className} bg-gray-950 text-white min-h-screen pb-16 md:pb-0`}>
+      <body
+        className={`${inter.className} bg-background text-foreground min-h-screen pb-16 md:pb-0`}
+      >
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="dark">
             <Header />

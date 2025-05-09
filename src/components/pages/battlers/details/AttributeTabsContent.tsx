@@ -28,10 +28,10 @@ export const AttributeTabsContent = ({
   gradientTo,
 }: TabContentProps) => (
   <div className="mb-8">
-    <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">
+    <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
       {title}
     </h2>
-    <p className="text-gray-300 mb-6">{description}</p>
+    <p className="text-muted-foreground mb-6">{description}</p>
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       {attributes.map((attr) => (

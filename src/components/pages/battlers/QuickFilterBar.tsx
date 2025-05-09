@@ -50,7 +50,7 @@ export default function QuickFilterBar({ tags, onFilterChange }: QuickFilterBarP
     <div className="space-y-4">
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground" />
           <Input
             placeholder="Search battlers..."
             value={search}
@@ -69,7 +69,7 @@ export default function QuickFilterBar({ tags, onFilterChange }: QuickFilterBarP
 
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <Filter className="h-4 w-4 text-gray-400" />
+          <Filter className="h-4 w-4 text-foreground" />
           <span className="text-sm font-medium">Quick Filters</span>
         </div>
 
@@ -80,8 +80,8 @@ export default function QuickFilterBar({ tags, onFilterChange }: QuickFilterBarP
               variant={selectedTags.includes(tag.id) ? "default" : "outline"}
               className={`cursor-pointer ${
                 selectedTags.includes(tag.id)
-                  ? "bg-blue-900/30 hover:bg-blue-900/50 text-blue-300"
-                  : "hover:bg-gray-800"
+                  ? "bg-background hover:bg-background text-blue-300"
+                  : "hover:bg-muted"
               }`}
               onClick={() => toggleTag(tag.id)}
             >

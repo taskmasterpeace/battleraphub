@@ -32,7 +32,7 @@ const RatingCard = ({ rating }: { rating: MyRating }) => {
                 <div className="flex items-center gap-2 mt-1">
                   <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                   <span className="font-medium">{rating.average_score.toFixed(2)}</span>
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-muted-foreground">
                     • Rated on {new Date(rating.created_at).toLocaleDateString()}
                   </span>
                 </div>
@@ -48,10 +48,10 @@ const RatingCard = ({ rating }: { rating: MyRating }) => {
                     index: number,
                   ) => {
                     const positiveCount = acc.filter((item) =>
-                      item.props.className.includes("bg-green-900"),
+                      item.props.className.includes("bg-success"),
                     ).length;
                     const negativeCount = acc.filter((item) =>
-                      item.props.className.includes("bg-red-900"),
+                      item.props.className.includes("bg-destructive"),
                     ).length;
 
                     if (
@@ -67,8 +67,8 @@ const RatingCard = ({ rating }: { rating: MyRating }) => {
                         key={index}
                         className={`${
                           badge?.is_positive
-                            ? "bg-green-900/30 text-green-400 border-green-700 hover:bg-green-900/30"
-                            : "bg-red-900/30 text-red-400 border-red-700 hover:bg-red-900/30"
+                            ? "bg-success-foreground dark:bg-success/20 text-success border-success hover:bg-success-foreground"
+                            : "bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive hover:bg-destructive-foreground"
                         } flex items-center`}
                       >
                         {badge?.is_positive ? (

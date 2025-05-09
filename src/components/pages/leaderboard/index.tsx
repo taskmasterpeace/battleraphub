@@ -26,7 +26,7 @@ const LeaderBoard = () => {
       </div>
 
       <Tabs defaultValue="most-ratings" className="mb-8">
-        <TabsList className="mb-6 bg-gray-900 border border-gray-800">
+        <TabsList className="mb-6">
           <TabsTrigger value="most-ratings">
             <Star className="w-4 h-4 mr-2" />
             Most Ratings
@@ -48,7 +48,7 @@ const LeaderBoard = () => {
               <CardDescription>Users who have rated the most battlers</CardDescription>
             </CardHeader>
             <CardContent>
-              <UserLeaderboard />
+              <UserLeaderboard tabType="most-ratings" />
             </CardContent>
           </Card>
         </TabsContent>
@@ -62,7 +62,7 @@ const LeaderBoard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <UserLeaderboard />
+              <UserLeaderboard tabType="most-accurate" />
             </CardContent>
           </Card>
         </TabsContent>
@@ -74,15 +74,15 @@ const LeaderBoard = () => {
               <CardDescription>Users with the most followers in the community</CardDescription>
             </CardHeader>
             <CardContent>
-              <UserLeaderboard />
+              <UserLeaderboard tabType="most-followed" />
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
 
-      <div className="bg-gray-900 p-6 rounded-lg border border-gray-800">
+      <div className="bg-background p-6 rounded-lg border border-border">
         <h2 className="text-xl font-bold mb-4">How Rankings Work</h2>
-        <div className="space-y-4 text-gray-300">
+        <div className="space-y-4 text-muted-foreground">
           <p>Our leaderboard rankings are calculated based on several factors:</p>
           <ul className="list-disc pl-6 space-y-2">
             <li>

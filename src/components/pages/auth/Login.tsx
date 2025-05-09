@@ -65,7 +65,7 @@ export default function Login() {
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
-            <div className="p-3 text-sm bg-red-900/30 border border-red-800 text-red-400 rounded-md">
+            <div className="p-3 text-sm bg-destructive-foreground/20 border border-destructive text-destructive rounded-md">
               {error}
             </div>
           )}
@@ -74,7 +74,7 @@ export default function Login() {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-700"></span>
+              <span className="w-full border-t border-border"></span>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
@@ -129,7 +129,7 @@ export default function Login() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <p className="text-center text-sm text-gray-400">
+          <p className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
             <Link href="/auth/signup" className="text-amber-400 hover:text-amber-300">
               Sign up

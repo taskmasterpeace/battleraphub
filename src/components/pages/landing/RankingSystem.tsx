@@ -3,133 +3,42 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Trophy, TrendingUp, TrendingDown, Calendar, Filter, Tag, X } from "lucide-react";
+import { Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { rankingSystemBattlers } from "@/__mocks__/landing";
-import { Battler } from "@/types";
+import { TopBattlersUnweighted } from "@/types";
+import { useHome } from "@/contexts/home.context";
+import { RANKING_TYPE } from "@/config";
 
 interface RankingSystemProps {
   compact?: boolean;
   showTitle?: string;
 }
 
-type TimeFrame = "all" | "month" | "week" | "day";
-type FilterTypes = "all" | "trending-up" | "trending-down";
-type RankingType = "weighted" | "unweighted";
+type RankingTypes = "weighted" | "unweighted";
 
 export default function RankingSystem({ compact = false, showTitle }: RankingSystemProps) {
-  const [timeFrame, setTimeFrame] = useState<TimeFrame>("month");
-  const [rankingType, setRankingType] = useState<RankingType>("weighted");
-  const [battlers, setBattlers] = useState<Battler[]>([]);
+  const { topBattlersWeightedData, topBattlersUnweightedData } = useHome();
+  const [rankingType, setRankingType] = useState<RankingTypes>("weighted");
+  const [battlers, setBattlers] = useState<TopBattlersUnweighted[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filter, setFilter] = useState<FilterTypes>("all");
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   useEffect(() => {
-    // Extract all unique tags
-    const allTags = new Set<string>();
-    rankingSystemBattlers.forEach((battler) => {
-      battler.tags.forEach((tag) => allTags.add(tag));
-    });
-    setAvailableTags(Array.from(allTags).sort());
+    let filteredBattlers =
+      rankingType === RANKING_TYPE.WEIGHTED ? topBattlersWeightedData : topBattlersUnweightedData;
 
-    // Apply filters
-    let filteredBattlers = [...rankingSystemBattlers];
-
-    // Apply trending filter
-    if (filter === "trending-up") {
-      filteredBattlers = filteredBattlers.filter((battler) => battler.change > 0);
-    } else if (filter === "trending-down") {
-      filteredBattlers = filteredBattlers.filter((battler) => battler.change < 0);
-    }
-
-    // Apply tag filters
-    if (selectedTags.length > 0) {
-      filteredBattlers = filteredBattlers.filter((battler) =>
-        selectedTags.every((tag) => battler.tags.includes(tag)),
-      );
-    }
-
-    // Sort by rating type
     filteredBattlers.sort((a, b) => {
-      const ratingA = rankingType === "weighted" ? a.weightedRating : a.unweightedRating;
-      const ratingB = rankingType === "weighted" ? b.weightedRating : b.unweightedRating;
-      return ratingB - ratingA;
+      return b.avg_rating - a.avg_rating;
     });
 
-    // Limit to 5 if compact mode
     if (compact) {
       filteredBattlers = filteredBattlers.slice(0, 5);
     }
 
-    // Map to Battler interface by adding the required rating property
-    const mappedBattlers = filteredBattlers.map((battler) => ({
-      ...battler,
-      id: parseInt(battler.id, 10),
-      rating: rankingType === "weighted" ? battler.weightedRating : battler.unweightedRating,
-    })) as Battler[];
-
-    setBattlers(mappedBattlers);
+    setBattlers(filteredBattlers as TopBattlersUnweighted[]);
     setIsLoading(false);
-  }, [timeFrame, rankingType, filter, selectedTags, compact]);
-
-  const getRatingLabel = () => {
-    return rankingType === "weighted" ? "Weighted Rating" : "Unweighted Rating";
-  };
-
-  const getUserTypeBadge = (userType?: string) => {
-    if (!userType) return null;
-
-    const badgeStyles: Record<string, string> = {
-      media: "bg-purple-900/30 text-purple-400 border-purple-700",
-      battler: "bg-green-900/30 text-green-400 border-green-700",
-      league_owner: "bg-amber-900/30 text-amber-400 border-amber-700",
-      admin: "bg-red-900/30 text-red-400 border-red-700",
-    };
-
-    return (
-      <Badge className={badgeStyles[userType]}>
-        {userType
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ")}
-      </Badge>
-    );
-  };
-
-  const addTag = (tag: string) => {
-    if (!selectedTags.includes(tag)) {
-      setSelectedTags([...selectedTags, tag]);
-    }
-  };
-
-  const removeTag = (tag: string) => {
-    setSelectedTags(selectedTags.filter((t) => t !== tag));
-  };
-
-  const getTimeFrameTitle = () => {
-    switch (timeFrame) {
-      case "day":
-        return "Daily Champion";
-      case "week":
-        return "Champion of the Week";
-      case "month":
-        return "Champion of the Month";
-      default:
-        return "All-Time Champion";
-    }
-  };
+  }, [rankingType, compact, topBattlersWeightedData, topBattlersUnweightedData]);
 
   return (
     <div className="h-full flex flex-col">
@@ -141,7 +50,7 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <Tabs
           value={rankingType}
-          onValueChange={(value) => setRankingType(value as "weighted" | "unweighted")}
+          onValueChange={(value) => setRankingType(value as RankingTypes)}
           className="w-full md:w-auto"
         >
           <TabsList className="grid w-full grid-cols-2">
@@ -149,104 +58,39 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
             <TabsTrigger value="unweighted">Unweighted</TabsTrigger>
           </TabsList>
         </Tabs>
-
-        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-          <Select value={timeFrame} onValueChange={(value) => setTimeFrame(value as TimeFrame)}>
-            <SelectTrigger className="w-full sm:w-[150px]">
-              <Calendar className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Time Frame" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Time</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-              <SelectItem value="week">This Week</SelectItem>
-              <SelectItem value="day">Today</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={filter} onValueChange={(value) => setFilter(value as FilterTypes)}>
-            <SelectTrigger className="w-full sm:w-[150px]">
-              <Filter className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Filter" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Battlers</SelectItem>
-              <SelectItem value="trending-up">Trending Up</SelectItem>
-              <SelectItem value="trending-down">Trending Down</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
       </div>
-
-      {/* Tag Filtering */}
-      {!compact && (
-        <div className="mb-6">
-          <div className="flex items-center mb-2">
-            <Tag className="w-4 h-4 mr-2 text-blue-400" />
-            <h3 className="text-sm font-medium">Filter by Tags</h3>
-          </div>
-
-          <div className="flex flex-wrap gap-2 mb-4">
-            {selectedTags.map((tag) => (
-              <Badge
-                key={tag}
-                className="bg-blue-900/30 text-blue-300 border-blue-700 flex items-center gap-1"
-              >
-                {tag}
-                <button onClick={() => removeTag(tag)} className="ml-1 hover:text-white">
-                  <X className="w-3 h-3" />
-                </button>
-              </Badge>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {availableTags
-              .filter((tag) => !selectedTags.includes(tag))
-              .map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="outline"
-                  className="cursor-pointer hover:bg-blue-900/20"
-                  onClick={() => addTag(tag)}
-                >
-                  {tag}
-                </Badge>
-              ))}
-          </div>
-        </div>
-      )}
 
       <Card className="flex-1">
         <CardHeader>
-          <CardTitle>
-            {showTitle || getTimeFrameTitle()}
-            {filter !== "all" && ` (${filter === "trending-up" ? "Trending Up" : "Trending Down"})`}
-          </CardTitle>
+          <CardTitle>{showTitle}</CardTitle>
         </CardHeader>
         <CardContent className="overflow-auto">
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-20 bg-gray-800 animate-pulse rounded-md"></div>
+                <div key={i} className="h-20 bg-muted animate-pulse rounded-md"></div>
               ))}
             </div>
           ) : (
             <div className="space-y-4">
               {battlers.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
+                <div className="text-center py-8 text-muted-foreground">
                   No battlers match your current filters
                 </div>
               ) : (
                 battlers.map((battler, index) => (
-                  <Link key={battler.id} href={`/battlers/${battler.id}`} className="block">
-                    <div className="flex items-center gap-4 p-4 bg-gray-900 rounded-lg border border-gray-800 hover:border-blue-500 transition-all">
-                      <div className="flex-shrink-0 w-8 text-center font-bold text-lg text-gray-400">
+                  <Link
+                    key={battler.battler_id}
+                    href={`/battlers/${battler.battler_id}`}
+                    className="block"
+                  >
+                    <div className="flex items-center gap-4 p-4 bg-background rounded-lg border border-border hover:border-blue-500 transition-all">
+                      <div className="flex-shrink-0 w-8 text-center font-bold text-lg text-muted-foreground">
                         #{index + 1}
                       </div>
                       <div className="relative w-12 h-12 rounded-full overflow-hidden">
                         <Image
-                          src={battler.image || "/placeholder.svg"}
+                          src={battler.avatar || "/placeholder.svg"}
                           alt={battler.name}
                           fill
                           className="object-cover"
@@ -255,49 +99,45 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <h3 className="font-medium">{battler.name}</h3>
-                          {getUserTypeBadge(battler.userType)}
                         </div>
-                        <p className="text-sm text-gray-400">{battler.location}</p>
-                        {!compact && (
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {battler?.tags?.map((tag) => (
-                              <Badge key={tag} variant="outline" className="text-xs py-0 px-1">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
+                        <p className="text-sm text-muted-foreground">{battler.location}</p>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold">
-                          {rankingType === "weighted"
-                            ? battler?.weightedRating?.toFixed(1)
-                            : battler?.unweightedRating?.toFixed(1)}
+                          {rankingType === RANKING_TYPE.WEIGHTED
+                            ? battler?.avg_rating?.toFixed(1)
+                            : battler?.avg_rating?.toFixed(1)}
                         </div>
-                        <p className="text-xs text-gray-400">{getRatingLabel()}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {rankingType === RANKING_TYPE.WEIGHTED
+                            ? "Weighted Rating"
+                            : "Unweighted Rating"}
+                        </p>
                       </div>
-                      <div className="text-center w-20">
+                      {/* <div className="text-center w-20">
                         <div
                           className={`flex items-center justify-center ${
                             battler.change && battler.change > 0
-                              ? "text-green-500"
+                              ? "text-success"
                               : battler.change && battler.change < 0
-                                ? "text-red-500"
-                                : "text-gray-400"
+                                ? "text-destructive"
+                                : "text-muted-foreground"
                           }`}
                         >
                           {battler.change && battler.change > 0 ? (
                             <TrendingUp className="w-4 h-4 mr-1" />
                           ) : battler.change && battler.change < 0 ? (
                             <TrendingDown className="w-4 h-4 mr-1" />
-                          ) : null}
+                          ) : (
+                            <TrendingUp className="w-4 h-4 mr-1" />
+                          )}
                           <span>
                             {battler.change && battler.change > 0 ? "+" : ""}
                             {battler.change?.toFixed(1) || "0.0"}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-400">{battler.lastUpdated}</p>
-                      </div>
+                        <p className="text-xs text-muted-foreground">{battler.updated_at}</p>
+                      </div> */}
                     </div>
                   </Link>
                 ))
@@ -308,7 +148,7 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
           {compact && battlers.length > 0 && (
             <div className="mt-4 text-center">
               <Button asChild variant="outline">
-                <Link href="/analytics">View Full Rankings</Link>
+                <Link href="/battlers">View All Battlers</Link>
               </Button>
             </div>
           )}

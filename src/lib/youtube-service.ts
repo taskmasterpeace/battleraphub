@@ -1,5 +1,6 @@
 "use server";
 
+import { VideoStatistics, YoutubeSearchResponse, YoutubeVideoStatsResponse } from "@/types";
 import { Video, YoutubeResponse } from "@/types/youtube";
 import { supabase } from "@/utils/supabase/client";
 
@@ -224,7 +225,6 @@ export const getLatestVideos = async (): Promise<Video[]> => {
 export const getLatestVideosFromYoutubeChannel = async (youtubeUrl: string): Promise<Video[]> => {
   const apiKey = process.env.YOUTUBE_API_KEY || "";
   const youtubeUrlMatch = youtubeUrl?.match(/@([a-zA-Z0-9_]+)/);
-
   const extractZYoutubeHandle = youtubeUrlMatch?.[1];
   if (!extractZYoutubeHandle) return [];
 
@@ -233,7 +233,6 @@ export const getLatestVideosFromYoutubeChannel = async (youtubeUrl: string): Pro
     `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${extractZYoutubeHandle}&key=${apiKey}`,
   );
   const channelData = await channelRes.json();
-
   const channelId = channelData.items?.[0]?.id;
   if (!channelId) return [];
 
@@ -248,14 +247,41 @@ export const getLatestVideosFromYoutubeChannel = async (youtubeUrl: string): Pro
   });
 
   const response = await fetch(`https://www.googleapis.com/youtube/v3/search?${searchParams}`);
+  const data: YoutubeSearchResponse = await response.json();
 
-  const data: YoutubeResponse = await response.json();
-  const videos = data.items.map((item, index: number) => ({
-    order: index + 1,
-    id: item.id.videoId,
-    title: item.snippet.title,
-    thumbnail: item.snippet.thumbnails.high.url,
-    videoId: item.id.videoId,
-  }));
+  const videoIds = data.items.map((item) => item.id.videoId).filter(Boolean);
+  if (videoIds.length === 0) return [];
+
+  // Step 3: Fetch statistics for those video IDs
+  const statsParams = new URLSearchParams({
+    key: apiKey,
+    part: "statistics",
+    id: videoIds.join(","),
+  });
+
+  const statsRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?${statsParams}`);
+  const statsData: YoutubeVideoStatsResponse = await statsRes.json();
+
+  const statsMap = new Map<string, VideoStatistics>(
+    statsData.items.map((item) => [item.id, item.statistics]),
+  );
+
+  const videos: Video[] = data.items.map((item, index) => {
+    const stats = statsMap.get(item.id.videoId) ?? {};
+    return {
+      channelId,
+      order: index + 1,
+      id: item.id.videoId,
+      videoId: item.id.videoId,
+      title: item.snippet.title,
+      description: item.snippet.description,
+      thumbnail: item.snippet.thumbnails.high.url,
+      publishedAt: item.snippet.publishedAt,
+      views: parseInt(stats.viewCount ?? "0", 10),
+      likes: parseInt(stats.likeCount ?? "0", 10),
+      comments: parseInt(stats.commentCount ?? "0", 10),
+    };
+  });
+
   return videos;
 };

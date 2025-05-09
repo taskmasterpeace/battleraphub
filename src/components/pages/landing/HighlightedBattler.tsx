@@ -98,8 +98,8 @@ export default function HighlightedBattler() {
 
   if (isLoading) {
     return (
-      <Card className="bg-gray-900 border-gray-800 animate-pulse h-full">
-        <CardContent className="p-0 h-96"></CardContent>
+      <Card className="bg-muted animate-pulse h-full">
+        <CardContent className="bg-muted p-0 h-96"></CardContent>
       </Card>
     );
   }
@@ -109,7 +109,7 @@ export default function HighlightedBattler() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            <Award className="w-5 h-5 mr-2 text-red-400" />
+            <Award className="w-5 h-5 mr-2 text-destructive" />
             <h2 className="text-2xl font-bold">Highlighted Battler</h2>
           </div>
 
@@ -156,9 +156,9 @@ export default function HighlightedBattler() {
           </DropdownMenu>
         </div>
 
-        <Card className="bg-gray-900 border-gray-800 h-full flex items-center justify-center p-8">
+        <Card className="bg-foreground border-border h-full flex items-center justify-center p-8">
           <div className="text-center">
-            <p className="text-gray-400 mb-4">No battlers match your selected filters</p>
+            <p className="text-muted-foreground mb-4">No battlers match your selected filters</p>
             <Button variant="outline" onClick={() => setSelectedTags([])}>
               Clear Filters
             </Button>
@@ -174,7 +174,7 @@ export default function HighlightedBattler() {
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
-          <Award className="w-5 h-5 mr-2 text-red-400" />
+          <Award className="w-5 h-5 mr-2 text-destructive" />
           <h2 className="text-2xl font-bold">Highlighted Battler</h2>
         </div>
 
@@ -184,7 +184,7 @@ export default function HighlightedBattler() {
               <Button variant="outline" size="icon" onClick={prevBattler}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-muted-foreground">
                 {currentIndex + 1}/{filteredBattlers.length}
               </span>
               <Button variant="outline" size="icon" onClick={nextBattler}>
@@ -244,7 +244,7 @@ export default function HighlightedBattler() {
         transition={{ duration: 0.5 }}
         className="flex-1"
       >
-        <Card className="bg-gray-900 border-gray-800 overflow-hidden h-full">
+        <Card className="overflow-hidden h-full">
           <CardContent className="p-0 h-full">
             <div className="flex flex-col md:flex-row h-full">
               {/* Image container - fixed width, not overlapping */}
@@ -256,7 +256,7 @@ export default function HighlightedBattler() {
                     fill
                     className="object-cover"
                   />
-                  <div className="absolute top-4 right-4 bg-gray-900/80 backdrop-blur-sm rounded-full p-2">
+                  <div className="absolute top-4 right-4 bg-foreground/90 text-white dark:bg-muted backdrop-blur-sm rounded-full p-1 px-3">
                     <div className="flex items-center">
                       <Star className="w-5 h-5 text-blue-500 fill-blue-500 mr-1" />
                       <span className="font-bold text-lg">{currentBattler.rating.toFixed(1)}</span>
@@ -271,7 +271,7 @@ export default function HighlightedBattler() {
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 gap-2">
                     <div>
                       <h3 className="text-2xl font-bold">{currentBattler.name}</h3>
-                      <p className="text-gray-400 flex items-center">
+                      <p className="text-muted-foreground flex items-center">
                         <MapPin className="w-4 h-4 mr-1" />
                         {currentBattler.location}
                       </p>
@@ -280,17 +280,17 @@ export default function HighlightedBattler() {
                       initial={{ rotate: 0 }}
                       animate={{ rotate: 360 }}
                       transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                      className="bg-red-500 rounded-full p-1 self-start"
+                      className="bg-destructive rounded-full p-1 self-start"
                     >
-                      <TrendingUp className="w-5 h-5 text-gray-900" />
+                      <TrendingUp className="w-5 h-5 text-muted" />
                     </motion.div>
                   </div>
 
-                  <p className="text-gray-300 my-4">{currentBattler.bio}</p>
+                  <p className="text-foreground my-4">{currentBattler.bio}</p>
 
                   <div className="mb-4">
-                    <h4 className="font-medium mb-2">Accolades:</h4>
-                    <ul className="list-disc list-inside text-gray-300">
+                    <h4 className="text-foreground font-medium mb-2">Accolades:</h4>
+                    <ul className="list-disc list-inside text-foreground">
                       {currentBattler.accolades.map((accolade, index) => (
                         <li key={index}>{accolade}</li>
                       ))}
@@ -306,7 +306,7 @@ export default function HighlightedBattler() {
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <Badge className="bg-blue-900/30 text-blue-300 border-blue-700">
+                          <Badge className="bg-muted text-foreground border-blue-700">
                             {badge}
                           </Badge>
                         </motion.div>
@@ -323,7 +323,7 @@ export default function HighlightedBattler() {
                           return tag && !tag.isHidden;
                         })
                         .map((tagName) => (
-                          <Badge key={tagName} variant="outline" className="text-gray-300">
+                          <Badge key={tagName} variant="outline" className="text-foreground">
                             {tagName}
                           </Badge>
                         ))}
