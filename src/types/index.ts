@@ -188,14 +188,26 @@ export interface BattlerAttribute {
   location: string;
 }
 
-export interface TopContributor {
-  userId: string;
-  username: string;
-  displayName: string;
-  profileImage?: string;
-  contribution: string;
-  score: number;
+export interface ContributorData {
+  user_id: string;
+  name: string;
+  avatar?: string;
+  average_rating?: number;
+  accuracy_score?: number;
+  avg_diff_from_community?: number;
+}
+export interface Contributor {
+  title: string;
   description: string;
+  data: {
+    user_id?: string;
+    name: string;
+    avatar?: string;
+    average_rating?: number;
+    accuracy_score?: number;
+    avg_diff_from_community?: number;
+    ratings_given?: number;
+  }[];
 }
 
 export type CommunityStatCards = {
@@ -359,6 +371,7 @@ export interface MostAccurateUsers {
 }
 
 export interface FilteredData {
+  user_id: string;
   name: string;
   avatar: string;
   ratings_given: number;
@@ -368,14 +381,13 @@ export interface FilteredData {
 
 export interface MediaContent {
   id: string;
-  userId: string;
+  user_id: string;
+  date: string;
+  type: "video" | "article" | "";
   title: string;
   description: string;
-  url: string;
-  type: "video" | "article" | "podcast";
-  thumbnail?: string;
-  likes: number;
-  likedByCurrentUser: boolean;
-  createdAt: string;
-  updatedAt: string;
+  thumbnail_img: string;
+  link: string;
+  created_at: string;
+  updated_at: string;
 }

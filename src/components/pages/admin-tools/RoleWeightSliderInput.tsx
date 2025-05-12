@@ -32,6 +32,7 @@ const RoleWeightSliderInput: React.FC<RoleWeightInputProps> = ({
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!userId) return null;
     const newValue = Number.parseFloat(e.target.value);
     if (!isNaN(newValue)) {
       const clampedValue = Math.min(Math.max(newValue, 1), 10);

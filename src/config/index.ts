@@ -38,6 +38,7 @@ const DB_TABLES = {
   BATTLER_RATINGS: "battler_ratings",
   RATING_ROLE_WEIGHTS: "rating_role_weights",
   BATTLER_ANALYTICS: "battler_analytics",
+  MEDIA_CONTENT: "media_content",
 };
 
 const MATERIALIZED_VIEWS = {
@@ -95,7 +96,6 @@ const PAGES = {
   FORGOT_PASSWORD: "/auth/forgot-password",
   BATTLERS: "/battlers",
   HOME: "/",
-  PROTECTED: "/protected",
   ADMIN_USER_LIST: "/admin/user-list",
   ADMIN_BATTLERS: "/admin/battlers",
   FAVORITES: "/favorites",

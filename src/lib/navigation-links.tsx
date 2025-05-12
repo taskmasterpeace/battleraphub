@@ -37,14 +37,14 @@ export const NAV_LINKS: NavList[] = [
         label: "Users",
         href: PAGES.ADMIN_USER_LIST,
         roles: [ROLE.ADMIN],
-        permissions: [PERMISSIONS.COMMUNITY_MANAGER],
+        permissions: [],
         icon: null,
       },
       {
         label: "Battlers",
         href: PAGES.ADMIN_BATTLERS,
-        roles: [],
-        permissions: [PERMISSIONS.COMMUNITY_MANAGER],
+        roles: [ROLE.ADMIN],
+        permissions: [],
         icon: null,
       },
     ],
@@ -114,7 +114,7 @@ export const secondaryNavItems: NavList[] = [
     icon: <Database className="w-5 h-5 inline mr-3" />,
     children: [
       {
-        label: "Admin-tools",
+        label: "Admin Tools",
         href: PAGES.ADMIN_TOOLS,
         roles: [ROLE.ADMIN],
         permissions: [],
@@ -130,7 +130,7 @@ export const secondaryNavItems: NavList[] = [
       {
         label: "Battlers",
         href: PAGES.ADMIN_BATTLERS,
-        roles: [],
+        roles: [ROLE.ADMIN],
         permissions: [PERMISSIONS.COMMUNITY_MANAGER],
         icon: null,
       },
@@ -140,40 +140,58 @@ export const secondaryNavItems: NavList[] = [
   },
 ];
 
-export const filterNavList = (links: NavList[], user: User | null) => {
+type UserMetadata = {
+  role?: string;
+  permission?: string;
+};
+
+const hasRequiredRole = (requiredRoles: number[], userRole: number): boolean => {
+  if (!requiredRoles.length) return true;
+  if (!userRole) return false;
+  if (requiredRoles.includes(userRole)) return true;
+  return false;
+};
+
+const hasRequiredPermission = (requiredPermissions: string[], userPermission: string): boolean => {
+  if (!requiredPermissions.length) return true;
+  if (!userPermission) return false;
+  if (requiredPermissions.includes(userPermission)) return true;
+  return false;
+};
+
+const filterNavChildren = (
+  children: NavItem[] = [],
+  role: number,
+  permission: string = "",
+): NavItem[] => {
+  if (!Array.isArray(children)) return [];
+
+  return children.filter(
+    (child) =>
+      hasRequiredRole(child.roles, role) && hasRequiredPermission(child.permissions, permission),
+  );
+};
+
+export const filterNavList = (links: NavList[], user: User | null): NavList[] => {
+  if (!Array.isArray(links)) return [];
+
+  const metadata = user?.user_metadata as UserMetadata | undefined;
+  const role = isNaN(Number(metadata?.role)) ? ROLE.FAN : Number(metadata?.role);
+  const permission = metadata?.permission || "";
+
   return links.filter((link) => {
-    const hasRequiredRole =
-      !link.roles.length ||
-      (user?.user_metadata?.role && link.roles.includes(user.user_metadata.role));
-    const hasRequiredPermission =
-      !link.permissions.length ||
-      (user?.user_metadata?.permission && link.permissions.includes(user.user_metadata.permission));
+    const meetsBaseRequirements =
+      hasRequiredRole(link.roles, role) && hasRequiredPermission(link.permissions, permission);
 
-    if (link.href === PAGES.ADMIN_TOOLS) {
-      let visibleChildren: NavItem[] = [];
-
-      if (link.children) {
-        visibleChildren = link.children.filter((child) => {
-          const hasChildRequiredRole =
-            !child.roles.length ||
-            (user?.user_metadata?.role && child.roles.includes(user.user_metadata.role));
-          const hasChildRequiredPermission =
-            !child.permissions.length ||
-            (user?.user_metadata?.permission &&
-              child.permissions.includes(user.user_metadata.permission));
-
-          return hasChildRequiredRole && hasChildRequiredPermission;
-        });
-      }
-
-      if (visibleChildren.length > 0) {
-        link.children = visibleChildren;
+    if (Array.isArray(link.children) && link.children.length > 0) {
+      const filteredChildren = filterNavChildren(link.children, role, permission);
+      if (filteredChildren.length) {
+        link.children = filteredChildren;
         return true;
       }
-
       return false;
     }
 
-    return hasRequiredRole && hasRequiredPermission;
+    return meetsBaseRequirements;
   });
 };

@@ -118,18 +118,20 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
                   >
                     <div className="grid">
                       <div className="space-y-1">
-                        <div className="text-md pl-2 pb-2 font-bold">Personal info</div>
+                        <div className="text-md text-muted-foreground pl-2 pb-2 font-bold">
+                          Personal info
+                        </div>
                         <Separator orientation="horizontal" />
                         <div className="flex flex-col items-start">
                           <Button
                             variant="ghost"
-                            className="flex justify-start items-center px-2 py-2 hover:bg-background rounded-md my-1 w-full"
+                            className="flex justify-start items-center px-2 py-2 hover:bg-muted rounded-md my-1 w-full"
                           >
                             Battler
                           </Button>
                           <Button
                             variant="ghost"
-                            className="flex justify-start px-2 py-2 hover:bg-background rounded-md w-full"
+                            className="flex justify-start px-2 py-2 hover:bg-muted rounded-md w-full"
                           >
                             Users
                           </Button>

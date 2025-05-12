@@ -26,12 +26,12 @@ const KEYBOARD_SHORTCUTS: ShortcutCategory[] = [
   {
     name: "Navigation",
     shortcuts: [
-      { keys: ["g", "h"], description: "Go to Home" },
-      { keys: ["g", "b"], description: "Go to Battlers" },
-      { keys: ["g", "a"], description: "Go to Analytics" },
-      { keys: ["g", "l"], description: "Go to Leaderboard" },
-      { keys: ["g", "p"], description: "Go to Profile" },
-      { keys: ["g", "r"], description: "Go to My Rating" },
+      { keys: ["g", "t", "h"], description: "Go to Home" },
+      { keys: ["g", "t", "b"], description: "Go to Battlers" },
+      { keys: ["g", "t", "a"], description: "Go to Analytics" },
+      { keys: ["g", "t", "l"], description: "Go to Leaderboard" },
+      { keys: ["g", "t", "p"], description: "Go to Profile" },
+      { keys: ["g", "t", "r"], description: "Go to My Rating" },
     ],
   },
   {
@@ -44,9 +44,9 @@ const KEYBOARD_SHORTCUTS: ShortcutCategory[] = [
   {
     name: "Admin",
     shortcuts: [
-      { keys: ["a", "b"], description: "Manage Battler" },
-      { keys: ["a", "u"], description: "Manage Users" },
-      { keys: ["a", "d"], description: "Data Tools" },
+      { keys: ["m", "t", "b"], description: "Manage Battler" },
+      { keys: ["m", "t", "u"], description: "Manage Users" },
+      { keys: ["m", "d", "t"], description: "Data Tools" },
     ],
   },
 ];

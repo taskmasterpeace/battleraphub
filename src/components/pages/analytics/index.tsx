@@ -27,7 +27,6 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
   const {
     battlerAnalytics,
     battlersData,
-    searchQuery,
     averageRatingByCategoryData,
     ratingsOverTimeData,
     ratingDistributionData,
@@ -174,7 +173,6 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
               placeholderText={selectedBattler?.name || "Select battler..."}
               options={battlersData as Battlers[]}
               setSearchQuery={setSearchQuery}
-              searchQuery={searchQuery}
               selectedOption={selectedBattler as Battlers}
               setSelectedOption={(value) => setSelectedBattler(value as Battlers)}
             />

@@ -31,12 +31,12 @@ export default function BadgeSection({
   const getColorScheme = (isSelected: boolean) => {
     if (isPositive) {
       return isSelected
-        ? "bg-success-foreground/20 dark:bg-success/20 text-success border-success hover:bg-success-foreground shadow-md shadow-success-900/30"
-        : "bg-background text-muted-foreground border-border hover:bg-success/50 hover:border-success";
+        ? "bg-success/10 dark:bg-success/20 text-success border-success/70 hover:bg-success-foreground shadow-md shadow-success-900/30"
+        : "bg-background text-muted-foreground dark:text-white/80 border-border hover:bg-success/10 hover:border-success/70";
     } else {
       return isSelected
-        ? "bg-destructive-foreground/20 dark:bg-destructive/20 text-destructive border-destructive hover:bg-destructive-foreground shadow-md shadow-destructive-900/30"
-        : "bg-background text-muted-foreground border-border hover:bg-destructive/50 hover:border-destructive";
+        ? "bg-destructive/10 dark:bg-destructive/20 text-destructive border-destructive/70 hover:bg-destructive-foreground shadow-md shadow-destructive-900/30"
+        : "bg-background text-muted-foreground dark:text-white/80 border-border hover:bg-destructive/15 hover:border-destructive/70";
     }
   };
 

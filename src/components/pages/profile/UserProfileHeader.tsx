@@ -30,8 +30,7 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
         color:
           "bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive",
       });
-    if (user?.role_id === ROLE.MEDIA)
-      badges.push({ label: "Media", color: "bg-primary/30 text-purple-400 border-purple-700" });
+    if (user?.role_id === ROLE.MEDIA) badges.push({ label: "Media", color: "text-foreground" });
     if (user?.role_id === ROLE.BATTLE)
       badges.push({
         label: "Battler",
@@ -88,7 +87,7 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
                     </Badge>
                   ))}
                   {user.verified && (
-                    <Badge className="bg-blue-900/30 text-blue-400 border-blue-700">Verified</Badge>
+                    <Badge className="bg-muted hover:bg-background text-foreground">Verified</Badge>
                   )}
                 </div>
 

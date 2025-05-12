@@ -50,7 +50,7 @@ export default function LeaderboardSection<T extends FilteredData>({
               />
             </div>
             <div>
-              <Link href={`/profile/${entry.name}`} className="font-medium hover:underline">
+              <Link href={`/profile/${entry.user_id}`} className="font-medium hover:underline">
                 {entry.name}
               </Link>
               <p className="text-sm text-muted-foreground">
@@ -59,7 +59,7 @@ export default function LeaderboardSection<T extends FilteredData>({
             </div>
           </div>
           <div className="text-right">
-            <div className="font-semibold">{String(entry[valueKey])}</div>
+            <div className="font-semibold">{String(entry[valueKey] || "0")}</div>
             <div className="text-sm text-muted-foreground">{valueLabel}</div>
           </div>
         </div>

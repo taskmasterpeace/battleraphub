@@ -4,12 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_ROUTES = [PAGES.SIGN_UP, PAGES.LOGIN, PAGES.RESET_PASSWORD, PAGES.FORGOT_PASSWORD];
 
-const PROTECTED_ROUTES = [
-  PAGES.SELECT_ROLE,
-  PAGES.PROTECTED,
-  PAGES.ADMIN_BATTLERS,
-  PAGES.ADMIN_USER_LIST,
-];
+const PROTECTED_ROUTES = [PAGES.SELECT_ROLE, PAGES.ADMIN_BATTLERS, PAGES.ADMIN_USER_LIST];
 
 const ACCESS_CONTROL = {
   [PAGES.ADMIN_USER_LIST]: {
@@ -60,7 +55,7 @@ export const updateSession = async (request: NextRequest) => {
     const user = await supabase.auth.getUser();
 
     if (PUBLIC_ROUTES.includes(request.nextUrl.pathname) && !user.error) {
-      return NextResponse.redirect(new URL(PAGES.PROTECTED, request.url));
+      return NextResponse.redirect(new URL(PAGES.HOME, request.url));
     }
 
     if (PROTECTED_ROUTES.includes(request.nextUrl.pathname) && user.error) {
@@ -82,7 +77,7 @@ export const updateSession = async (request: NextRequest) => {
       user.data.user.user_metadata.role &&
       request.nextUrl.pathname === PAGES.SELECT_ROLE
     ) {
-      return NextResponse.redirect(new URL(PAGES.PROTECTED, request.url));
+      return NextResponse.redirect(new URL(PAGES.HOME, request.url));
     }
     // Role base access control
     const rbacAccess = ACCESS_CONTROL[pathname];

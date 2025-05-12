@@ -57,7 +57,7 @@ export default function Header() {
                   <DropdownMenu key={link.href}>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className={`text-sm font-medium transition-colors hover:text-primary ${
+                        className={`text-sm font-medium transition-colors hover:text-primary outline-none ${
                           isActive ? "text-primary" : "text-muted-foreground"
                         }`}
                       >
@@ -100,7 +100,7 @@ export default function Header() {
                   <Button variant="ghost" size="sm" className="gap-2">
                     <User className="h-4 w-4 text-foreground" />
                     <span className="hidden md:inline text-foreground">
-                      {user.email?.split("@")[0]}
+                      {user.user_metadata.name}
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
@@ -115,7 +115,7 @@ export default function Header() {
                   </DropdownMenuItem>
                   {user.user_metadata.role === ROLE.ADMIN && (
                     <DropdownMenuItem asChild>
-                      <Link href="/admin-tools">Admin</Link>
+                      <Link href="/admin-tools">Admin Tools</Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
