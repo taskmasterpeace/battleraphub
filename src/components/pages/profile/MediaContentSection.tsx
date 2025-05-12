@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Calendar, ExternalLink, Edit, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/auth.context";
-import { MediaContent } from "@/types";
+import { MediaContent, User } from "@/types";
 import { deleteContentAction, getUserContentAction } from "@/app/actions";
 import FormContentDialog from "@/components/pages/profile/FormContentDialog";
 import {
@@ -21,28 +21,27 @@ import {
 } from "@/components/ui/dialog";
 
 interface MediaContentSectionProps {
-  userId: string;
-  username: string;
+  userDetails: User;
 }
 
-export default function MediaContentSection({ userId, username }: MediaContentSectionProps) {
+export default function MediaContentSection({ userDetails }: MediaContentSectionProps) {
   const { user: currentUser } = useAuth();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [content, setContent] = useState<MediaContent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
-  const isOwnProfile = currentUser?.id === userId;
+  const isOwnProfile = currentUser?.id === userDetails?.id;
 
   const fetchContent = useCallback(async () => {
     try {
-      const data = await getUserContentAction(userId);
+      const data = await getUserContentAction(userDetails?.id);
       setContent(data);
     } catch (error) {
       console.error("Error fetching content:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [userId]);
+  }, [userDetails]);
 
   useEffect(() => {
     fetchContent();
@@ -107,7 +106,7 @@ export default function MediaContentSection({ userId, username }: MediaContentSe
         <div className="text-center py-12 text-muted-foreground">
           {isOwnProfile
             ? "You haven't added any content yet. Click 'Add Content' to get started."
-            : `${username} hasn't added any content yet.`}
+            : `${userDetails?.name} hasn't added any content yet.`}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -127,7 +126,7 @@ export default function MediaContentSection({ userId, username }: MediaContentSe
         <FormContentDialog
           open={isAddDialogOpen}
           onOpenChange={setIsAddDialogOpen}
-          userId={userId}
+          userId={userDetails?.id}
           fetchContent={fetchContent}
           isContentCreate={true}
         />

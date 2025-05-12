@@ -16,14 +16,8 @@ interface AnalyticsTabProps {
 const colorOptions = ["#8884d8", "#82ca9d", "#ffc658"];
 
 export default function AnalyticsTab({ battlerData, attributeData }: AnalyticsTabProps) {
-  const {
-    battlerAnalytics,
-    battlerRatings,
-    battlersData,
-    fetchBattlerAnalytics,
-    setSearchQuery,
-    searchQuery,
-  } = useBattler();
+  const { battlerAnalytics, battlerRatings, battlersData, fetchBattlerAnalytics, setSearchQuery } =
+    useBattler();
   const [selectedBattler, setSelectedBattler] = useState<Battlers | null>(null);
   const [selectedBattlerAnalytics, setSelectedBattlerAnalytics] = useState<BattlerAnalytics[]>([]);
 
@@ -130,7 +124,6 @@ export default function AnalyticsTab({ battlerData, attributeData }: AnalyticsTa
           placeholderText={selectedBattler?.name || battlersData[0]?.name || "Select battler..."}
           options={battlersData}
           setSearchQuery={setSearchQuery}
-          searchQuery={searchQuery}
           selectedOption={selectedBattler as Battlers}
           setSelectedOption={(value) => setSelectedBattler(value as Battlers)}
         />

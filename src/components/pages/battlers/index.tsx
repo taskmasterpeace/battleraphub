@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import QuickFilterBar from "@/components/pages/battlers/QuickFilterBar";
@@ -15,6 +15,7 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination";
+import debounce from "lodash/debounce";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -153,26 +154,33 @@ export default function Battlers({ tags }: { tags: TagsOption[] }) {
   });
 
   // Add this function to handle filter changes
-  const handleFilterChange = async (filters: { search: string; tags: number[] }) => {
-    let count = 0;
-    if (!filters.tags.length && !filters.search) {
-      count = await fetchBattlersCount();
-      resetCount(count);
-    } else {
-      // Get the count for pagination
-      const { data, error: countError } = await supabase.rpc(RPC_FUNCTIONS.BATTLER_FILTER_COUNT, {
-        tags: filters.tags,
-        search_name: filters.search,
-      });
+  const handleFilterChange = useMemo(
+    () =>
+      debounce(async (filters: { search: string; tags: number[] }) => {
+        let count = 0;
+        if (!filters.tags.length && !filters.search) {
+          count = await fetchBattlersCount();
+          resetCount(count);
+        } else {
+          // Get the count for pagination
+          const { data, error: countError } = await supabase.rpc(
+            RPC_FUNCTIONS.BATTLER_FILTER_COUNT,
+            {
+              tags: filters.tags,
+              search_name: filters.search,
+            },
+          );
 
-      if (countError) {
-        console.error("Error getting count for filtered battlers:", countError);
-      }
-      resetCount(data[0].count);
-    }
-    // In a real app, this would filter the battlers
-    fetchBattlers(1, ITEMS_PER_PAGE, filters);
-  };
+          if (countError) {
+            console.error("Error getting count for filtered battlers:", countError);
+          }
+          resetCount(data[0].count);
+        }
+        // In a real app, this would filter the battlers
+        fetchBattlers(1, ITEMS_PER_PAGE, filters);
+      }, 500),
+    [fetchBattlersCount, resetCount, fetchBattlers],
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">

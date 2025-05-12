@@ -59,7 +59,7 @@ export default function LeaderboardSection<T extends FilteredData>({
             </div>
           </div>
           <div className="text-right">
-            <div className="font-semibold">{String(entry[valueKey])}</div>
+            <div className="font-semibold">{String(entry[valueKey] || "0")}</div>
             <div className="text-sm text-muted-foreground">{valueLabel}</div>
           </div>
         </div>

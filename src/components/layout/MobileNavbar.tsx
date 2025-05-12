@@ -171,18 +171,24 @@ export default function MobileNavbar() {
                     <div key={item.href}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button
-                            className={`flex items-center py-3 px-4 rounded-md transition-colors hover:primary ${
-                              isActive ? "text-primary" : "text-foreground"
+                          <span
+                            className={`cursor-pointer flex items-center py-3 px-4 rounded-md transition-colors ${
+                              isActive
+                                ? "bg-amber-900/20 text-amber-400"
+                                : "text-foreground hover:bg-muted hover:text-amber-400"
                             }`}
                           >
                             {item.icon}
                             {item.label}
-                          </button>
+                          </span>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56" align="start">
                           {item.children.map((child) => (
-                            <DropdownMenuItem asChild key={child.href}>
+                            <DropdownMenuItem
+                              asChild
+                              key={child.href}
+                              className="cursor-pointer hover:bg-muted"
+                            >
                               <Link href={child.href || "#"}>{child.label}</Link>
                             </DropdownMenuItem>
                           ))}

@@ -64,7 +64,7 @@ export default async function UserProfilePage({ params }: { params: UserProfileP
             </TabsContent>
 
             <TabsContent value="content">
-              <MediaContentSection userId={userDetails.id} username={username} />
+              <MediaContentSection userDetails={userDetails} />
             </TabsContent>
           </>
         )}

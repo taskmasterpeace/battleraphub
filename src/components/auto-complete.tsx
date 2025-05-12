@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown, CircleUser } from "lucide-react";
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import debounce from "lodash.debounce";
 
 interface AutoCompleteOption {
   id: string | number;
@@ -21,7 +22,6 @@ interface AutoCompleteOption {
 
 interface AutoCompleteProps<T extends AutoCompleteOption> {
   placeholderText: string;
-  searchQuery: string;
   setSearchQuery: (value: string) => void;
   options: T[];
   selectedOption?: T;
@@ -30,13 +30,21 @@ interface AutoCompleteProps<T extends AutoCompleteOption> {
 
 const AutoComplete = <T extends AutoCompleteOption>({
   placeholderText,
-  searchQuery,
   setSearchQuery,
   options,
   selectedOption,
   setSelectedOption,
 }: AutoCompleteProps<T>) => {
   const [open, setOpen] = useState(false);
+
+  const debouncedOnChange = useMemo(
+    () =>
+      debounce((value: string) => {
+        setSearchQuery(value);
+      }, 500),
+    [setSearchQuery],
+  );
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -55,8 +63,7 @@ const AutoComplete = <T extends AutoCompleteOption>({
           <CommandInput
             placeholder="Search item..."
             className="h-9"
-            value={searchQuery}
-            onValueChange={(value) => setSearchQuery(value)}
+            onValueChange={(values) => debouncedOnChange(values)}
           />
           <CommandList>
             <CommandEmpty>No battler found.</CommandEmpty>
