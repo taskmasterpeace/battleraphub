@@ -1,12 +1,10 @@
 "use client";
 
-import type React from "react";
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Edit, Save, X, Youtube, Twitter, Instagram, LinkIcon } from "lucide-react";
+import { Edit, Save, X, Youtube, Instagram, LinkIcon } from "lucide-react";
 import { User } from "@/types";
 import { useAuth } from "@/contexts/auth.context";
 import { updateUserProfileAction } from "@/app/actions";
@@ -23,6 +21,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import Image from "next/image";
+import PlatformX from "../../../../public/image/twitter-x.svg";
 
 interface SocialLinksSectionProps {
   user: User;
@@ -48,10 +48,10 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
   const { control, watch, handleSubmit, setValue } = form;
 
   useEffect(() => {
-    setValue("website", user.website);
-    setValue("youtube", user.youtube);
-    setValue("twitter", user.twitter);
-    setValue("instagram", user.instagram);
+    setValue("website", user.website || "");
+    setValue("youtube", user.youtube || "");
+    setValue("twitter", user.twitter || "");
+    setValue("instagram", user.instagram || "");
   }, [user, setValue]);
 
   const isOwnProfile = currentUser?.id === user.id;
@@ -124,14 +124,20 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
                 name="twitter"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center">
-                      <Twitter className="w-4 h-4 mr-2 text-blue-400" />
-                      Twitter
+                    <FormLabel className="flex items-center gap-3">
+                      <Image
+                        src={PlatformX}
+                        width={13}
+                        height={13}
+                        alt="platform-x"
+                        className="filter brightness-0 dark:filter-none"
+                      />
+                      Platform X
                     </FormLabel>
                     <FormControl>
                       <Input
                         className="text-sm md:text-base bg-background border-border"
-                        placeholder="https://twitter.com/yourusername"
+                        placeholder="https://www.x.com/yourusername"
                         {...field}
                       />
                     </FormControl>
@@ -215,12 +221,12 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
               className="flex items-center text-muted-foreground hover:text-destructive transition-colors"
             >
               <Youtube className="w-5 h-5 mr-3 text-destructive" />
-              YouTube Channel
+              Youtube channel
             </a>
           ) : isOwnProfile ? (
             <div className="flex items-center text-muted-foreground">
               <Youtube className="w-5 h-5 mr-3 text-muted-foreground" />
-              Add your YouTube channel
+              Add your youTube channel
             </div>
           ) : null}
           {watch("twitter") ? (
@@ -228,15 +234,27 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
               href={watch("twitter")}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center text-muted-foreground hover:text-blue-400 transition-colors"
+              className="flex items-center gap-4 text-muted-foreground hover:text-white transition-colors"
             >
-              <Twitter className="w-5 h-5 mr-3 text-blue-400" />
-              Twitter
+              <Image
+                src={PlatformX}
+                width={14}
+                height={14}
+                alt="platform-x"
+                className="filter brightness-0 dark:filter-none"
+              />
+              Platform X
             </a>
           ) : isOwnProfile ? (
-            <div className="flex items-center text-muted-foreground">
-              <Twitter className="w-5 h-5 mr-3 text-muted-foreground" />
-              Add your Twitter
+            <div className="flex items-center text-muted-foreground gap-5">
+              <Image
+                src={PlatformX}
+                width={14}
+                height={14}
+                alt="platform-x"
+                className="filter brightness-0 dark:filter-none"
+              />
+              Add your platform X
             </div>
           ) : null}
           {watch("instagram") ? (
@@ -252,7 +270,7 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
           ) : isOwnProfile ? (
             <div className="flex items-center text-muted-foreground">
               <Instagram className="w-5 h-5 mr-3 text-muted-foreground" />
-              Add your Instagram
+              Add your instagram
             </div>
           ) : null}
           {watch("website") ? (

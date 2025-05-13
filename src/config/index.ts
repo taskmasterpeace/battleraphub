@@ -39,6 +39,7 @@ const DB_TABLES = {
   RATING_ROLE_WEIGHTS: "rating_role_weights",
   BATTLER_ANALYTICS: "battler_analytics",
   MEDIA_CONTENT: "media_content",
+  WEIGHTED_BATTLER_ANALYTICS: "weighted_battler_analytics",
 };
 
 const MATERIALIZED_VIEWS = {

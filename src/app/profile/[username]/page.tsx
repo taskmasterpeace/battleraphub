@@ -25,7 +25,7 @@ export default async function UserProfilePage({ params }: { params: UserProfileP
   return (
     <div className="container mx-auto px-4 py-8">
       <UserProfileHeader user={userDetails} />
-      <Tabs defaultValue="about" className="mt-12">
+      <Tabs defaultValue={isMediaUser ? "videos" : "ratings"} className="mt-12">
         <TabsList className="mb-6">
           {isMediaUser && (
             <>

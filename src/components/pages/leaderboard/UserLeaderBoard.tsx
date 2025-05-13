@@ -69,110 +69,127 @@ export default function UserLeaderboard({
   ]);
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-yellow-500" />
-              User Leaderboard
-            </CardTitle>
-            <CardDescription>Top contributors ranked by ratings and influence</CardDescription>
-          </div>
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search users..."
-              className="pl-8"
-              value={searchQuery}
-              onChange={handleSearch}
-            />
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="overall" className="space-y-4" onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="overall">
-              <Trophy className="h-4 w-4 mr-2" />
-              Overall
-            </TabsTrigger>
-            <TabsTrigger value="consistency">
-              <BarChart2 className="h-4 w-4 mr-2" />
-              Consistency
-            </TabsTrigger>
-            <TabsTrigger value="influence">
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Influence
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overall" className="space-y-4">
-            {topRaterBattlerLoading || mostAccurateUsersLoading ? (
-              <div className="space-y-2">
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <SkeletonLoader key={index} />
-                ))}
+    <div>
+      {tabType === LEADERBOARD_TAB_TYPE.MOST_FOLLOWED ? (
+        <Card className="bg-background/50 backdrop-blur-sm border-muted">
+          <CardHeader>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-center gap-6 my-24">
+              <div className="text-center">
+                <h3 className="text-3xl font-semibold text-muted-foreground mb-2">Coming Soon</h3>
+                <p className="text-muted-foreground text-lg">
+                  We're working on something exciting!
+                </p>
               </div>
-            ) : filteredData.length === 0 ? (
-              <div className="text-center py-8 text-foreground">No Data Found</div>
-            ) : (
-              <LeaderboardSection
-                data={filteredData}
-                sortKey="battlers_rated"
-                sortDirection="asc"
-                valueKey={
-                  tabType === LEADERBOARD_TAB_TYPE.MOST_RATINGS
-                    ? "battlers_rated"
-                    : tabType === LEADERBOARD_TAB_TYPE.MOST_ACCURATE
-                      ? "accuracy_score"
-                      : "accuracy_score"
-                }
-                valueLabel="Ratings"
-              />
-            )}
-
-            <div className="flex justify-center pt-2">
-              <Button asChild variant="outline" size="sm">
-                <Link href="/my-ratings">View All Rankings</Link>
-              </Button>
             </div>
-          </TabsContent>
+          </CardHeader>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  User Leaderboard
+                </CardTitle>
+                <CardDescription>Top contributors ranked by ratings and influence</CardDescription>
+              </div>
+              <div className="relative w-full md:w-64">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search users..."
+                  className="pl-8"
+                  value={searchQuery}
+                  onChange={handleSearch}
+                />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="overall" className="space-y-4" onValueChange={setActiveTab}>
+              <TabsList>
+                <TabsTrigger value="overall">
+                  <Trophy className="h-4 w-4 mr-2" />
+                  Overall
+                </TabsTrigger>
+                <TabsTrigger value="consistency">
+                  <BarChart2 className="h-4 w-4 mr-2" />
+                  Consistency
+                </TabsTrigger>
+                <TabsTrigger value="influence">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Influence
+                </TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="consistency" className="space-y-4">
-            {mostConsistentUsersLoading ? (
-              <SkeletonLoader />
-            ) : filteredData.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">No Data Found</div>
-            ) : (
-              <LeaderboardSection
-                data={filteredData}
-                sortKey="ratings_given"
-                sortDirection="asc"
-                valueKey="ratings_given"
-                valueLabel="Consistency"
-              />
-            )}
-          </TabsContent>
+              <TabsContent value="overall" className="space-y-4">
+                {topRaterBattlerLoading || mostAccurateUsersLoading ? (
+                  <div className="space-y-2">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <SkeletonLoader key={index} />
+                    ))}
+                  </div>
+                ) : filteredData.length === 0 ? (
+                  <div className="text-center py-8 text-foreground">No Data Found</div>
+                ) : (
+                  <LeaderboardSection
+                    data={filteredData}
+                    sortKey="battlers_rated"
+                    sortDirection="asc"
+                    valueKey={
+                      tabType === LEADERBOARD_TAB_TYPE.MOST_RATINGS
+                        ? "battlers_rated"
+                        : tabType === LEADERBOARD_TAB_TYPE.MOST_ACCURATE
+                          ? "accuracy_score"
+                          : "accuracy_score"
+                    }
+                    valueLabel="Ratings"
+                  />
+                )}
 
-          <TabsContent value="influence" className="space-y-4">
-            {mostInfluentialUsersLoading ? (
-              <SkeletonLoader />
-            ) : filteredData.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">No Data Found</div>
-            ) : (
-              <LeaderboardSection
-                data={filteredData}
-                sortKey="ratings_given"
-                sortDirection="asc"
-                valueKey="ratings_given"
-                valueLabel="Ratings"
-              />
-            )}
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+                <div className="flex justify-center pt-2">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href="/my-ratings">View All Rankings</Link>
+                  </Button>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="consistency" className="space-y-4">
+                {mostConsistentUsersLoading ? (
+                  <SkeletonLoader />
+                ) : filteredData.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">No Data Found</div>
+                ) : (
+                  <LeaderboardSection
+                    data={filteredData}
+                    sortKey="ratings_given"
+                    sortDirection="asc"
+                    valueKey="ratings_given"
+                    valueLabel="Consistency"
+                  />
+                )}
+              </TabsContent>
+
+              <TabsContent value="influence" className="space-y-4">
+                {mostInfluentialUsersLoading ? (
+                  <SkeletonLoader />
+                ) : filteredData.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">No Data Found</div>
+                ) : (
+                  <LeaderboardSection
+                    data={filteredData}
+                    sortKey="ratings_given"
+                    sortDirection="asc"
+                    valueKey="ratings_given"
+                    valueLabel="Ratings"
+                  />
+                )}
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
 

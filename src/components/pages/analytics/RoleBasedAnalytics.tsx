@@ -133,7 +133,9 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
           <CardTitle>
             Top Battlers by {getRoleDisplayName(selectedRole)} Ratings
             {selectedCategory && ` - ${selectedCategory}`}
-            {selectedAttribute && ` (${selectedAttribute})`}
+            {selectedAttribute !== "All"
+              ? ` (${attributeData.find((attr) => String(attr.id) === selectedAttribute)?.name})`
+              : " (All)"}
           </CardTitle>
         </CardHeader>
         <CardContent>

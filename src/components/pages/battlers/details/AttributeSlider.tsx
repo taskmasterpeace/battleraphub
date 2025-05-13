@@ -2,7 +2,7 @@
 import { Slider } from "@/components/ui/slider";
 import { Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import debounce from "lodash.debounce";
 import { useAuth } from "@/contexts/auth.context";
 
@@ -24,7 +24,6 @@ export default function AttributeSlider({
   // gradientTo,
 }: AttributeSliderProps) {
   const [localValue, setLocalValue] = useState(value);
-
   const { user } = useAuth();
   const userId = user?.id;
 
@@ -32,16 +31,18 @@ export default function AttributeSlider({
     setLocalValue(value);
   }, [value]);
 
-  // Debounced onChange handler
-  const debouncedOnChange = useCallback(
-    (value: number) => {
-      const debouncedFn = debounce((val: number) => {
-        onChange(val);
-      }, 500);
-      debouncedFn(value);
-    },
-    [onChange],
+  const debouncedChangeRef = useRef(
+    debounce((val: number) => {
+      onChange(val);
+    }, 500),
   );
+
+  useEffect(() => {
+    const debouncedChange = debouncedChangeRef.current;
+    return () => {
+      debouncedChange.cancel();
+    };
+  }, []);
 
   // Get color based on value
   const getColor = () => {
@@ -80,8 +81,9 @@ export default function AttributeSlider({
         value={[localValue]}
         onValueChange={(values) => {
           if (!userId) return null;
-          setLocalValue(values[0]);
-          debouncedOnChange(values[0]);
+          const newVal = values[0];
+          setLocalValue(newVal);
+          debouncedChangeRef.current(newVal);
         }}
         className="w-full"
       />

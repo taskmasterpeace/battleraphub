@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 import RoleSelector from "./RoleSelector";
 import Image from "next/image";
-import { DB_TABLES, ROLE } from "@/config";
+import { DB_TABLES, PAGES, ROLE } from "@/config";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
@@ -51,7 +51,7 @@ export default function SelectRole() {
       }
       // Refresh the token to get the latest role
       await supabase.auth.getSession();
-      router.push("/");
+      router.replace(PAGES.HOME);
     } catch (error) {
       console.error(error);
     }
