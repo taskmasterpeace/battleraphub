@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { protectedCreateClient } from "@/utils/supabase/protected-server";
-import { DB_TABLES, PAGES, PERMISSIONS, RPC_FUNCTIONS } from "@/config";
+import { DB_TABLES, PAGES, PERMISSIONS, ROLES_NAME, RPC_FUNCTIONS } from "@/config";
 import {
   successResponse,
   errorResponse,
@@ -11,7 +11,7 @@ import {
   encodedRedirect,
 } from "@/utils/response";
 import { uploadFileToStorage } from "@/lib/uploadFileToStorage";
-import { MediaContent, MyRating, User, UserBadge } from "@/types";
+import { Battlers, MediaContent, MyRating, User, UserBadge } from "@/types";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -415,25 +415,70 @@ export const editBattlersAction = async (formData: FormData) => {
   }
 };
 
-export const deleteBattlersAction = async (formData: FormData) => {
+export const deleteBattlersAction = async (battlerId: string) => {
   const supabase = await protectedCreateClient();
-  const userId = formData.get("userId") as string;
-
-  if (!userId) {
-    return errorResponse("userId is required");
+  if (!battlerId) {
+    return errorResponse("battlerId is required");
   }
 
   const { error: tagError } = await supabase
     .from(DB_TABLES.BATTLERS_TAGS)
     .delete()
-    .eq("battler_id", userId);
+    .eq("battler_id", battlerId);
 
   if (tagError) {
     console.error("Failed to delete battler_tags:", tagError);
     return errorResponse("Failed to delete battler tags");
   }
 
-  const { error } = await supabase.from(DB_TABLES.BATTLERS).delete().eq("id", userId);
+  const { error: badgeError } = await supabase
+    .from(DB_TABLES.BATTLER_BADGES)
+    .delete()
+    .eq("battler_id", battlerId);
+
+  if (badgeError) {
+    console.error("Failed to delete battler_badges:", badgeError);
+    return errorResponse("Failed to delete battler badges");
+  }
+
+  const { error: ratingError } = await supabase
+    .from(DB_TABLES.BATTLER_RATINGS)
+    .delete()
+    .eq("battler_id", battlerId);
+
+  if (ratingError) {
+    console.error("Failed to delete battler_ratings:", ratingError);
+    return errorResponse("Failed to delete battler ratings");
+  }
+
+  const { error: analyticsError } = await supabase
+    .from(DB_TABLES.BATTLER_ANALYTICS)
+    .delete()
+    .eq("battler_id", battlerId);
+
+  if (analyticsError) {
+    console.error("Failed to delete battler_analytics:", analyticsError);
+    return errorResponse("Failed to delete battler analytics");
+  }
+
+  const { data: weightedBattlerData } = await supabase
+    .from(DB_TABLES.WEIGHTED_BATTLER_ANALYTICS)
+    .select()
+    .eq("battler_id", battlerId);
+
+  if (weightedBattlerData && weightedBattlerData.length > 0) {
+    const { error: weightedBattlerError } = await supabase
+      .from(DB_TABLES.WEIGHTED_BATTLER_ANALYTICS)
+      .delete()
+      .eq("battler_id", battlerId);
+
+    if (weightedBattlerError) {
+      console.error("Failed to delete weighted battler:", weightedBattlerError);
+      return errorResponse("Failed to delete weighted battler");
+    }
+  }
+
+  const { error } = await supabase.from(DB_TABLES.BATTLERS).delete().eq("id", battlerId);
 
   if (error) {
     console.error("Delete error:", error);
@@ -553,13 +598,13 @@ export const updateUserProfileAction = async (formData: FormData) => {
       .update({
         ...(name && { name }),
         ...(bio && { bio }),
-        ...(website && { website }),
         ...(location && { location }),
         ...(avatarUrl && { avatar: avatarUrl }),
         ...(imageUrl && { image: imageUrl }),
-        ...(twitter && { twitter }),
-        ...(instagram && { instagram }),
-        ...(youtube && { youtube }),
+        ...(website !== undefined && { website }),
+        ...(twitter !== undefined && { twitter }),
+        ...(instagram !== undefined && { instagram }),
+        ...(youtube !== undefined && { youtube }),
       })
       .eq("id", userId);
 
@@ -792,6 +837,50 @@ export const deleteContentAction = async (contentId: string) => {
       return errorResponse("Error deleting content");
     }
     return successResponse("Content deleted successfully");
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+    return errorResponse(errorMessage);
+  }
+};
+export const highlightedBattlerAction = async (isChecked: boolean, battler: Battlers) => {
+  const supabase = await protectedCreateClient();
+  const userId = battler?.added_by;
+  try {
+    if (isChecked) {
+      const { data: userData } = await supabase
+        .from(DB_TABLES.USERS)
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (!userData) {
+        throw new Error("User not found");
+      }
+      const { error: highLightError } = await supabase
+        .from(DB_TABLES.HIGHLIGHTS)
+        .insert({
+          entity_id: battler.id,
+          entity_type: ROLES_NAME[userData.role_id],
+        })
+        .select();
+
+      if (highLightError) {
+        console.error("Error adding highlight:", highLightError);
+        return errorResponse("Error adding highlight");
+      }
+      return successResponse("Highlighted battler added successfully");
+    } else {
+      const { error: highLightError } = await supabase
+        .from(DB_TABLES.HIGHLIGHTS)
+        .delete()
+        .eq("entity_id", battler.id);
+
+      if (highLightError) {
+        console.error("Error removing highlight:", highLightError);
+        return errorResponse("Error removing highlight");
+      }
+      return successResponse("Highlighted battler removed successfully");
+    }
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Something went wrong";
     return errorResponse(errorMessage);

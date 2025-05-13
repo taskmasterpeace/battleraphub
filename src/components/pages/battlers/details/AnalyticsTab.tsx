@@ -18,7 +18,7 @@ const colorOptions = ["#8884d8", "#82ca9d", "#ffc658"];
 export default function AnalyticsTab({ battlerData, attributeData }: AnalyticsTabProps) {
   const { battlerAnalytics, battlerRatings, battlersData, fetchBattlerAnalytics, setSearchQuery } =
     useBattler();
-  const [selectedBattler, setSelectedBattler] = useState<Battlers | null>(null);
+  const [selectedBattler, setSelectedBattler] = useState<Battlers | null>(battlersData[0]);
   const [selectedBattlerAnalytics, setSelectedBattlerAnalytics] = useState<BattlerAnalytics[]>([]);
 
   useEffect(() => {

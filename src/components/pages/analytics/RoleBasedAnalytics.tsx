@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/chart";
 import Link from "next/link";
 import { BattlerAttribute, Attribute } from "@/types";
-import { defaultRoleWeights } from "@/__mocks__/analytics";
+import { rolesWeightData } from "@/lib/static/static-data";
 import { topBattlerByRatingAction } from "@/app/actions";
 import { Loader, CircleUser } from "lucide-react";
 import Image from "next/image";
@@ -61,13 +61,13 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
   }, [selectedRole, selectedCategory, selectedAttribute]);
 
   const getRoleColor = (role: number): string => {
-    const roleWeight = defaultRoleWeights.find((rw) => rw.role_id === role);
+    const roleWeight = rolesWeightData.find((rw) => rw.role_id === role);
     return roleWeight?.color || "gray";
   };
 
   const getRoleDisplayName = (role: number) => {
-    const roleWeight = defaultRoleWeights.find((rw) => rw.role_id === role);
-    return roleWeight?.displayName || role;
+    const roleWeight = rolesWeightData.find((rw) => rw.role_id === role);
+    return roleWeight?.key || role;
   };
 
   return (
@@ -85,11 +85,11 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
               <SelectValue placeholder="Select role" />
             </SelectTrigger>
             <SelectContent>
-              {defaultRoleWeights.map((role) => (
-                <SelectItem key={role.role} value={String(role?.role_id)}>
+              {rolesWeightData.map((role) => (
+                <SelectItem key={role.formKey} value={String(role?.role_id)}>
                   <div className="flex items-center">
                     <div className={`w-2 h-2 rounded-full ${role.backgroundColor} mr-2`}></div>
-                    {role.displayName}
+                    {role.key}
                   </div>
                 </SelectItem>
               ))}
@@ -133,7 +133,9 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
           <CardTitle>
             Top Battlers by {getRoleDisplayName(selectedRole)} Ratings
             {selectedCategory && ` - ${selectedCategory}`}
-            {selectedAttribute && ` (${selectedAttribute})`}
+            {selectedAttribute !== "All"
+              ? ` (${attributeData.find((attr) => String(attr.id) === selectedAttribute)?.name})`
+              : " (All)"}
           </CardTitle>
         </CardHeader>
         <CardContent>

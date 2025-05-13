@@ -46,6 +46,7 @@ const UserListTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [userData, setUserData] = useState<User[]>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [activePopover, setActivePopover] = useState<string | null>(null);
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   const fetchUserList = async (page: number) => {
@@ -83,6 +84,7 @@ const UserListTable = () => {
       const response = await revokeUserPermissionAction(formData);
       if (response.success) {
         toast.success(response.message);
+        setActivePopover(null);
         fetchUserList(currentPage);
       } else {
         toast.error(response.message);
@@ -99,6 +101,7 @@ const UserListTable = () => {
       const response = await giveUserPermissionAction(formData);
       if (response.success) {
         toast.success(response.message);
+        setActivePopover(null);
         fetchUserList(currentPage);
       } else {
         toast.error(response.message);
@@ -115,6 +118,7 @@ const UserListTable = () => {
       const response = await markAsVerifiedAction(formData);
       if (response.success) {
         toast.success(response.message);
+        setActivePopover(null);
         fetchUserList(currentPage);
       } else {
         toast.error(response.message);
@@ -222,7 +226,10 @@ const UserListTable = () => {
                   {user?.verified === true ? <Check className="w-4 h-4" /> : "-"}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Popover>
+                  <Popover
+                    open={activePopover === user.id}
+                    onOpenChange={(isOpen) => setActivePopover(isOpen ? user.id : null)}
+                  >
                     <PopoverTrigger>
                       <EllipsisVertical className="text-muted-foreground" />
                     </PopoverTrigger>

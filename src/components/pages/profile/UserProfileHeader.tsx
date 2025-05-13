@@ -68,7 +68,7 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
           <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-border relative">
             <Image
               src={user.avatar || "/placeholder.svg?height=400&width=400"}
-              alt={user.name}
+              alt={user.name || "profile-avatar"}
               fill
               className="object-cover"
               unoptimized

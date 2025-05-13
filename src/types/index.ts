@@ -1,26 +1,3 @@
-export interface Battler {
-  id: number;
-  name: string;
-  image: string;
-  location: string;
-  rating?: number;
-  change?: number;
-  bio?: string;
-  accolades?: string[];
-  badges?: string[];
-  tags?: string[];
-  spotlightBadges?: string[];
-  weightedRating?: number;
-  unweightedRating?: number;
-  userType?: "media" | "battler" | "league_owner" | "admin";
-  banner?: string;
-  totalPoints?: number;
-  createdAt?: Date;
-  addedBy?: string; // ID of the user who added this battler
-  addedAt?: string; // When the battler was added
-  lastUpdated?: string;
-}
-
 export interface MediaUser {
   id: string;
   name: string;
@@ -70,14 +47,6 @@ export interface CommunityStats {
   active_users_last_30_days: number;
 }
 
-export interface AnalyticsData {
-  title: string;
-  description: string;
-  chartData: { name: string; value: number }[];
-  dataKey: string;
-  color: string;
-}
-
 export interface User {
   id: string;
   name: string;
@@ -108,6 +77,17 @@ export interface Battlers {
       name: string;
     };
   }[];
+  battler_badges?: {
+    badges?: {
+      id: number;
+      is_positive: boolean;
+      name: string;
+    };
+  }[];
+  battler_analytics?: {
+    type: number;
+    score: number;
+  }[];
   added_by?: string;
   name?: string;
   avatar?: string;
@@ -119,6 +99,13 @@ export interface Battlers {
     added_by: string;
   };
   created_at?: string;
+}
+
+export interface Tags {
+  id: number;
+  name?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface TagsOption {
@@ -144,6 +131,7 @@ export interface rolesWeights {
   key: string;
   label: string;
   color: string;
+  backgroundColor: string;
   description: string;
 }
 
@@ -171,15 +159,6 @@ export interface BattlerRating {
 }
 
 // For analytic and leaderboard static data
-
-export interface RoleWeight {
-  role: RoleKey;
-  role_id: number;
-  displayName: string;
-  color: string;
-  backgroundColor: string;
-}
-
 export interface BattlerAttribute {
   battler_id: string;
   name?: string;
@@ -188,14 +167,6 @@ export interface BattlerAttribute {
   location: string;
 }
 
-export interface ContributorData {
-  user_id: string;
-  name: string;
-  avatar?: string;
-  average_rating?: number;
-  accuracy_score?: number;
-  avg_diff_from_community?: number;
-}
 export interface Contributor {
   title: string;
   description: string;
