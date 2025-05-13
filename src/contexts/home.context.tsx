@@ -9,6 +9,7 @@ import {
   CommunityStatCards,
   MostAssignedBadges,
   MostValuedAttributes,
+  Tags,
   TopBattlersUnweighted,
 } from "@/types";
 
@@ -20,6 +21,10 @@ type HomeContextType = {
   ratingsOverTimeData: AvgRatingsOverTime[];
   topBattlersUnweightedData: TopBattlersUnweighted[];
   topBattlersWeightedData: TopBattlersUnweighted[];
+  highlightBattlers: Battlers[];
+  tagsData: Tags[];
+  tagsLoading: boolean;
+  highlightBattlerLoading: boolean;
   recentBattlerLoading: boolean;
   mostValuedAttributesLoading: boolean;
   mostAssignBadgesLoading: boolean;
@@ -37,6 +42,10 @@ const HomeContext = createContext<HomeContextType>({
   ratingsOverTimeData: [],
   topBattlersUnweightedData: [],
   topBattlersWeightedData: [],
+  highlightBattlers: [],
+  tagsData: [],
+  tagsLoading: false,
+  highlightBattlerLoading: false,
   recentBattlerLoading: false,
   mostValuedAttributesLoading: false,
   mostAssignBadgesLoading: false,
@@ -58,6 +67,10 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
   const [topBattlersWeightedData, setTopBattlersWeightedData] = useState<TopBattlersUnweighted[]>(
     [],
   );
+  const [highlightBattlers, setHighlightBattlers] = useState<Battlers[]>([]);
+  const [tagsData, setTagsData] = useState<Tags[]>([]);
+  const [tagsLoading, setTagsLoading] = useState<boolean>(false);
+  const [highlightBattlerLoading, setHighlightBattlerLoading] = useState<boolean>(false);
   const [recentBattlerLoading, setRecentBattlerLoading] = useState<boolean>(false);
   const [mostValuedAttributesLoading, setMostValuedAttributesLoading] = useState<boolean>(false);
   const [mostAssignBadgesLoading, setMostAssignBadgesLoading] = useState<boolean>(false);
@@ -87,6 +100,57 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // Fetch highlight battlers
+  const fetchHighlightBattlers = async () => {
+    setHighlightBattlerLoading(true);
+    try {
+      const { data: highlightData, error: highlightError } = await supabase
+        .from(DB_TABLES.HIGHLIGHTS)
+        .select("*");
+
+      if (highlightError) {
+        console.error("Error fetching highlight battlers:", highlightError);
+      }
+
+      const { data: battlerData, error: battlerError } = await supabase
+        .from(DB_TABLES.BATTLERS)
+        .select(
+          `*, battler_tags (tags(id, name)),
+          battler_analytics !inner(type, score),
+          battler_badges (badges (id, name, description, is_positive, category))`,
+        )
+        .in("id", highlightData?.map(({ entity_id }) => entity_id) || []);
+
+      if (battlerError) {
+        console.error("Error fetching highlighted battlers:", battlerError);
+      }
+      const highlightBattlersWithDetails =
+        highlightData?.map(({ entity_id }) => battlerData?.find((b) => b.id === entity_id)) || [];
+
+      setHighlightBattlers(highlightBattlersWithDetails);
+    } catch (error) {
+      console.error("Error fetching highlighted battlers:", error);
+    } finally {
+      setHighlightBattlerLoading(false);
+    }
+  };
+
+  //Fetch tags data
+  const fetchTagsData = async () => {
+    setTagsLoading(true);
+    try {
+      const { data, error } = await supabase.from(DB_TABLES.TAGS).select("*");
+      if (error) {
+        console.error("Error fetching tags:", error);
+        return;
+      }
+      setTagsData(data || []);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+    } finally {
+      setTagsLoading(false);
+    }
+  };
   // Fetch most valued attributes
   const fetchMostValuedAttributes = async () => {
     setMostValuedAttributesLoading(true);
@@ -207,6 +271,8 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
     fetchAvgRatingsOverTime();
     fetchTopBattlersUnweighted();
     fetchTopBattlersWeighted();
+    fetchHighlightBattlers();
+    fetchTagsData();
   }, []);
 
   return (
@@ -226,6 +292,10 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
         ratingsOverTimeData,
         topBattlersUnweightedData,
         topBattlersWeightedData,
+        highlightBattlers,
+        highlightBattlerLoading,
+        tagsData,
+        tagsLoading,
       }}
     >
       {children}

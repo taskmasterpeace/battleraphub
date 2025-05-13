@@ -70,7 +70,7 @@ export default function AttributeSlider({
           </TooltipProvider>
         </div>
         <span className={`px-2 py-1 bg-accent rounded-full text-sm font-medium ${getColor()}`}>
-          {localValue.toFixed(1)}
+          {localValue?.toFixed(2) || 0}
         </span>
       </div>
       <p className="text-sm text-muted-foreground mb-3">{description}</p>

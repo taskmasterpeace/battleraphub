@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, Highlighter, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Pagination,
@@ -20,29 +20,53 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { deleteBattlersAction } from "@/app/actions";
+import { deleteBattlersAction, highlightedBattlerAction } from "@/app/actions";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
 import { DB_TABLES } from "@/config";
 import { Battlers } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import FormBattlers from "@/components/pages/battlers/admin-table/FormBattlers";
 import { toast } from "sonner";
+import { Controller, useForm } from "react-hook-form";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const itemsPerPage = 10;
 
 const supabase = createClient();
 
 const BattlersListTable = () => {
+  const { control } = useForm();
   const [open, setOpen] = useState(false);
   const [edit, setEditOpen] = useState(false);
   const [activePopover, setActivePopover] = useState<string | null>(null);
+  const [toggleHighlighter, setToggleHighlighter] = useState<boolean>(false);
+  const [selectedHighlightedBattlers, setSelectedHighlightedBattlers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [battlersData, setBattlersData] = useState<Battlers[]>([]);
   const [activeTagId, setActiveTagId] = useState<string>("");
   const [totalCount, setTotalCount] = useState(0);
   const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+  const fetchHighlightedBattlers = async () => {
+    try {
+      const { data: highlightData, error: highlightError } = await supabase
+        .from(DB_TABLES.HIGHLIGHTS)
+        .select("entity_id");
+      if (highlightError) {
+        console.log(highlightError);
+        return;
+      }
+      const ids = highlightData?.map((item) => item.entity_id) || [];
+      setSelectedHighlightedBattlers(ids);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchHighlightedBattlers();
+  }, [selectedHighlightedBattlers.length]);
 
   const fetchBattlersList = async (page: number) => {
     try {
@@ -84,13 +108,12 @@ const BattlersListTable = () => {
     fetchBattlersList(currentPage);
   }, [currentPage]);
 
-  const deleteBattler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  const handleDeleteBattler = async (battlerId: string) => {
     try {
-      const response = await deleteBattlersAction(formData);
+      const response = await deleteBattlersAction(battlerId);
       if (response.success) {
         toast.success(response.message);
+        setActivePopover(null);
         fetchBattlersList(currentPage);
       } else {
         toast.error(response.message);
@@ -100,22 +123,53 @@ const BattlersListTable = () => {
     }
   };
 
+  const handleHighlighterChange = async (battler: Battlers, isChecked: boolean) => {
+    try {
+      const response = await highlightedBattlerAction(isChecked, battler);
+      if (response.success) {
+        toast.success(response.message);
+        fetchBattlersList(currentPage);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update highlighter status");
+    }
+  };
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-start justify-between gap-2 py-4">
         <h1 className="text-3xl font-bold text-nowrap">Battlers List</h1>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button variant="default">Create Battlers</Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <FormBattlers
-              createBattler={true}
-              setOpenClose={() => setOpen(false)}
-              fetchBattlersList={() => fetchBattlersList(currentPage)}
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" onClick={() => setToggleHighlighter((prev) => !prev)}>
+            <span className="flex items-center gap-2 font-medium">
+              {toggleHighlighter ? (
+                <>
+                  <X className="h-4 w-4 transition-transform group-hover:rotate-12" />
+                  Close
+                </>
+              ) : (
+                <>
+                  <Highlighter className="h-4 w-4 transition-transform group-hover:rotate-12" />
+                  Show highlighted battlers
+                </>
+              )}
+            </span>
+          </Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button variant="default">Create Battlers</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <FormBattlers
+                createBattler={true}
+                setOpenClose={() => setOpen(false)}
+                fetchBattlersList={() => fetchBattlersList(currentPage)}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       <Table>
         <TableHeader>
@@ -139,7 +193,26 @@ const BattlersListTable = () => {
 
               return (
                 <TableRow key={battler.id}>
-                  <TableCell className="pr-0 w-[100px]">
+                  <TableCell className="pr-0 w-[100px] flex items-center justify-between gap-1">
+                    {toggleHighlighter && (
+                      <Controller
+                        name={`battler-${battler.id}`}
+                        control={control}
+                        defaultValue={selectedHighlightedBattlers.includes(battler.id)}
+                        render={({ field }) => (
+                          <Checkbox
+                            checked={
+                              field.value ?? selectedHighlightedBattlers.includes(battler.id)
+                            }
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked);
+                              handleHighlighterChange(battler, checked as boolean);
+                            }}
+                            id={`battler-${battler.id}`}
+                          />
+                        )}
+                      />
+                    )}
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={battler?.avatar || ""} alt={battler.name} />
                       <AvatarFallback>
@@ -237,18 +310,15 @@ const BattlersListTable = () => {
                               />
                             </DialogContent>
                           </Dialog>
-
-                          <form onSubmit={(e) => deleteBattler(e)}>
-                            <Input type="hidden" name="userId" value={battler.id} />
-                            <Button
-                              type="submit"
-                              variant={"destructive"}
-                              size={"sm"}
-                              className="w-[150px]"
-                            >
-                              Delete Battlers
-                            </Button>
-                          </form>
+                          <Button
+                            type="submit"
+                            variant={"destructive"}
+                            size={"sm"}
+                            onClick={() => handleDeleteBattler(battler?.id)}
+                            className="w-[150px]"
+                          >
+                            Delete Battlers
+                          </Button>
                         </div>
                       </PopoverContent>
                     </Popover>

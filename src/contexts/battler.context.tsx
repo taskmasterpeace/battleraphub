@@ -21,6 +21,7 @@ type BattlerContextType = {
   fetchBattlerAnalytics: (battlerId: string, store?: boolean) => Promise<BattlerAnalytics[]>;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  setBattlerRatings: React.Dispatch<React.SetStateAction<BattlerRating[]>>;
 };
 
 const BattlerContext = createContext<BattlerContextType>({
@@ -32,6 +33,7 @@ const BattlerContext = createContext<BattlerContextType>({
   fetchBattlerAnalytics: async () => [],
   searchQuery: "",
   setSearchQuery: () => {},
+  setBattlerRatings: () => {},
 });
 
 export const BattlerProvider = ({ children }: { children: React.ReactNode }) => {
@@ -155,6 +157,7 @@ export const BattlerProvider = ({ children }: { children: React.ReactNode }) => 
         searchQuery,
         setSearchQuery,
         fetchBattlerAnalytics,
+        setBattlerRatings,
       }}
     >
       {children}

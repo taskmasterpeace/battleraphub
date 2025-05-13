@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge, Attribute } from "@/types";
+import { Badge, Attribute, BattlerRating } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import { ATTRIBUTE_CATEGORIES, DB_TABLES } from "@/config";
 import { toast } from "sonner";
@@ -26,7 +26,7 @@ export default function AttributesTab({
   badgeData,
   battlerId,
 }: AttributesTabProps) {
-  const { battlerBadges, battlerRatings } = useBattler();
+  const { battlerBadges, battlerRatings, setBattlerRatings, battlerAnalytics } = useBattler();
   const [ratings, setRatings] = useState<Record<string, { id: string; score: number }>>({});
   const [selectedBadges, setSelectedBadges] = useState<{
     positive: string[];
@@ -62,17 +62,12 @@ export default function AttributesTab({
   }, [badgeData, battlerBadges]);
 
   useEffect(() => {
-    if (battlerRatings.length > 0) {
-      const ratingMap: Record<string, { id: string; score: number }> = {};
-      battlerRatings.forEach((rating) => {
-        ratingMap[rating.attribute_id] = {
-          id: rating.id,
-          score: Number(rating.score),
-        };
-      });
-      setRatings(ratingMap);
-    }
-  }, [battlerRatings]);
+    const ratingMap: Record<string, { id: string; score: number }> = {};
+    (battlerRatings.length > 0 ? battlerRatings : battlerAnalytics).forEach((rating) => {
+      ratingMap[rating.attribute_id] = { id: rating.id, score: Number(rating.score) };
+    });
+    setRatings(ratingMap);
+  }, [battlerRatings, battlerAnalytics]);
 
   useEffect(() => {
     const writingBadges = badgeData.filter(
@@ -106,37 +101,53 @@ export default function AttributesTab({
   const handleRatingChange = async (attributeId: number, value: number) => {
     if (!userId) return null;
     try {
-      const existingRating = ratings[attributeId];
-      const { error, data } = await supabase
+      const { data, error } = await supabase
         .from(DB_TABLES.BATTLER_RATINGS)
-        .upsert({
-          ...existingRating,
-          user_id: userId,
-          battler_id: battlerId,
-          attribute_id: attributeId,
-          score: value,
-        })
-        .select();
-
-      if (error) {
-        toast.error("Error saving rating");
-        return;
-      }
-
-      if (data.length) {
-        setRatings((prev) => ({
-          ...prev,
-          [attributeId]: {
-            id: data[0].id,
+        .upsert(
+          {
+            user_id: userId,
+            battler_id: battlerId,
+            attribute_id: attributeId,
             score: value,
           },
-        }));
-      } else {
+          {
+            onConflict: "user_id,battler_id,attribute_id",
+          },
+        )
+        .select();
+
+      if (error || !data || data.length === 0) {
+        console.error("Error saving rating", error);
         toast.error("Error saving rating");
         return;
       }
-    } catch (error) {
-      console.error("Error saving rating:", error);
+
+      const newRating = data[0];
+      // Update ratings
+      setRatings((prev) => ({
+        ...prev,
+        [attributeId]: {
+          id: newRating.id,
+          score: newRating.score,
+        },
+      }));
+
+      setBattlerRatings((prev: BattlerRating[]) => {
+        const index = prev.findIndex((r) => r.attribute_id === attributeId);
+        const updated = {
+          ...newRating,
+          updated_at: new Date().toISOString(),
+        };
+        if (index !== -1) {
+          const prevData = [...prev];
+          prevData[index] = updated;
+          return prevData;
+        } else {
+          return [...prev, updated];
+        }
+      });
+    } catch (err) {
+      console.error("Error saving rating:", err);
       toast.error("Failed to save rating");
     }
   };

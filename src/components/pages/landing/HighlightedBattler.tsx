@@ -13,70 +13,29 @@ import {
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { getTags, type Tag } from "@/lib/tag-service";
-import { highlightedBattlers } from "@/__mocks__/landing";
-
-interface Battler {
-  id: number;
-  name: string;
-  image: string;
-  location: string;
-  rating: number;
-  bio: string;
-  accolades: string[];
-  badges: string[];
-  tags: string[];
-}
+import { useHome } from "@/contexts/home.context";
+import { Battlers } from "@/types";
 
 export default function HighlightedBattler() {
-  const [battlers, setBattlers] = useState<Battler[]>([]);
-  const [filteredBattlers, setFilteredBattlers] = useState<Battler[]>([]);
+  const { highlightBattlers, tagsData, highlightBattlerLoading } = useHome();
+  const [filteredBattlers, setFilteredBattlers] = useState<Battlers[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [tagCategories, setTagCategories] = useState<Record<string, Tag[]>>({});
 
   useEffect(() => {
-    // Get tags from tag service
-    const allTags = getTags();
-    setTags(allTags);
-
-    // Group tags by category
-    const groupedTags: Record<string, Tag[]> = {};
-    allTags.forEach((tag) => {
-      const category = tag.category || "Uncategorized";
-      if (!groupedTags[category]) {
-        groupedTags[category] = [];
-      }
-      groupedTags[category].push(tag);
-    });
-    setTagCategories(groupedTags);
-
-    // Mock data for highlighted battlers
-
-    setBattlers(highlightedBattlers);
-    setFilteredBattlers(highlightedBattlers);
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    // Filter battlers based on selected tags
     if (selectedTags.length === 0) {
-      setFilteredBattlers(battlers);
+      setFilteredBattlers(highlightBattlers);
     } else {
-      const filtered = battlers.filter((battler) =>
-        selectedTags.every((tag) => battler.tags.includes(tag)),
+      const filtered = highlightBattlers.filter((battler) =>
+        selectedTags.every((tag) => battler?.battler_tags?.some((bt) => bt.tags.name === tag)),
       );
       setFilteredBattlers(filtered);
     }
 
-    // Reset current index when filters change
     setCurrentIndex(0);
-  }, [selectedTags, battlers]);
+  }, [selectedTags, highlightBattlers]);
 
   const handleTagToggle = (tagName: string) => {
     setSelectedTags((prev) =>
@@ -96,7 +55,7 @@ export default function HighlightedBattler() {
     }
   };
 
-  if (isLoading) {
+  if (highlightBattlerLoading) {
     return (
       <Card className="bg-muted animate-pulse h-full">
         <CardContent className="bg-muted p-0 h-96"></CardContent>
@@ -121,42 +80,22 @@ export default function HighlightedBattler() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              {Object.entries(tagCategories).map(([category, categoryTags]) => (
-                <div key={category}>
-                  <DropdownMenuLabel>{category}</DropdownMenuLabel>
-                  {categoryTags
-                    .filter((tag) => !tag.isHidden)
-                    .map((tag) => (
-                      <DropdownMenuCheckboxItem
-                        key={tag.id}
-                        checked={selectedTags.includes(tag.name)}
-                        onCheckedChange={() => handleTagToggle(tag.name)}
-                      >
-                        {tag.name}
-                      </DropdownMenuCheckboxItem>
-                    ))}
-                  <DropdownMenuSeparator />
-                </div>
-              ))}
-
-              {/* Hidden tags section */}
-              <DropdownMenuLabel>Special Categories</DropdownMenuLabel>
-              {tags
-                .filter((tag) => tag.isHidden)
-                .map((tag) => (
+              <DropdownMenuLabel>Tags</DropdownMenuLabel>
+              {tagsData.length > 0 &&
+                tagsData.map((tag) => (
                   <DropdownMenuCheckboxItem
                     key={tag.id}
-                    checked={selectedTags.includes(tag.name)}
-                    onCheckedChange={() => handleTagToggle(tag.name)}
+                    checked={selectedTags.includes(tag.name || "")}
+                    onCheckedChange={() => handleTagToggle(tag.name || "")}
                   >
-                    {tag.description || tag.name}
+                    {tag.name}
                   </DropdownMenuCheckboxItem>
                 ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
-        <Card className="bg-foreground border-border h-full flex items-center justify-center p-8">
+        <Card className="border-border h-full flex items-center justify-center p-8">
           <div className="text-center">
             <p className="text-muted-foreground mb-4">No battlers match your selected filters</p>
             <Button variant="outline" onClick={() => setSelectedTags([])}>
@@ -201,35 +140,15 @@ export default function HighlightedBattler() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              {Object.entries(tagCategories).map(([category, categoryTags]) => (
-                <div key={category}>
-                  <DropdownMenuLabel>{category}</DropdownMenuLabel>
-                  {categoryTags
-                    .filter((tag) => !tag.isHidden)
-                    .map((tag) => (
-                      <DropdownMenuCheckboxItem
-                        key={tag.id}
-                        checked={selectedTags.includes(tag.name)}
-                        onCheckedChange={() => handleTagToggle(tag.name)}
-                      >
-                        {tag.name}
-                      </DropdownMenuCheckboxItem>
-                    ))}
-                  <DropdownMenuSeparator />
-                </div>
-              ))}
-
-              {/* Hidden tags section */}
-              <DropdownMenuLabel>Special Categories</DropdownMenuLabel>
-              {tags
-                .filter((tag) => tag.isHidden)
-                .map((tag) => (
+              <DropdownMenuLabel>Tags options</DropdownMenuLabel>
+              {tagsData.length > 0 &&
+                tagsData.map((tag) => (
                   <DropdownMenuCheckboxItem
                     key={tag.id}
-                    checked={selectedTags.includes(tag.name)}
-                    onCheckedChange={() => handleTagToggle(tag.name)}
+                    checked={selectedTags.includes(tag.name || "")}
+                    onCheckedChange={() => handleTagToggle(tag.name || "")}
                   >
-                    {tag.description || tag.name}
+                    {tag.name}
                   </DropdownMenuCheckboxItem>
                 ))}
             </DropdownMenuContent>
@@ -238,7 +157,7 @@ export default function HighlightedBattler() {
       </div>
 
       <motion.div
-        key={currentBattler.id}
+        key={currentBattler?.id}
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -247,33 +166,34 @@ export default function HighlightedBattler() {
         <Card className="overflow-hidden h-full">
           <CardContent className="p-0 h-full">
             <div className="flex flex-col md:flex-row h-full">
-              {/* Image container - fixed width, not overlapping */}
               <div className="md:w-1/3 relative">
                 <div className="aspect-square relative">
                   <Image
-                    src={currentBattler.image || "/image/default-avatar-img.jpg"}
-                    alt={currentBattler.name}
+                    src={currentBattler?.avatar || "/image/default-avatar-img.jpg"}
+                    alt={currentBattler?.name || "battler-avatar"}
                     fill
                     className="object-cover"
                   />
                   <div className="absolute top-4 right-4 bg-foreground/90 text-white dark:bg-muted backdrop-blur-sm rounded-full p-1 px-3">
                     <div className="flex items-center">
                       <Star className="w-5 h-5 text-blue-500 fill-blue-500 mr-1" />
-                      <span className="font-bold text-lg">{currentBattler.rating.toFixed(1)}</span>
+
+                      <span className="font-bold text-lg">
+                        {currentBattler?.battler_analytics?.find((analytic) => analytic.type === 1)
+                          ?.score || 0}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* Content container - separate from image */}
               <div className="md:w-2/3 p-6 flex flex-col">
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 gap-2">
                     <div>
-                      <h3 className="text-2xl font-bold">{currentBattler.name}</h3>
+                      <h3 className="text-2xl font-bold">{currentBattler?.name}</h3>
                       <p className="text-muted-foreground flex items-center">
                         <MapPin className="w-4 h-4 mr-1" />
-                        {currentBattler.location}
+                        {currentBattler?.location}
                       </p>
                     </div>
                     <motion.div
@@ -286,49 +206,65 @@ export default function HighlightedBattler() {
                     </motion.div>
                   </div>
 
-                  <p className="text-foreground my-4">{currentBattler.bio}</p>
-
-                  <div className="mb-4">
-                    <h4 className="text-foreground font-medium mb-2">Accolades:</h4>
-                    <ul className="list-disc list-inside text-foreground">
-                      {currentBattler.accolades.map((accolade, index) => (
-                        <li key={index}>{accolade}</li>
-                      ))}
-                    </ul>
+                  <div>
+                    {currentBattler?.bio ? (
+                      <p className={`text-foreground my-4 text-ellipsis h-[250px] overflow-y-auto`}>
+                        {currentBattler?.bio}
+                      </p>
+                    ) : (
+                      <p className="text-foreground my-4 text-ellipsis h-56 overflow-y-auto">
+                        No Bio
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <h4 className="font-medium mb-2">Badges:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {currentBattler.badges.map((badge) => (
-                        <motion.div
-                          key={badge}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <Badge className="bg-muted text-foreground border-blue-700">
-                            {badge}
-                          </Badge>
-                        </motion.div>
-                      ))}
-                    </div>
+                    {currentBattler?.battler_badges && currentBattler?.battler_badges.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {currentBattler?.battler_badges
+                          .map((badge, i) => (
+                            <motion.div
+                              key={`${badge.badges?.id}-${i}`}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              <Badge
+                                className={`bg-muted text-foreground ${
+                                  badge.badges?.is_positive
+                                    ? "bg-success-foreground dark:bg-success/20 text-success border-success hover:bg-success-foreground"
+                                    : "bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive hover:bg-destructive-foreground"
+                                }`}
+                              >
+                                {badge.badges?.name}
+                              </Badge>
+                            </motion.div>
+                          ))
+                          .slice(0, 10)}{" "}
+                      </div>
+                    ) : (
+                      <div className="mt-4">
+                        <Badge variant="secondary">-</Badge>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="mt-4">
-                    <h4 className="font-medium mb-2">Categories:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {currentBattler.tags
-                        .filter((tagName) => {
-                          const tag = tags.find((t) => t.name === tagName);
-                          return tag && !tag.isHidden;
-                        })
-                        .map((tagName) => (
-                          <Badge key={tagName} variant="outline" className="text-foreground">
-                            {tagName}
+                  {currentBattler?.battler_tags ? (
+                    <div className="mt-4">
+                      <h4 className="font-medium mb-2">Tags:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {currentBattler?.battler_tags?.map((tag) => (
+                          <Badge key={tag.tags.id} variant="outline" className="text-foreground">
+                            {tag.tags.name}
                           </Badge>
                         ))}
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <Badge variant="outline" className="text-foreground">
+                      -
+                    </Badge>
+                  )}
                 </div>
 
                 <div className="mt-6">
@@ -336,7 +272,7 @@ export default function HighlightedBattler() {
                     asChild
                     className="w-full bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
                   >
-                    <Link href={`/battlers/${currentBattler.id}`}>View Full Profile</Link>
+                    <Link href={`/battlers/${currentBattler?.id}`}>View Full Profile</Link>
                   </Button>
                 </div>
               </div>

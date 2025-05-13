@@ -8,7 +8,8 @@ export const rolesWeightData: rolesWeights[] = [
     formKey: "fan",
     key: ROLES_NAME[ROLE.FAN],
     label: "Fan",
-    color: "bg-blue-500",
+    color: "orange",
+    backgroundColor: "bg-orange-500",
     description: "Battle rap enthusiasts and viewers",
   },
   {
@@ -17,7 +18,8 @@ export const rolesWeightData: rolesWeights[] = [
     formKey: "media",
     key: ROLES_NAME[ROLE.MEDIA],
     label: "Media",
-    color: "bg-primary",
+    color: "purple",
+    backgroundColor: "bg-primary",
     description: "Battle rap journalists, bloggers, and content creators",
   },
   {
@@ -26,7 +28,8 @@ export const rolesWeightData: rolesWeights[] = [
     formKey: "battler",
     key: ROLES_NAME[ROLE.BATTLE],
     label: "Battler",
-    color: "bg-success",
+    color: "green",
+    backgroundColor: "bg-success",
     description: "Active battle rappers",
   },
   {
@@ -35,7 +38,8 @@ export const rolesWeightData: rolesWeights[] = [
     formKey: "league_owner",
     key: ROLES_NAME[ROLE.LEAGUE_OWNER_INVESTOR],
     label: "League Owner",
-    color: "bg-amber-500",
+    color: "amber",
+    backgroundColor: "bg-amber-500",
     description: "Owners and operators of battle rap leagues",
   },
   {
@@ -44,7 +48,8 @@ export const rolesWeightData: rolesWeights[] = [
     formKey: "admin",
     key: ROLES_NAME[ROLE.ADMIN],
     label: "Admin",
-    color: "bg-destructive",
+    color: "red",
+    backgroundColor: "bg-destructive",
     description: "Platform administrators",
   },
 ];

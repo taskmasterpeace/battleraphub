@@ -112,7 +112,7 @@ const RoleWeightsContent = () => {
         <CardContent className="space-y-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {rolesWeightData.map(({ key, formKey, label, color, description }) => (
+              {rolesWeightData.map(({ key, formKey, label, backgroundColor, description }) => (
                 <FormField
                   key={key}
                   control={form.control}
@@ -122,7 +122,7 @@ const RoleWeightsContent = () => {
                       <FormControl>
                         <RoleWeightSliderInput
                           label={label}
-                          color={color}
+                          color={backgroundColor}
                           description={description}
                           value={field.value}
                           onChange={field.onChange}
