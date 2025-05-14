@@ -110,21 +110,9 @@ export default function TopContributorCards() {
                   <p className="text-sm text-muted-foreground">
                     @{userData.name.split(" ").join("").toLowerCase()}
                   </p>
-                  <div className="mt-1 text-sm">
-                    <span className="font-semibold">
-                      {index === 0
-                        ? userData.average_rating?.toFixed(2)
-                        : index === 1
-                          ? userData.accuracy_score?.toFixed(2)
-                          : userData.avg_diff_from_community?.toFixed(2)}
-                    </span>{" "}
-                    <span className="text-muted-foreground">
-                      {index === 0
-                        ? "consistency score"
-                        : index === 1
-                          ? "accuracy score"
-                          : "influence score"}
-                    </span>
+                  <div className="my-1 text-sm flex gap-2">
+                    <span className="font-semibold">{userData.ratings_given?.toFixed(2) || 0}</span>
+                    <span className="text-muted-foreground">Rating given by</span>
                   </div>
                 </div>
               </div>

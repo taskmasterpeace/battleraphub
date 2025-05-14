@@ -142,10 +142,10 @@ export default function UserLeaderboard({
                       tabType === LEADERBOARD_TAB_TYPE.MOST_RATINGS
                         ? "battlers_rated"
                         : tabType === LEADERBOARD_TAB_TYPE.MOST_ACCURATE
-                          ? "accuracy_score"
-                          : "accuracy_score"
+                          ? "accuracy_score" // need to add here ratings_given from materialized view
+                          : "battlers_rated"
                     }
-                    valueLabel="Ratings"
+                    valueLabel="Ratings given by"
                   />
                 )}
 
@@ -167,7 +167,7 @@ export default function UserLeaderboard({
                     sortKey="ratings_given"
                     sortDirection="asc"
                     valueKey="ratings_given"
-                    valueLabel="Consistency"
+                    valueLabel="Ratings given by"
                   />
                 )}
               </TabsContent>
@@ -183,7 +183,7 @@ export default function UserLeaderboard({
                     sortKey="ratings_given"
                     sortDirection="asc"
                     valueKey="ratings_given"
-                    valueLabel="Ratings"
+                    valueLabel="Ratings given by"
                   />
                 )}
               </TabsContent>
