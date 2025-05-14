@@ -6,7 +6,7 @@ import { formBattlerCreateSchema, formBattlerUpdateSchema } from "@/lib/schema/f
 import { toast } from "sonner";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/utils/supabase/client";
 import { MultiSelect } from "@/components/multi-select";
 import { SubmitButton } from "@/components/submit-button";
 import {
@@ -23,6 +23,7 @@ import { DB_TABLES } from "@/config";
 import { Battlers, TagsOption } from "@/types";
 import { createBattlersAction, editBattlersAction } from "@/app/actions";
 import ImageUploader from "@/components/pages/battlers/admin-table/ImageUploader";
+import { Loader } from "lucide-react";
 
 type FormCreateDataType = z.infer<typeof formBattlerCreateSchema>;
 type FormUpdateDataType = z.infer<typeof formBattlerUpdateSchema>;
@@ -34,8 +35,6 @@ interface FormBattlersProps {
   fetchBattlersList: () => void;
   battlerData?: Battlers;
 }
-
-const supabase = createClient();
 
 const FormBattlers = ({
   createBattler,
@@ -50,6 +49,7 @@ const FormBattlers = ({
   const [bannerPreview, setBannerPreview] = useState<string>("");
   const [currentAvatar, setCurrentAvatar] = useState<string>("");
   const [currentBanner, setCurrentBanner] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedTagIds = battlerData?.battler_tags?.map((tag) => tag.tags?.id.toString());
 
@@ -103,8 +103,8 @@ const FormBattlers = ({
     label: tag.name,
     value: tag.id.toString(),
   }));
-
   const onSubmit = async (data: FormCreateDataType | FormUpdateDataType) => {
+    setIsSubmitting(true);
     try {
       const formData = new FormData();
 
@@ -141,6 +141,8 @@ const FormBattlers = ({
     } catch (error) {
       console.log("error", error);
       toast.error(`Failed to ${createBattler ? "create" : "update"} battler. Please try again.`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -264,12 +266,17 @@ const FormBattlers = ({
         </div>
 
         <DialogFooter className="flex flex-col gap-3 items-center mt-4">
-          <SubmitButton
-            className="w-full"
-            type="submit"
-            pendingText={createBattler ? "Creating..." : "Updating..."}
-          >
-            {createBattler ? "Create" : "Edit"}
+          <SubmitButton className="w-full" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                {createBattler ? "Creating..." : "Updating..."}
+              </>
+            ) : createBattler ? (
+              "Create"
+            ) : (
+              "Edit"
+            )}
           </SubmitButton>
         </DialogFooter>
       </form>

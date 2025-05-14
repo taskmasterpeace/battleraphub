@@ -107,20 +107,22 @@ export default function UserLeaderboard({
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="overall" className="space-y-4" onValueChange={setActiveTab}>
-              <TabsList>
-                <TabsTrigger value="overall">
-                  <Trophy className="h-4 w-4 mr-2" />
-                  Overall
-                </TabsTrigger>
-                <TabsTrigger value="consistency">
-                  <BarChart2 className="h-4 w-4 mr-2" />
-                  Consistency
-                </TabsTrigger>
-                <TabsTrigger value="influence">
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Influence
-                </TabsTrigger>
-              </TabsList>
+              <div className="w-full overflow-x-auto max-w-[500px]">
+                <TabsList>
+                  <TabsTrigger value="overall">
+                    <Trophy className="h-4 w-4 mr-2" />
+                    Overall
+                  </TabsTrigger>
+                  <TabsTrigger value="consistency">
+                    <BarChart2 className="h-4 w-4 mr-2" />
+                    Consistency
+                  </TabsTrigger>
+                  <TabsTrigger value="influence">
+                    <TrendingUp className="h-4 w-4 mr-2" />
+                    Influence
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="overall" className="space-y-4">
                 {topRaterBattlerLoading || mostAccurateUsersLoading ? (

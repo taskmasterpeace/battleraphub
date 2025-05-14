@@ -362,3 +362,34 @@ export interface MediaContent {
   created_at: string;
   updated_at: string;
 }
+
+export interface RoleDataType {
+  role_id: number;
+  weight: number;
+}
+
+export interface ChartConfig {
+  categoryTypes: string[];
+  colorOptions: string[];
+  attributes: Attribute[];
+}
+
+export interface ChartData {
+  [key: string]: {
+    title: string;
+    description: string;
+    data: { name: string; value: string }[];
+    barColor: string;
+  };
+}
+
+export interface ComparisonChartData {
+  [key: string]: {
+    title: string;
+    description: string;
+    data: { name: string; [label: string]: string }[];
+    barColor: string;
+  };
+}
+
+export type Rating = { attribute_id: number; score: number };

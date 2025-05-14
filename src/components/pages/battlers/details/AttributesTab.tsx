@@ -3,15 +3,13 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge, Attribute, BattlerRating } from "@/types";
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/utils/supabase/client";
 import { ATTRIBUTE_CATEGORIES, DB_TABLES } from "@/config";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/auth.context";
 import { TabsContent } from "@/components/ui/tabs";
 import { AttributeTabsContent } from "@/components/pages/battlers/details/AttributeTabsContent";
 import { useBattler } from "@/contexts/battler.context";
-
-const supabase = createClient();
 
 export interface AttributesTabProps {
   updateBadges: (badges: { positive: string[]; negative: string[] }) => void;

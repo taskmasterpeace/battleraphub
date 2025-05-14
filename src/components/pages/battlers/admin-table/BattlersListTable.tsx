@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { EllipsisVertical, Highlighter, X } from "lucide-react";
+import { EllipsisVertical, Highlighter, Loader, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Pagination,
@@ -39,6 +39,7 @@ const BattlersListTable = () => {
   const { control } = useForm();
   const [open, setOpen] = useState(false);
   const [edit, setEditOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const [toggleHighlighter, setToggleHighlighter] = useState<boolean>(false);
   const [selectedHighlightedBattlers, setSelectedHighlightedBattlers] = useState<string[]>([]);
@@ -109,6 +110,7 @@ const BattlersListTable = () => {
   }, [currentPage]);
 
   const handleDeleteBattler = async (battlerId: string) => {
+    setDeleteLoading(true);
     try {
       const response = await deleteBattlersAction(battlerId);
       if (response.success) {
@@ -120,6 +122,8 @@ const BattlersListTable = () => {
       }
     } catch (error) {
       toast.error(`Delete battler failed: ${error}`);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -315,9 +319,17 @@ const BattlersListTable = () => {
                             variant={"destructive"}
                             size={"sm"}
                             onClick={() => handleDeleteBattler(battler?.id)}
+                            disabled={deleteLoading}
                             className="w-[150px]"
                           >
-                            Delete Battlers
+                            {deleteLoading ? (
+                              <>
+                                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                Deleting...
+                              </>
+                            ) : (
+                              "Delete Battlers"
+                            )}
                           </Button>
                         </div>
                       </PopoverContent>

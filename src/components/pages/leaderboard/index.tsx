@@ -26,20 +26,22 @@ const LeaderBoard = () => {
       </div>
 
       <Tabs defaultValue="most-ratings" className="mb-8">
-        <TabsList className="mb-6">
-          <TabsTrigger value="most-ratings">
-            <Star className="w-4 h-4 mr-2" />
-            Most Ratings
-          </TabsTrigger>
-          <TabsTrigger value="most-accurate">
-            <Award className="w-4 h-4 mr-2" />
-            Most Accurate
-          </TabsTrigger>
-          <TabsTrigger value="most-followed">
-            <Users className="w-4 h-4 mr-2" />
-            Most Followed
-          </TabsTrigger>
-        </TabsList>
+        <div className="w-full overflow-x-auto max-w-[500px] mb-6">
+          <TabsList>
+            <TabsTrigger value="most-ratings">
+              <Star className="w-4 h-4 mr-2" />
+              Most Ratings
+            </TabsTrigger>
+            <TabsTrigger value="most-accurate">
+              <Award className="w-4 h-4 mr-2" />
+              Most Accurate
+            </TabsTrigger>
+            <TabsTrigger value="most-followed">
+              <Users className="w-4 h-4 mr-2" />
+              Most Followed
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="most-ratings">
           <Card>

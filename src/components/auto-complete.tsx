@@ -52,7 +52,7 @@ const AutoComplete = <T extends AutoCompleteOption>({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[250px] justify-between"
+          className="w-full sm:w-[250px] justify-between"
         >
           {placeholderText}
           <ChevronsUpDown className="opacity-50" />

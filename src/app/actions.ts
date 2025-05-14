@@ -116,9 +116,8 @@ export const signOutAction = async () => {
   return redirectResponse(PAGES.LOGIN);
 };
 
-export const giveUserPermissionAction = async (formData: FormData) => {
+export const giveUserPermissionAction = async (userId: string) => {
   const supabase = await protectedCreateClient();
-  const userId = formData.get("userId") as string;
 
   if (!userId) {
     return errorResponse("userId is required");
@@ -156,9 +155,8 @@ export const giveUserPermissionAction = async (formData: FormData) => {
   return successResponse("User permissions updated successfully");
 };
 
-export const revokeUserPermissionAction = async (formData: FormData) => {
+export const revokeUserPermissionAction = async (userId: string) => {
   const supabase = await protectedCreateClient();
-  const userId = formData.get("userId") as string;
 
   if (!userId) {
     return errorResponse("userId is required");
@@ -197,9 +195,8 @@ export const revokeUserPermissionAction = async (formData: FormData) => {
   return successResponse("User permissions revoked successfully");
 };
 
-export const deleteUserAction = async (formData: FormData) => {
+export const deleteUserAction = async (userId: string) => {
   const supabase = await protectedCreateClient();
-  const userId = formData.get("userId") as string;
 
   if (!userId) {
     return errorResponse("userId is required");
@@ -226,9 +223,8 @@ export const deleteUserAction = async (formData: FormData) => {
   return successResponse("user deleted successfully");
 };
 
-export const markAsVerifiedAction = async (formData: FormData) => {
+export const markAsVerifiedAction = async (userId: string) => {
   const supabase = await protectedCreateClient();
-  const userId = formData.get("userId") as string;
 
   if (!userId) {
     return errorResponse("userId is required");

@@ -14,7 +14,7 @@ import RoleSelector from "./RoleSelector";
 import Image from "next/image";
 import { DB_TABLES, PAGES, ROLE } from "@/config";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 
 export default function SelectRole() {
@@ -27,7 +27,6 @@ export default function SelectRole() {
 
   const handleSubmit = async () => {
     try {
-      const supabase = await createClient();
       // Update user role in metadata
       const { error, data } = await supabase.auth.updateUser({
         data: {
