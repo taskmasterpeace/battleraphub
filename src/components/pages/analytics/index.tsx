@@ -90,16 +90,19 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
       <h1 className="text-3xl font-bold mb-8">Analytics Dashboard</h1>
 
       <Tabs defaultValue="overview">
-        <TabsList className="mb-8">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="role-based">Role-Based</TabsTrigger>
-          <TabsTrigger value="battler">Battler Analysis</TabsTrigger>
-          <TabsTrigger value="community">Community Trends</TabsTrigger>
-        </TabsList>
+        <div className="w-full overflow-x-auto max-w-[500px] mb-8">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="role-based">Role-Based</TabsTrigger>
+            <TabsTrigger value="battler">Battler Analysis</TabsTrigger>
+            <TabsTrigger value="community">Community Trends</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="overview">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 w-full">
             <ChartCard
+              className="!w-full"
               title="Top Rated Battlers"
               description="Overall ratings across all categories"
             >
@@ -168,7 +171,7 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
         </TabsContent>
 
         <TabsContent value="battler">
-          <div className="mb-6 flex justify-end">
+          <div className="mb-6 flex w-full sm:w-auto justify-start sm:justify-end">
             <AutoComplete
               placeholderText={selectedBattler?.name || "Select battler..."}
               options={battlersData as Battlers[]}

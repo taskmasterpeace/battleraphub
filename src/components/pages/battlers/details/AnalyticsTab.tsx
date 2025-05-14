@@ -3,19 +3,25 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RatingCard } from "@/components/pages/battlers/details/RatingCard";
-import { Attribute, BattlerAnalytics, Battlers } from "@/types";
+import { Attribute, BattlerAnalytics, Battlers, ChartConfig } from "@/types";
 import { CATEGORY_TYPES } from "@/config";
 import { useBattler } from "@/contexts/battler.context";
 import AutoComplete from "@/components/auto-complete";
+import { useAuth } from "@/contexts/auth.context";
+import {
+  colorOptions,
+  generateChartData,
+  generateComparisonChartData,
+} from "@/lib/static/static-data";
 
 interface AnalyticsTabProps {
   battlerData: Battlers | undefined;
   attributeData: Attribute[];
 }
 
-const colorOptions = ["#8884d8", "#82ca9d", "#ffc658"];
-
 export default function AnalyticsTab({ battlerData, attributeData }: AnalyticsTabProps) {
+  const { user } = useAuth();
+  const userId = user?.id;
   const { battlerAnalytics, battlerRatings, battlersData, fetchBattlerAnalytics, setSearchQuery } =
     useBattler();
   const [selectedBattler, setSelectedBattler] = useState<Battlers | null>(battlersData[0]);
@@ -31,90 +37,21 @@ export default function AnalyticsTab({ battlerData, attributeData }: AnalyticsTa
     getBattlerAnalytics();
   }, [selectedBattler, fetchBattlerAnalytics]);
 
-  const generateChartData = (
-    ratingData: { attribute_id: number; score: number }[],
-  ): {
-    [key: string]: {
-      title: string;
-      description: string;
-      data: { name: string; value: string }[];
-      barColor: string;
-    };
-  } => {
-    const data: {
-      [key: string]: {
-        title: string;
-        description: string;
-        data: {
-          name: string;
-          value: string;
-        }[];
-        barColor: string;
-      };
-    } = {};
-    Object.values(CATEGORY_TYPES).forEach((category, index) => {
-      data[category] = {
-        title: category.charAt(0).toUpperCase() + category.slice(1),
-        description: `${category} attributes ratings`,
-        data: [],
-        barColor: colorOptions[index],
-      };
-    });
-
-    const attributeMapper = attributeData.reduce(
-      (acc: { [key: string]: { name: string; category: string } }, attr) => {
-        acc[attr.id] = { name: attr.name, category: attr.category };
-        return acc;
-      },
-      {},
-    );
-
-    ratingData.forEach((item) => {
-      const attribute = attributeMapper[item.attribute_id];
-      data[attribute.category].data.push({
-        name: attribute.name,
-        value: item.score?.toString() || "0",
-      });
-    });
-
-    return data;
+  const chartConfig: ChartConfig = {
+    categoryTypes: Object.values(CATEGORY_TYPES),
+    colorOptions,
+    attributes: attributeData,
   };
 
-  const generateComparisonChartData = () => {
-    const battlerAnalyticsData = generateChartData(battlerAnalytics);
-    const selectedBattlerAnalyticsData = generateChartData(selectedBattlerAnalytics);
-
-    const mergedData: {
-      [key: string]: {
-        title: string;
-        description: string;
-        data: { name: string; [key: string]: string }[];
-        barColor: string;
-      };
-    } = {};
-
-    Object.keys(battlerAnalyticsData).forEach((key) => {
-      const data = battlerAnalyticsData[key].data.map((item) => {
-        const selectedItem = selectedBattlerAnalyticsData[key].data.find(
-          (selectedItem) => selectedItem.name === item.name,
-        );
-        return {
-          name: item.name,
-          [battlerData?.name || ""]: item.value,
-          [selectedBattler?.name || ""]: selectedItem?.value || "0",
-        };
-      });
-
-      mergedData[key] = {
-        title: battlerAnalyticsData[key].title,
-        description: battlerAnalyticsData[key].description,
-        data,
-        barColor: battlerAnalyticsData[key].barColor,
-      };
-    });
-
-    return mergedData;
-  };
+  const battlerAnalyticsData = generateChartData(battlerAnalytics, chartConfig);
+  const battlerRatingsData = generateChartData(battlerRatings, chartConfig);
+  const comparisonData = generateComparisonChartData(
+    battlerAnalytics,
+    selectedBattlerAnalytics,
+    chartConfig,
+    battlerData?.name || "",
+    selectedBattler?.name || "",
+  );
 
   return (
     <div>
@@ -129,33 +66,35 @@ export default function AnalyticsTab({ battlerData, attributeData }: AnalyticsTa
         />
       </div>
 
-      <Tabs defaultValue="my-ratings">
+      <Tabs defaultValue={userId ? "my-ratings" : "community"}>
         <TabsList className="mb-6">
-          <TabsTrigger value="my-ratings">My Ratings</TabsTrigger>
+          {userId && <TabsTrigger value="my-ratings">My Ratings</TabsTrigger>}
           <TabsTrigger value="community">Community Ratings</TabsTrigger>
           <TabsTrigger value="comparison">Comparison</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="my-ratings">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.values(generateChartData(battlerRatings)).map((item, index) => {
-              return (
-                <RatingCard
-                  key={index}
-                  title={item.title}
-                  description={item.description}
-                  data={item.data}
-                  barColor={item.barColor}
-                  keys={["value"]}
-                />
-              );
-            })}
-          </div>
-        </TabsContent>
+        {userId && (
+          <TabsContent value="my-ratings">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Object.values(battlerRatingsData).map((item, index) => {
+                return (
+                  <RatingCard
+                    key={index}
+                    title={item.title}
+                    description={item.description}
+                    data={item.data}
+                    barColor={item.barColor}
+                    keys={["value"]}
+                  />
+                );
+              })}
+            </div>
+          </TabsContent>
+        )}
 
         <TabsContent value="community">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.values(generateChartData(battlerAnalytics)).map((item, index) => {
+            {Object.values(battlerAnalyticsData).map((item, index) => {
               return (
                 <RatingCard
                   key={index}
@@ -172,7 +111,7 @@ export default function AnalyticsTab({ battlerData, attributeData }: AnalyticsTa
 
         <TabsContent value="comparison">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.values(generateComparisonChartData()).map((item, index) => {
+            {Object.values(comparisonData).map((item, index) => {
               return (
                 <RatingCard
                   key={index}

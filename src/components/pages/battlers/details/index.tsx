@@ -7,17 +7,12 @@ import { MapPin } from "lucide-react";
 import AttributesTab from "@/components/pages/battlers/details/AttributesTab";
 import AnalyticsTab from "@/components/pages/battlers/details/AnalyticsTab";
 import { Badge } from "@/components/ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/utils/supabase/client";
 import { DB_TABLES } from "@/config";
 import { Attribute, Badge as badgesType, Battlers } from "@/types";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import { useBattler } from "@/contexts/battler.context";
-
-const supabase = createClient();
 
 interface BattlerDetailsProps {
   params: Promise<{ id: string }>;
@@ -107,55 +102,28 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
 
           <div className="flex-1">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-              <div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <h1 className="text-3xl font-bold cursor-pointer">{battlerData?.name}</h1>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    align="start"
-                    className="w-52 bg-background text-primary-foreground"
-                  >
-                    <div className="grid">
-                      <div className="space-y-1">
-                        <div className="text-md text-muted-foreground pl-2 pb-2 font-bold">
-                          Personal info
-                        </div>
-                        <Separator orientation="horizontal" />
-                        <div className="flex flex-col items-start">
-                          <Button
-                            variant="ghost"
-                            className="flex justify-start items-center px-2 py-2 hover:bg-muted rounded-md my-1 w-full"
-                          >
-                            Battler
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            className="flex justify-start px-2 py-2 hover:bg-muted rounded-md w-full"
-                          >
-                            Users
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="grid gap-2"></div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+              <div className="flex justify-between items-center gap-2">
+                <div>
+                  <h1 className="text-3xl font-bold">{battlerData?.name}</h1>
 
-                <p className="text-muted-foreground flex items-center mt-1">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  {battlerData?.location}
-                </p>
-                <div className="flex flex-wrap gap-1 mt-3">
-                  {battlerData?.battler_tags?.map((tag, index) => (
-                    <Badge key={index} className="text-xs px-2 py-0.5 rounded">
-                      {tag?.tags?.name}
-                    </Badge>
-                  ))}
+                  <p className="text-muted-foreground flex items-center mt-1">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {battlerData?.location}
+                  </p>
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    {battlerData?.battler_tags?.map((tag, index) => (
+                      <Badge key={index} className="text-xs px-2 py-0.5 rounded">
+                        {tag?.tags?.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <div className="md:hidden bg-muted rounded-lg p-4 text-center">
+                  <p className="text-sm text-muted-foreground">Total Rating</p>
+                  <p className="text-3xl font-bold text-primary">{totalRatings.toFixed(1)}</p>
                 </div>
               </div>
-
-              <div className="bg-background rounded-lg p-4 text-center">
+              <div className="hidden md:block bg-muted rounded-lg p-4 text-center">
                 <p className="text-sm text-muted-foreground">Total Rating</p>
                 <p className="text-3xl font-bold text-primary">{totalRatings.toFixed(1)}</p>
               </div>

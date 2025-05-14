@@ -73,7 +73,6 @@ export default function AttributeSlider({
           {localValue?.toFixed(2) || 0}
         </span>
       </div>
-      <p className="text-sm text-muted-foreground mb-3">{description}</p>
       <Slider
         min={0}
         max={10}

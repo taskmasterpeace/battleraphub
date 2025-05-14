@@ -74,17 +74,17 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
     <div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h2 className="text-2xl font-bold">Role-Based Analytics</h2>
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
           <Select
             value={String(selectedRole)}
             onValueChange={(value) => {
               setSelectedRole(Number(value));
             }}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="sm:w-[180px]">
               <SelectValue placeholder="Select role" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="sm:w-[180px]">
               {rolesWeightData.map((role) => (
                 <SelectItem key={role.formKey} value={String(role?.role_id)}>
                   <div className="flex items-center">
@@ -97,7 +97,7 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
           </Select>
 
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="sm:w-[180px]">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
@@ -113,7 +113,7 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
             value={String(selectedAttribute)}
             onValueChange={(value) => setSelectedAttribute(value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="sm:w-[180px]">
               <SelectValue placeholder="Select attribute" />
             </SelectTrigger>
             <SelectContent>
@@ -130,7 +130,7 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
 
       <Card>
         <CardHeader>
-          <CardTitle>
+          <CardTitle className="text-md sm:text-2xl">
             Top Battlers by {getRoleDisplayName(selectedRole)} Ratings
             {selectedCategory && ` - ${selectedCategory}`}
             {selectedAttribute !== "All"

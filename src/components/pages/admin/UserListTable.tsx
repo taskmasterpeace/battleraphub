@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Link from "next/link";
-import { Check, EllipsisVertical } from "lucide-react";
+import { Check, EllipsisVertical, Loader } from "lucide-react";
 import PlatformX from "../../../../public/image/twitter-x.svg";
 import Youtube from "../../../../public/image/youtube.svg";
 import Instagram from "../../../../public/image/instagram.svg";
@@ -26,7 +26,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/utils/supabase/client";
 import { DB_TABLES, ROLE, ROLES_NAME } from "@/config";
 import {
   deleteUserAction,
@@ -34,13 +34,10 @@ import {
   markAsVerifiedAction,
   revokeUserPermissionAction,
 } from "@/app/actions";
-import { Input } from "@/components/ui/input";
 import { User } from "@/types";
 import { toast } from "sonner";
 
 const itemsPerPage = 10;
-
-const supabase = createClient();
 
 const UserListTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,6 +45,10 @@ const UserListTable = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const totalPages = Math.ceil(totalCount / itemsPerPage);
+  const [givePermissionLoading, setGivePermissionLoading] = useState(false);
+  const [revokePermissionLoading, setRevokePermissionLoading] = useState(false);
+  const [deleteUserLoading, setDeleteUserLoading] = useState(false);
+  const [markAsVerifiedLoading, setMarkAsVerifiedLoading] = useState(false);
 
   const fetchUserList = async (page: number) => {
     try {
@@ -77,11 +78,10 @@ const UserListTable = () => {
     fetchUserList(currentPage);
   }, [currentPage]);
 
-  const onRevokePermission = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  const onRevokePermission = async (userId: string) => {
+    setRevokePermissionLoading(true);
     try {
-      const response = await revokeUserPermissionAction(formData);
+      const response = await revokeUserPermissionAction(userId);
       if (response.success) {
         toast.success(response.message);
         setActivePopover(null);
@@ -91,14 +91,15 @@ const UserListTable = () => {
       }
     } catch (error) {
       toast.error(`revoke permission failed: ${error}`);
+    } finally {
+      setRevokePermissionLoading(false);
     }
   };
 
-  const onGivePermission = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  const onGivePermission = async (userId: string) => {
+    setGivePermissionLoading(true);
     try {
-      const response = await giveUserPermissionAction(formData);
+      const response = await giveUserPermissionAction(userId);
       if (response.success) {
         toast.success(response.message);
         setActivePopover(null);
@@ -108,14 +109,15 @@ const UserListTable = () => {
       }
     } catch (error) {
       toast.error(`give permission failed: ${error}`);
+    } finally {
+      setGivePermissionLoading(false);
     }
   };
 
-  const markAsVerified = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  const markAsVerified = async (userId: string) => {
+    setMarkAsVerifiedLoading(true);
     try {
-      const response = await markAsVerifiedAction(formData);
+      const response = await markAsVerifiedAction(userId);
       if (response.success) {
         toast.success(response.message);
         setActivePopover(null);
@@ -125,14 +127,15 @@ const UserListTable = () => {
       }
     } catch (error) {
       toast.error(`mark as verified failed: ${error}`);
+    } finally {
+      setMarkAsVerifiedLoading(false);
     }
   };
 
-  const onDeleteUser = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  const onDeleteUser = async (userId: string) => {
+    setDeleteUserLoading(true);
     try {
-      const response = await deleteUserAction(formData);
+      const response = await deleteUserAction(userId);
       if (response.success) {
         toast.success(response.message);
         fetchUserList(currentPage);
@@ -141,6 +144,8 @@ const UserListTable = () => {
       }
     } catch (error) {
       toast.error(`delete user failed: ${error}`);
+    } finally {
+      setDeleteUserLoading(false);
     }
   };
 
@@ -237,57 +242,82 @@ const UserListTable = () => {
                       <div className="flex flex-col items-start gap-3 w-full">
                         <div>
                           {user.verified === false && (
-                            <form onSubmit={(e) => markAsVerified(e)}>
-                              <Input type="hidden" name="userId" value={user.id} />
-                              <Button
-                                type="submit"
-                                variant={"secondary"}
-                                size={"sm"}
-                                className="w-[190px]"
-                              >
-                                Mark as Verified
-                              </Button>
-                            </form>
+                            <Button
+                              type="submit"
+                              variant={"secondary"}
+                              size={"sm"}
+                              onClick={() => markAsVerified(user?.id)}
+                              className="w-[190px]"
+                              disabled={markAsVerifiedLoading}
+                            >
+                              {markAsVerifiedLoading ? (
+                                <>
+                                  <Loader className="w-4 h-4 mr-2 animate-spin" />
+                                  Verifying...
+                                </>
+                              ) : (
+                                "Mark as Verified"
+                              )}
+                            </Button>
                           )}
                         </div>
                         <div>
                           {user.user_permissions?.find((perm) => perm.user_id === user.id) ? (
-                            <form onSubmit={(e) => onRevokePermission(e)}>
-                              <Input type="hidden" name="userId" value={user.id} />
-                              <Button
-                                type="submit"
-                                variant={"secondary"}
-                                size={"sm"}
-                                className="w-[190px]"
-                              >
-                                Revoke c.m. permission
-                              </Button>
-                            </form>
+                            <Button
+                              type="submit"
+                              variant={"secondary"}
+                              size={"sm"}
+                              onClick={() => onRevokePermission(user?.id)}
+                              className="w-[190px]"
+                              disabled={revokePermissionLoading}
+                            >
+                              {revokePermissionLoading ? (
+                                <>
+                                  <Loader className="w-4 h-4 mr-2 animate-spin" />
+                                  Revoking permission...
+                                </>
+                              ) : (
+                                "Revoke c.m. permission"
+                              )}
+                            </Button>
                           ) : (
-                            <form onSubmit={(e) => onGivePermission(e)}>
-                              <Input type="hidden" name="userId" value={user.id} />
-                              <Button
-                                type="submit"
-                                variant={"secondary"}
-                                size={"sm"}
-                                className="w-[190px]"
-                              >
-                                Give c.m. permission
-                              </Button>
-                            </form>
+                            <Button
+                              type="submit"
+                              variant={"secondary"}
+                              size={"sm"}
+                              onClick={() => onGivePermission(user?.id)}
+                              className="w-[190px]"
+                              disabled={givePermissionLoading}
+                            >
+                              {givePermissionLoading ? (
+                                <>
+                                  <Loader className="w-4 h-4 mr-2 animate-spin" />
+                                  Giving permission...
+                                </>
+                              ) : (
+                                "Give c.m. permission"
+                              )}
+                            </Button>
                           )}
                         </div>
-                        <form onSubmit={(e) => onDeleteUser(e)}>
-                          <Input type="hidden" name="userId" value={user.id} />
-                          <Button
-                            type="submit"
-                            variant={"destructive"}
-                            size={"sm"}
-                            className="w-[190px]"
-                          >
-                            Delete user
-                          </Button>
-                        </form>
+
+                        <Button
+                          type="submit"
+                          variant={"destructive"}
+                          size={"sm"}
+                          onClick={() => onDeleteUser(user?.id)}
+                          className="w-[190px]"
+                          disabled={deleteUserLoading}
+                        >
+                          {deleteUserLoading ? (
+                            <>
+                              <Loader className="w-4 h-4 mr-2 animate-spin" />
+                              Deleting...
+                            </>
+                          ) : (
+                            "Delete user"
+                          )}
+                        </Button>
                       </div>
                     </PopoverContent>
                   </Popover>

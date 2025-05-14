@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Save } from "lucide-react";
+import { Loader, Save } from "lucide-react";
 import React, { useEffect } from "react";
 import { rolesWeightData } from "@/lib/static/static-data";
 import { toast } from "sonner";
@@ -12,22 +12,17 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { roleWeightsSchema } from "@/lib/schema/roleWeightSchema";
 import { ratingRoleWeightsActions } from "@/app/actions";
 import { DB_TABLES, ROLE } from "@/config";
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/utils/supabase/client";
 import { useAuth } from "@/contexts/auth.context";
+import { RoleDataType } from "@/types";
 
 type RoleWeightsFormValues = z.infer<typeof roleWeightsSchema>;
-
-const supabase = createClient();
 
 const RoleWeightsContent = () => {
   const { user } = useAuth();
   const userId = user?.id;
-  const [roleData, setRoleData] = React.useState<
-    {
-      role_id: number;
-      weight: number;
-    }[]
-  >([]);
+  const [roleData, setRoleData] = React.useState<RoleDataType[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
   const form = useForm<RoleWeightsFormValues>({
     resolver: zodResolver(roleWeightsSchema),
     defaultValues: {
@@ -40,23 +35,24 @@ const RoleWeightsContent = () => {
   });
   const { setValue } = form;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: weights, error } = await supabase
-          .from(DB_TABLES.RATING_ROLE_WEIGHTS)
-          .select("role_id, weight");
+  const fetchData = async () => {
+    try {
+      const { data: weights, error } = await supabase
+        .from(DB_TABLES.RATING_ROLE_WEIGHTS)
+        .select("role_id, weight");
 
-        if (error) {
-          toast.error("Failed to fetch data");
-        }
-
-        setRoleData(weights || []);
-      } catch (error) {
-        console.log("Error fetching data:", error);
-        toast.error(error as string);
+      if (error) {
+        toast.error("Failed to fetch data");
       }
-    };
+
+      setRoleData(weights || []);
+    } catch (error) {
+      console.log("Error fetching data:", error);
+      toast.error(error as string);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -72,6 +68,7 @@ const RoleWeightsContent = () => {
   }, [setValue, roleData]);
 
   const onSubmit = async (values: RoleWeightsFormValues) => {
+    setIsLoading(true);
     if (!userId) return null;
     const convertedValues = Object.entries(values).reduce(
       (acc, [key, weight]) => {
@@ -97,6 +94,8 @@ const RoleWeightsContent = () => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to save weights.");
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -133,9 +132,18 @@ const RoleWeightsContent = () => {
                   )}
                 />
               ))}
-              <Button type="submit">
-                <Save className="w-4 h-4 mr-2" />
-                Save Role Weights
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Role Weights
+                  </>
+                )}
               </Button>
             </form>
           </Form>
