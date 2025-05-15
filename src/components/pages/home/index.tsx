@@ -10,8 +10,12 @@ import RankingSystem from "@/components/pages/landing/RankingSystem";
 import MediaHighlight from "@/components/pages/landing/MediaHighlight";
 import HeroSection from "@/components/pages/landing/HeroSection";
 import { useHome } from "@/contexts/home.context";
+import { User } from "@/types";
 
-const HomePage = () => {
+interface HomeProps {
+  usersData: User[];
+}
+const HomePage = ({ usersData }: HomeProps) => {
   const { recentBattlers, recentBattlerLoading } = useHome();
 
   return (
@@ -91,7 +95,7 @@ const HomePage = () => {
 
       {/* Media Highlight Section */}
       <section className="py-6 md:py-8 border-t border-border">
-        <MediaHighlight />
+        <MediaHighlight usersData={usersData} />
       </section>
 
       {/* Trending Battlers Section */}

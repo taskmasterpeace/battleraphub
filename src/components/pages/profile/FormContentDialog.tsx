@@ -39,6 +39,7 @@ import { addUserContentAction, editMediaContentAction } from "@/app/actions";
 import { toast } from "sonner";
 import { MediaContent } from "@/types";
 import { SubmitButton } from "@/components/submit-button";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 interface formContentDialogProps {
   open: boolean;
@@ -63,7 +64,6 @@ export default function FormContentDialog({
   const thumbnailRef = useRef<HTMLInputElement>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
   const [currentThumbnail, setCurrentThumbnail] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<FormCreateDataType | FormUpdateDataType>({
     resolver: zodResolver(isContentCreate ? formAddContentSchema : formUpdateContentSchema),
@@ -89,10 +89,10 @@ export default function FormContentDialog({
     }
   }, [isContentCreate, contentData, setValue]);
 
-  const onSubmit = async (data: FormCreateDataType | FormUpdateDataType) => {
-    setIsLoading(true);
-    try {
+  const { onSubmit, processing } = useFormSubmit<FormCreateDataType | FormUpdateDataType>(
+    async (data) => {
       const formData = new FormData();
+
       if (userId) formData.append("userId", userId);
       formData.append("type", data.type);
       formData.append("title", data.title);
@@ -105,10 +105,15 @@ export default function FormContentDialog({
         if (currentThumbnail) formData.append("currentThumbnail", currentThumbnail);
       }
 
-      if (data.thumbnail_img?.[0]) formData.append("thumbnail_img", data.thumbnail_img[0]);
+      if (data.thumbnail_img?.[0]) {
+        formData.append("thumbnail_img", data.thumbnail_img[0]);
+      }
 
-      if (isContentCreate) {
-        const response = await addUserContentAction(formData);
+      try {
+        const response = isContentCreate
+          ? await addUserContentAction(formData)
+          : await editMediaContentAction(formData);
+
         if (response?.success) {
           toast.success(response.message);
           reset();
@@ -118,28 +123,18 @@ export default function FormContentDialog({
           fetchContent?.();
           router.refresh();
         } else {
-          toast.error(response?.message || "Failed to create content");
+          toast.error(
+            response?.message || `Failed to ${isContentCreate ? "create" : "update"} content`,
+          );
         }
-      } else {
-        const response = await editMediaContentAction(formData);
-        if (response.success) {
-          toast.success(response.message);
-          onOpenChange?.(false);
-          fetchContent?.();
-          router.refresh();
-        } else {
-          toast.error(response?.message || "Failed to update content");
-        }
+      } catch (error) {
+        console.error("error", error);
+        toast.error(
+          `Failed to ${isContentCreate ? "create" : "update"} media content. Please try again.`,
+        );
       }
-    } catch (error) {
-      console.error("error", error);
-      toast.error(
-        `Failed to ${isContentCreate ? "create" : "update"} media content. Please try again.`,
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -293,7 +288,7 @@ export default function FormContentDialog({
                   setThumbnailPreview("");
                   setCurrentThumbnail("");
                 }}
-                disabled={isLoading}
+                disabled={processing}
               >
                 <X className="w-4 h-4 mr-2" />
                 Cancel
@@ -302,7 +297,7 @@ export default function FormContentDialog({
                 className="h-10 px-4 py-2"
                 type="submit"
                 pendingText={isContentCreate ? "Adding..." : "Updating..."}
-                disabled={isLoading}
+                disabled={processing}
               >
                 <Upload className="w-4 h-4 mr-2" />
                 {isContentCreate ? "Add Content" : "Edit Content"}

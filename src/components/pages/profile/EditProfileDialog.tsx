@@ -31,6 +31,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 interface EditProfileDialogProps {
   open: boolean;
@@ -46,7 +47,6 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
   const [currentImage, setCurrentImage] = useState<string>(""); // banner
   const [profilePreview, setProfilePreview] = useState<string>("");
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
 
   type FormProfileSchema = z.infer<typeof formProfileSchema>;
 
@@ -75,24 +75,21 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
     }
   }, [setValue, user]);
 
-  const onSubmit = async (data: FormProfileSchema) => {
+  const { onSubmit, processing } = useFormSubmit<FormProfileSchema>(async (data) => {
+    const formData = new FormData();
+
+    if (currentAvatar) formData.append("currentAvatar", currentAvatar);
+    if (currentImage) formData.append("currentImage", currentImage);
+    formData.append("userId", user.id || "");
+    formData.append("name", data.name);
+    formData.append("bio", data.bio || "");
+    formData.append("website", data.website || "");
+    formData.append("location", data.location || "");
+
+    if (data.avatar?.[0]) formData.append("avatar", data.avatar[0]);
+    if (data.image?.[0]) formData.append("image", data.image[0]);
+
     try {
-      setIsLoading(true);
-      const formData = new FormData();
-
-      if (currentAvatar) formData.append("currentAvatar", currentAvatar);
-      if (currentImage) formData.append("currentImage", currentImage);
-      formData.append("userId", user.id || "");
-      formData.append("name", data.name);
-      formData.append("bio", data.bio || "");
-      formData.append("website", data.website || "");
-      formData.append("location", data.location || "");
-
-      if (data.avatar?.[0]) formData.append("avatar", data.avatar[0]);
-      if (data.image?.[0]) formData.append("image", data.image[0]);
-      if (currentAvatar) formData.append("currentAvatar", currentAvatar);
-      if (currentImage) formData.append("currentImage", currentImage);
-
       const response = await updateUserProfileAction(formData);
       if (response.success) {
         toast.success("Profile updated successfully!");
@@ -101,11 +98,9 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
       }
     } catch (error) {
       console.error("error", error);
-      toast.error(`Failed to edit profile. Please try again.`);
-    } finally {
-      setIsLoading(false);
+      toast.error("Failed to edit profile. Please try again.");
     }
-  };
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -303,9 +298,9 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                   <X className="w-4 h-4 mr-2" />
                   Cancel
                 </Button>
-                <Button type="submit" className="w-auto" disabled={isLoading}>
+                <Button type="submit" className="w-auto" disabled={processing}>
                   <Upload className="w-4 h-4 mr-2" />
-                  {isLoading ? "Updating..." : "Save Changes"}
+                  {processing ? "Updating..." : "Save Changes"}
                 </Button>
               </DialogFooter>
             </form>

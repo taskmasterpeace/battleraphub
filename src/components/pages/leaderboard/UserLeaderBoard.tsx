@@ -136,16 +136,18 @@ export default function UserLeaderboard({
                 ) : (
                   <LeaderboardSection
                     data={filteredData}
-                    sortKey="battlers_rated"
-                    sortDirection="asc"
                     valueKey={
                       tabType === LEADERBOARD_TAB_TYPE.MOST_RATINGS
                         ? "battlers_rated"
                         : tabType === LEADERBOARD_TAB_TYPE.MOST_ACCURATE
-                          ? "accuracy_score" // need to add here ratings_given from materialized view
-                          : "battlers_rated"
+                          ? "accuracy_score"
+                          : "ratings_given"
                     }
-                    valueLabel="Ratings given by"
+                    valueLabel={
+                      tabType === LEADERBOARD_TAB_TYPE.MOST_ACCURATE
+                        ? "Accuracy score"
+                        : "Ratings given by"
+                    }
                   />
                 )}
 
@@ -164,8 +166,6 @@ export default function UserLeaderboard({
                 ) : (
                   <LeaderboardSection
                     data={filteredData}
-                    sortKey="ratings_given"
-                    sortDirection="asc"
                     valueKey="ratings_given"
                     valueLabel="Ratings given by"
                   />
@@ -180,8 +180,6 @@ export default function UserLeaderboard({
                 ) : (
                   <LeaderboardSection
                     data={filteredData}
-                    sortKey="ratings_given"
-                    sortDirection="asc"
                     valueKey="ratings_given"
                     valueLabel="Ratings given by"
                   />

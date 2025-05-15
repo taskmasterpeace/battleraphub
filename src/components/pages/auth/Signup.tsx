@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import GoogleButton from "@/components/pages/auth/GoogleButton";
 
 import Image from "next/image";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 export default function Signup() {
   const { signUp } = useAuth();
@@ -28,41 +29,44 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { onSubmit, processing } = useFormSubmit(
+    async (formData: { name: string; email: string; password: string }) => {
+      setError("");
+      setSuccess("");
+
+      try {
+        const { error } = await signUp(formData.name, formData.email, formData.password);
+        if (error) {
+          toast.error(error.message);
+          setError(error.message);
+        } else {
+          // Clear form
+          setEmail("");
+          setName("");
+          setPassword("");
+          setConfirmPassword("");
+          toast.success(
+            "Registration successful! Please check your email to confirm your account.",
+          );
+          setSuccess("Registration successful! Please check your email to confirm your account.");
+        }
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+          toast.error(err.message);
+        } else {
+          toast.error("An unknown error occurred during registration");
+          setError("An unknown error occurred during registration");
+        }
+      }
+    },
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError("");
-    setSuccess("");
-
-    try {
-      const { error } = await signUp(name, email, password);
-      if (error) {
-        toast.error(error.message);
-        setError(error.message);
-      } else {
-        // Clear form
-        setEmail("");
-        setName("");
-        setPassword("");
-        setConfirmPassword("");
-        toast.success("Registration successful! Please check your email to confirm your account.");
-        setSuccess("Registration successful! Please check your email to confirm your account.");
-      }
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-        toast.error(err.message);
-      } else {
-        toast.error("An unknown error occurred during registration");
-        setError("An unknown error occurred during registration");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    await onSubmit({ name, email, password });
   };
-
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
       <Card className="w-full max-w-md">
@@ -157,9 +161,9 @@ export default function Signup() {
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-              disabled={isLoading}
+              disabled={processing}
             >
-              {isLoading ? "Signing up..." : "Continue"}
+              {processing ? "Signing up..." : "Continue"}
             </Button>
           </form>
         </CardContent>

@@ -393,3 +393,13 @@ export interface ComparisonChartData {
 }
 
 export type Rating = { attribute_id: number; score: number };
+
+export interface TopAssignBadgeByBattler {
+  battler_id: string;
+  badge_id: string;
+  badge_name: string;
+  is_positive: boolean;
+  assign_count: number;
+  percentage: number;
+  description: string;
+}

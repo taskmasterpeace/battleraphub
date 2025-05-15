@@ -7,6 +7,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { useBattler } from "@/contexts/battler.context";
 import { CATEGORY_TYPES } from "@/config";
 import { colorOptions, generateComparisonChartData } from "@/lib/static/static-data";
+import { useAuth } from "@/contexts/auth.context";
 
 interface TabContentProps {
   title: string;
@@ -33,6 +34,8 @@ export const AttributeTabsContent = ({
   gradientFrom,
   gradientTo,
 }: TabContentProps) => {
+  const { user } = useAuth();
+  const userId = user?.id;
   const { battlerAnalytics, battlerRatings } = useBattler();
 
   const chartConfig: ChartConfig = {
@@ -97,13 +100,15 @@ export const AttributeTabsContent = ({
                             )
                           }
                         />
-                        <Radar
-                          name="My Rating"
-                          dataKey="community-score"
-                          stroke="hsl(var(--primary))"
-                          fill="hsl(var(--primary))"
-                          fillOpacity={0.9}
-                        />
+                        {userId && (
+                          <Radar
+                            name="My Rating"
+                            dataKey="community-score"
+                            stroke="hsl(var(--primary))"
+                            fill="hsl(var(--primary))"
+                            fillOpacity={0.9}
+                          />
+                        )}
                         <Radar
                           name="Community Rating"
                           dataKey="rating-score"
@@ -114,10 +119,12 @@ export const AttributeTabsContent = ({
                       </RadarChart>
                     </ChartContainer>
                     <CardFooter className="flex items-center justify-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-1.5 rounded-sm bg-primary"></div>
-                        <span className="text-sm">My Rating</span>
-                      </div>
+                      {userId && (
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-1.5 rounded-sm bg-primary"></div>
+                          <span className="text-sm">My Rating</span>
+                        </div>
+                      )}
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-1.5 rounded-sm bg-success"></div>
                         <span className="text-sm">Community Rating</span>

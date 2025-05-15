@@ -1,6 +1,7 @@
 "use client";
 
 import { MATERIALIZED_VIEWS } from "@/config";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 import {
   ActiveRolesByRatings,
   CommunityStats,
@@ -63,7 +64,6 @@ export const LeaderboardProvider = ({ children }: { children: React.ReactNode })
   const [mostInfluentialUsers, setMostInfluentialUsers] = useState<MostInfluentialUsers[]>([]);
   const [mostInfluentialUsersLoading, setMostInfluentialUsersLoading] = useState<boolean>(false);
   const [mostAccurateUsers, setMostAccurateUsers] = useState<MostAccurateUsers[]>([]);
-  const [mostAccurateUsersLoading, setMostAccurateUsersLoading] = useState<boolean>(false);
 
   const fetchCommunityStats = async () => {
     setCommunityLoading(true);
@@ -163,22 +163,21 @@ export const LeaderboardProvider = ({ children }: { children: React.ReactNode })
     }
   };
 
-  const fetchMostAccurateUsers = async () => {
-    setMostAccurateUsersLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from(MATERIALIZED_VIEWS.MOST_ACCURATE_USERS)
-        .select("*");
-      if (error) {
+  const { onSubmit: fetchMostAccurateUsers, processing: mostAccurateUsersLoading } = useFormSubmit(
+    async () => {
+      try {
+        const { data, error } = await supabase
+          .from(MATERIALIZED_VIEWS.MOST_ACCURATE_USERS)
+          .select("*");
+        if (error) {
+          console.error("Error fetching most accurate users", error);
+        }
+        setMostAccurateUsers(data as MostAccurateUsers[]);
+      } catch (error) {
         console.error("Error fetching most accurate users", error);
       }
-      setMostAccurateUsers(data as MostAccurateUsers[]);
-    } catch (error) {
-      console.error("Error fetching most accurate users", error);
-    } finally {
-      setMostAccurateUsersLoading(false);
-    }
-  };
+    },
+  );
 
   useEffect(() => {
     fetchCommunityStats();

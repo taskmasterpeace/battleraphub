@@ -12,19 +12,19 @@ import { AttributeTabsContent } from "@/components/pages/battlers/details/Attrib
 import { useBattler } from "@/contexts/battler.context";
 
 export interface AttributesTabProps {
-  updateBadges: (badges: { positive: string[]; negative: string[] }) => void;
   attributeData: Attribute[];
   badgeData: Badge[];
   battlerId: string;
 }
 
-export default function AttributesTab({
-  updateBadges,
-  attributeData,
-  badgeData,
-  battlerId,
-}: AttributesTabProps) {
-  const { battlerBadges, battlerRatings, setBattlerRatings, battlerAnalytics } = useBattler();
+export default function AttributesTab({ attributeData, badgeData, battlerId }: AttributesTabProps) {
+  const {
+    battlerBadges,
+    battlerRatings,
+    setBattlerRatings,
+    battlerAnalytics,
+    topBadgesAssignedByBattler,
+  } = useBattler();
   const [ratings, setRatings] = useState<Record<string, { id: string; score: number }>>({});
   const [selectedBadges, setSelectedBadges] = useState<{
     positive: string[];
@@ -47,17 +47,24 @@ export default function AttributesTab({
   const userId = user?.id;
 
   useEffect(() => {
-    if (battlerBadges.length > 0) {
+    if (userId && battlerBadges.length > 0) {
       const badgeIds = battlerBadges.map((bb) => bb.badge_id);
-
       const filterBadgeData = badgeData.filter((badge) => badgeIds.includes(badge.id));
       if (filterBadgeData) {
         const positive = filterBadgeData.filter((b) => b.is_positive).map((b) => b.name);
         const negative = filterBadgeData.filter((b) => !b.is_positive).map((b) => b.name);
         setSelectedBadges({ positive, negative });
       }
+    } else if (!userId && topBadgesAssignedByBattler.length > 0) {
+      const positive = topBadgesAssignedByBattler
+        .filter((b) => b.is_positive && b.battler_id === battlerId)
+        .map((b) => b.badge_name);
+      const negative = topBadgesAssignedByBattler
+        .filter((b) => !b.is_positive && b.battler_id === battlerId)
+        .map((b) => b.badge_name);
+      setSelectedBadges({ positive, negative });
     }
-  }, [badgeData, battlerBadges]);
+  }, [badgeData, battlerBadges, userId, topBadgesAssignedByBattler, battlerId]);
 
   useEffect(() => {
     const ratingMap: Record<string, { id: string; score: number }> = {};
@@ -217,10 +224,6 @@ export default function AttributesTab({
       }
     }
   };
-
-  useEffect(() => {
-    updateBadges(selectedBadges);
-  }, [selectedBadges, updateBadges]);
 
   return (
     <div>

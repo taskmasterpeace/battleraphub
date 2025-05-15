@@ -59,4 +59,5 @@ export interface Video {
   views?: number;
   likes?: number;
   comments?: number;
+  tag?: "latest" | "popular";
 }

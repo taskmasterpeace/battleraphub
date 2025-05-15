@@ -96,7 +96,7 @@ GROUP BY
 HAVING
   COUNT(br.id) >= 5 -- Filter out users with very few ratings
 ORDER BY
-  rating_stddev ASC;
+  ratings_given DESC;
 
 
 -- Most Influential Users
@@ -124,7 +124,7 @@ GROUP BY
 HAVING
   COUNT(br.id) >= 5
 ORDER BY
-  avg_diff_from_community ASC;
+  ratings_given DESC;
 
 -- Most Accurate (Consistency + Influence) Users: standard deviation and average difference from community
 
@@ -166,7 +166,7 @@ FROM
 JOIN consistency c ON u.id = c.user_id
 JOIN influence i ON u.id = i.user_id
 ORDER BY
-  accuracy_score ASC;
+  accuracy_score DESC;
 
 
 DROP MATERIALIZED VIEW IF EXISTS top_battlers_weighted;
@@ -202,6 +202,60 @@ ORDER BY
 LIMIT 10;
 
 
+-- Top Assigned Badges by Battlers
+
+DROP MATERIALIZED VIEW IF EXISTS top_assigned_badges_by_battlers;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS top_assigned_badges_by_battlers AS
+WITH badge_counts AS (
+    SELECT 
+        bb.battler_id,
+        bb.badge_id,
+        COUNT(*) AS assign_count
+    FROM battler_badges bb
+    GROUP BY bb.battler_id, bb.badge_id
+),
+battler_totals AS (
+    SELECT 
+        battler_id,
+        SUM(assign_count) AS total_assignments
+    FROM badge_counts
+    GROUP BY battler_id
+),
+badge_with_type AS (
+    SELECT 
+        bc.battler_id,
+        bc.badge_id,
+        bc.assign_count,
+        b.name AS badge_name,
+        b.description AS description,
+        b.is_positive
+    FROM badge_counts bc
+    JOIN badges b ON bc.badge_id = b.id
+),
+ranked AS (
+    SELECT 
+        bwt.*,
+        bt.total_assignments,
+        ROW_NUMBER() OVER (
+            PARTITION BY bwt.battler_id, bwt.is_positive
+            ORDER BY bwt.assign_count DESC
+        ) AS rn
+    FROM badge_with_type bwt
+    JOIN battler_totals bt ON bwt.battler_id = bt.battler_id
+)
+SELECT 
+    battler_id,
+    badge_id,
+    badge_name,
+    description,
+    is_positive,
+    assign_count,
+    ROUND((assign_count::decimal / total_assignments) * 100, 2) AS percentage
+FROM ranked
+WHERE rn <= 5
+ORDER BY battler_id, is_positive DESC, rn;
+
 -- Refresh materialized views every 6 hours
 
 SELECT cron.schedule(
@@ -232,6 +286,12 @@ SELECT cron.schedule(
     'refresh-top_battlers_weighted',
     '20 1 * * *', -- Run daily at 01:20
     'REFRESH MATERIALIZED VIEW top_battlers_weighted'
+);
+
+SELECT cron.schedule(
+    'refresh-top_assigned_badges_by_battlers',
+    '25 1 * * *', -- Run daily at 01:25
+    'REFRESH MATERIALIZED VIEW top_assigned_badges_by_battlers'
 );
 
 -- Alter users table to add location:string and website:string if not already present

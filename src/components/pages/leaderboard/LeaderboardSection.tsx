@@ -5,8 +5,6 @@ import Link from "next/link";
 
 interface LeaderboardSectionProps<T> {
   data: T[];
-  sortKey: keyof T;
-  sortDirection?: "asc" | "desc";
   valueLabel: string;
   valueKey: keyof T;
   useIndex?: boolean;
@@ -14,25 +12,12 @@ interface LeaderboardSectionProps<T> {
 
 export default function LeaderboardSection<T extends FilteredData>({
   data,
-  sortKey,
-  sortDirection = "desc",
   valueLabel,
   valueKey,
 }: LeaderboardSectionProps<T>) {
-  const sortedData = [...data].sort((a, b) => {
-    const aValue = a[sortKey];
-    const bValue = b[sortKey];
-
-    if (typeof aValue === "number" && typeof bValue === "number") {
-      return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
-    }
-
-    return 0;
-  });
-
   return (
     <div className="space-y-2">
-      {sortedData.map((entry, index) => (
+      {data.map((entry, index) => (
         <div
           key={index}
           className="justify-between p-3 rounded-lg bg-background border border-border"

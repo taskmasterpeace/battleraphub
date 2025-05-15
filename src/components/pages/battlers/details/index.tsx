@@ -3,7 +3,7 @@
 import { use, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin } from "lucide-react";
+import { Info, MapPin } from "lucide-react";
 import AttributesTab from "@/components/pages/battlers/details/AttributesTab";
 import AnalyticsTab from "@/components/pages/battlers/details/AnalyticsTab";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import { supabase } from "@/utils/supabase/client";
 import { DB_TABLES } from "@/config";
 import { Attribute, Badge as badgesType, Battlers } from "@/types";
 import { useBattler } from "@/contexts/battler.context";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface BattlerDetailsProps {
   params: Promise<{ id: string }>;
@@ -23,14 +24,7 @@ interface BattlerDetailsProps {
 export default function BattlerPage({ params, badgeData, attributeData }: BattlerDetailsProps) {
   const { id: battlerId } = use(params);
   const [battlerData, setBattlerData] = useState<Battlers>();
-  const { totalRatings } = useBattler();
-  const [selectedBadges, setSelectedBadges] = useState<{
-    positive: string[];
-    negative: string[];
-  }>({
-    positive: [],
-    negative: [],
-  });
+  const { totalRatings, topBadgesAssignedByBattler } = useBattler();
 
   const fetchBattlerData = useCallback(async () => {
     try {
@@ -69,11 +63,6 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
   useEffect(() => {
     fetchBattlerData();
   }, [fetchBattlerData]);
-
-  // Function to update badges (will be passed to AttributesTab)
-  const updateBadges = async (badges: { positive: string[]; negative: string[] }) => {
-    setSelectedBadges(badges);
-  };
 
   return (
     <div>
@@ -128,28 +117,58 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
                 <p className="text-3xl font-bold text-primary">{totalRatings.toFixed(1)}</p>
               </div>
             </div>
-
-            {/* Selected badges */}
-            {(selectedBadges.positive.length > 0 || selectedBadges.negative.length > 0) && (
+            {/* Selected badges  */}
+            {(topBadgesAssignedByBattler.some((badge) => badge.is_positive) ||
+              topBadgesAssignedByBattler.some((badge) => !badge.is_positive)) && (
               <div className="mt-6">
-                <h3 className="text-sm font-medium text-muted-foreground mb-3">Selected Badges</h3>
+                <div className="flex items-center mb-3">
+                  <h3 className="text-sm font-medium text-muted-foreground">Top Assigned Badges</h3>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="ml-1 h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-xs">
+                        most commonly assigned badges by users.
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <div className="flex flex-wrap gap-3">
-                  {selectedBadges.positive.map((badge, index) => (
-                    <div key={`${badge}-${index}`}>
-                      <Badge className="px-3 py-2 text-base bg-success-foreground dark:bg-success/20 text-success border-success hover:bg-success-foreground flex items-center">
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        {badge}
-                      </Badge>
-                    </div>
-                  ))}
-                  {selectedBadges.negative.map((badge, index) => (
-                    <div key={`${badge}-${index}`}>
-                      <Badge className="px-3 py-2 text-base bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive hover:bg-destructive-foreground flex items-center">
-                        <XCircle className="w-4 h-4 mr-2" />
-                        {badge}
-                      </Badge>
-                    </div>
-                  ))}
+                  {topBadgesAssignedByBattler
+                    .filter((badge) => badge.is_positive)
+                    .map((badge, index) => (
+                      <TooltipProvider key={`${badge.badge_name}-${index}`}>
+                        <Tooltip delayDuration={300}>
+                          <TooltipTrigger>
+                            <Badge className="px-3 py-2 text-base bg-success-foreground dark:bg-success/20 text-success border-success hover:bg-success-foreground flex items-center">
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              {`${badge.badge_name} (${badge.percentage}%)`}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs">
+                            <p className="p-2">{badge.description}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ))}
+                  {topBadgesAssignedByBattler
+                    .filter((badge) => !badge.is_positive)
+                    .map((badge, index) => (
+                      <TooltipProvider key={`${badge.badge_name}-${index}`}>
+                        <Tooltip delayDuration={300}>
+                          <TooltipTrigger>
+                            <Badge className="px-3 py-2 text-base bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive hover:bg-destructive-foreground flex items-center">
+                              <XCircle className="w-4 h-4 mr-2" />
+                              {`${badge.badge_name} (${badge.percentage}%)`}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs">
+                            <p className="p-2">{badge.description}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ))}
                 </div>
               </div>
             )}
@@ -164,7 +183,6 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
           </TabsList>
           <TabsContent value="attributes">
             <AttributesTab
-              updateBadges={updateBadges}
               attributeData={attributeData}
               badgeData={badgeData}
               battlerId={battlerId}

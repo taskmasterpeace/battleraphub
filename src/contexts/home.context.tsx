@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { DB_TABLES, MATERIALIZED_VIEWS } from "@/config";
 import {
@@ -10,8 +10,10 @@ import {
   MostAssignedBadges,
   MostValuedAttributes,
   Tags,
+  TopAssignBadgeByBattler,
   TopBattlersUnweighted,
 } from "@/types";
+import { useParams } from "next/navigation";
 
 type HomeContextType = {
   recentBattlers: Battlers[];
@@ -23,6 +25,9 @@ type HomeContextType = {
   topBattlersWeightedData: TopBattlersUnweighted[];
   highlightBattlers: Battlers[];
   tagsData: Tags[];
+  topBadgesAssignedByBattler: TopAssignBadgeByBattler[];
+  fetchTopBadgesAssignedByBattlers: (battlerId: string) => Promise<void>;
+  topBadgesAssignedByBattlerLoading: boolean;
   tagsLoading: boolean;
   highlightBattlerLoading: boolean;
   recentBattlerLoading: boolean;
@@ -44,6 +49,9 @@ const HomeContext = createContext<HomeContextType>({
   topBattlersWeightedData: [],
   highlightBattlers: [],
   tagsData: [],
+  topBadgesAssignedByBattler: [],
+  fetchTopBadgesAssignedByBattlers: async () => {},
+  topBadgesAssignedByBattlerLoading: false,
   tagsLoading: false,
   highlightBattlerLoading: false,
   recentBattlerLoading: false,
@@ -56,6 +64,7 @@ const HomeContext = createContext<HomeContextType>({
 });
 
 export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
+  const battlerId = useParams().id;
   const [recentBattlers, setRecentBattlers] = useState<Battlers[]>([]);
   const [mostValuesAttributes, setMostValuesAttributes] = useState<MostValuedAttributes[]>([]);
   const [mostAssignBadges, setMostAssignBadges] = useState<MostAssignedBadges[]>([]);
@@ -78,6 +87,11 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
   const [avgRatingOverTimeLoading, setAvgRatingOverTimeLoading] = useState<boolean>(false);
   const [battlerUnweightedLoading, setBattlerUnweightedLoading] = useState<boolean>(false);
   const [battlerWeightedLoading, setBattlerWeightedLoading] = useState<boolean>(false);
+  const [topBadgesAssignedByBattler, setTopBadgesAssignedByBattler] = useState<
+    TopAssignBadgeByBattler[]
+  >([]);
+  const [topBadgesAssignedByBattlerLoading, setTopBadgesAssignedByBattlerLoading] =
+    useState<boolean>(false);
   // Fetch recent battlers
   const fetchRecentBattlers = async () => {
     setRecentBattlerLoading(true);
@@ -263,6 +277,32 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // Fetch top badges assigned by battlers
+  const fetchTopBadgesAssignedByBattlers = useCallback(async (battlerId: string) => {
+    setTopBadgesAssignedByBattlerLoading(true);
+    try {
+      if (!battlerId || battlerId.trim() === "") {
+        console.warn("fetchTopBadgesAssignedByBattlers called with invalid battlerId:", battlerId);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.TOP_ASSIGNED_BADGES_BY_BATTLERS)
+        .select("*")
+        .eq("battler_id", battlerId);
+
+      if (error) {
+        console.error("Error fetching top badges assigned by battlers", error);
+        return;
+      }
+      setTopBadgesAssignedByBattler(data as TopAssignBadgeByBattler[]);
+    } catch (err) {
+      console.error("Unexpected error fetching top badges assigned by battlers:", err);
+    } finally {
+      setTopBadgesAssignedByBattlerLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchRecentBattlers();
     fetchMostValuedAttributes();
@@ -274,6 +314,10 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
     fetchHighlightBattlers();
     fetchTagsData();
   }, []);
+
+  useEffect(() => {
+    fetchTopBadgesAssignedByBattlers(battlerId as string);
+  }, [battlerId, fetchTopBadgesAssignedByBattlers]);
 
   return (
     <HomeContext.Provider
@@ -294,6 +338,9 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
         topBattlersWeightedData,
         highlightBattlers,
         highlightBattlerLoading,
+        topBadgesAssignedByBattler,
+        topBadgesAssignedByBattlerLoading,
+        fetchTopBadgesAssignedByBattlers,
         tagsData,
         tagsLoading,
       }}

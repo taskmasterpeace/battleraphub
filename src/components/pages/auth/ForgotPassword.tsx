@@ -8,24 +8,27 @@ import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/submit-button";
 import { forgotPasswordAction } from "@/app/actions";
 import { toast } from "sonner";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
 
-  const onForgetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    try {
-      const response = await forgotPasswordAction(formData);
-      if (response.success) {
-        toast.success(response.message);
-      } else {
-        toast.error(response.message);
+  const { onSubmit: onForgetPassword, processing } = useFormSubmit(
+    async (data: { email: string }) => {
+      const formData = new FormData();
+      try {
+        formData.append("email", data.email);
+        const response = await forgotPasswordAction(formData);
+        if (response.success) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Forgot password failed: ${error}`);
       }
-    } catch (error) {
-      toast.error(`Forgot password failed: ${error}`);
-    }
-  };
+    },
+  );
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
@@ -37,7 +40,13 @@ const ForgotPassword = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <form onSubmit={(e) => onForgetPassword(e)} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onForgetPassword({ email });
+            }}
+            className="space-y-4"
+          >
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -51,7 +60,9 @@ const ForgotPassword = () => {
               />
             </div>
             <div className="flex items-center justify-center">
-              <SubmitButton pendingText="Sending...">Send link</SubmitButton>
+              <SubmitButton disabled={processing} pendingText="Sending...">
+                Send link
+              </SubmitButton>
             </div>
           </form>
         </CardContent>
