@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 import Image from "next/image";
 import PlatformX from "../../../../public/image/twitter-x.svg";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 interface SocialLinksSectionProps {
   user: User;
@@ -32,7 +33,6 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
   const router = useRouter();
   const { user: currentUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   type FormProfileSchema = z.infer<typeof socialMediaLinksSchema>;
 
   const form = useForm<FormProfileSchema>({
@@ -56,16 +56,15 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
 
   const isOwnProfile = currentUser?.id === user.id;
 
-  const onSubmit = async (data: FormProfileSchema) => {
-    setIsLoading(true);
+  const { onSubmit, processing } = useFormSubmit<FormProfileSchema>(async (data) => {
+    const formData = new FormData();
+    formData.append("userId", user.id || "");
+    formData.append("website", data.website || "");
+    formData.append("youtube", data.youtube || "");
+    formData.append("twitter", data.twitter || "");
+    formData.append("instagram", data.instagram || "");
 
     try {
-      const formData = new FormData();
-      formData.append("userId", user.id || "");
-      formData.append("website", data.website || "");
-      formData.append("youtube", data.youtube || "");
-      formData.append("twitter", data.twitter || "");
-      formData.append("instagram", data.instagram || "");
       const response = await updateUserProfileAction(formData);
       if (response.success) {
         toast.success("Social media links updated successfully!");
@@ -74,10 +73,9 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
       }
     } catch (error) {
       console.error("Error updating social links:", error);
-    } finally {
-      setIsLoading(false);
+      toast.error("Failed to update social links. Please try again.");
     }
-  };
+  });
 
   return (
     <div className="bg-background rounded-lg p-6 border border-border">
@@ -199,14 +197,14 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsEditing(false)}
-                disabled={isLoading}
+                disabled={processing}
               >
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>
-              <Button type="submit" size="sm" disabled={isLoading}>
+              <Button type="submit" size="sm" disabled={processing}>
                 <Save className="w-4 h-4 mr-2" />
-                {isLoading ? "Saving..." : "Save"}
+                {processing ? "Saving..." : "Save"}
               </Button>
             </div>
           </form>

@@ -19,10 +19,21 @@ import { useHome } from "@/contexts/home.context";
 import { Battlers } from "@/types";
 
 export default function HighlightedBattler() {
-  const { highlightBattlers, tagsData, highlightBattlerLoading } = useHome();
+  const {
+    highlightBattlers,
+    tagsData,
+    highlightBattlerLoading,
+    topBadgesAssignedByBattler,
+    fetchTopBadgesAssignedByBattlers,
+  } = useHome();
   const [filteredBattlers, setFilteredBattlers] = useState<Battlers[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  const currentBattler = filteredBattlers[currentIndex];
+  const battlerBadges = topBadgesAssignedByBattler?.filter(
+    (item) => item.battler_id === currentBattler?.id,
+  );
 
   useEffect(() => {
     if (selectedTags.length === 0) {
@@ -54,6 +65,12 @@ export default function HighlightedBattler() {
       setCurrentIndex((prev) => (prev - 1 + filteredBattlers.length) % filteredBattlers.length);
     }
   };
+
+  useEffect(() => {
+    if (currentBattler?.id) {
+      fetchTopBadgesAssignedByBattlers(currentBattler.id);
+    }
+  }, [currentBattler?.id, fetchTopBadgesAssignedByBattlers]);
 
   if (highlightBattlerLoading) {
     return (
@@ -106,8 +123,6 @@ export default function HighlightedBattler() {
       </div>
     );
   }
-
-  const currentBattler = filteredBattlers[currentIndex];
 
   return (
     <div className="h-full flex flex-col">
@@ -220,27 +235,27 @@ export default function HighlightedBattler() {
 
                   <div>
                     <h4 className="font-medium mb-2">Badges:</h4>
-                    {currentBattler?.battler_badges && currentBattler?.battler_badges.length > 0 ? (
+                    {battlerBadges && battlerBadges.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
-                        {currentBattler?.battler_badges
+                        {battlerBadges
                           .map((badge, i) => (
                             <motion.div
-                              key={`${badge.badges?.id}-${i}`}
+                              key={`${badge.battler_id}-${i}`}
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.95 }}
                             >
                               <Badge
                                 className={`bg-muted text-foreground ${
-                                  badge.badges?.is_positive
+                                  badge.is_positive
                                     ? "bg-success-foreground dark:bg-success/20 text-success border-success hover:bg-success-foreground"
                                     : "bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive hover:bg-destructive-foreground"
                                 }`}
                               >
-                                {badge.badges?.name}
+                                {badge.badge_name}
                               </Badge>
                             </motion.div>
                           ))
-                          .slice(0, 10)}{" "}
+                          .slice(0, 10)}
                       </div>
                     ) : (
                       <div className="mt-4">

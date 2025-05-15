@@ -15,6 +15,7 @@ import { DB_TABLES, ROLE } from "@/config";
 import { supabase } from "@/utils/supabase/client";
 import { useAuth } from "@/contexts/auth.context";
 import { RoleDataType } from "@/types";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 type RoleWeightsFormValues = z.infer<typeof roleWeightsSchema>;
 
@@ -22,7 +23,6 @@ const RoleWeightsContent = () => {
   const { user } = useAuth();
   const userId = user?.id;
   const [roleData, setRoleData] = React.useState<RoleDataType[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
   const form = useForm<RoleWeightsFormValues>({
     resolver: zodResolver(roleWeightsSchema),
     defaultValues: {
@@ -67,9 +67,8 @@ const RoleWeightsContent = () => {
     setValue("admin", roleData.find((item) => item.role_id === ROLE.ADMIN)?.weight || 0);
   }, [setValue, roleData]);
 
-  const onSubmit = async (values: RoleWeightsFormValues) => {
-    setIsLoading(true);
-    if (!userId) return null;
+  const { onSubmit, processing } = useFormSubmit<RoleWeightsFormValues>(async (values) => {
+    if (!userId) return;
     const convertedValues = Object.entries(values).reduce(
       (acc, [key, weight]) => {
         const roleEntry = rolesWeightData.find((role) => role.formKey === key);
@@ -94,10 +93,8 @@ const RoleWeightsContent = () => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to save weights.");
-    } finally {
-      setIsLoading(false);
     }
-  };
+  });
   return (
     <div className="space-y-6">
       <Card>
@@ -132,8 +129,8 @@ const RoleWeightsContent = () => {
                   )}
                 />
               ))}
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? (
+              <Button type="submit" disabled={processing}>
+                {processing ? (
                   <>
                     <Loader className="w-4 h-4 mr-2 animate-spin" />
                     Saving...

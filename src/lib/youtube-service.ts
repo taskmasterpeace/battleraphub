@@ -285,3 +285,105 @@ export const getLatestVideosFromYoutubeChannel = async (youtubeUrl: string): Pro
 
   return videos;
 };
+
+export const getMixedVideosFromYoutubeChannel = async (youtubeUrl: string): Promise<Video[]> => {
+  const apiKey = process.env.YOUTUBE_API_KEY || "";
+  const youtubeUrlMatch = youtubeUrl?.match(/@([a-zA-Z0-9_]+)/);
+  const handle = youtubeUrlMatch?.[1];
+  if (!handle) return [];
+
+  // Step 1: Get channel ID from handle
+  const channelRes = await fetch(
+    `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${handle}&key=${apiKey}`,
+  );
+  const channelData = await channelRes.json();
+  const channelId = channelData.items?.[0]?.id;
+  if (!channelId) return [];
+
+  // Step 2: Fetch 2 latest videos
+  const latestParams = new URLSearchParams({
+    part: "snippet",
+    channelId,
+    maxResults: "2",
+    order: "date",
+    type: "video",
+    key: apiKey,
+  });
+
+  const latestRes = await fetch(`https://www.googleapis.com/youtube/v3/search?${latestParams}`);
+  const latestData: YoutubeSearchResponse = await latestRes.json();
+  const latestVideos = latestData.items;
+
+  // Step 3: Fetch 3 most popular videos
+  const popularParams = new URLSearchParams({
+    part: "snippet",
+    channelId,
+    maxResults: "3",
+    order: "viewCount",
+    type: "video",
+    key: apiKey,
+  });
+
+  const popularRes = await fetch(`https://www.googleapis.com/youtube/v3/search?${popularParams}`);
+  const popularData: YoutubeSearchResponse = await popularRes.json();
+  const popularVideos = popularData.items;
+
+  // Step 4: Create video source map to track tags
+  const tagMap = new Map<string, "latest" | "popular">();
+
+  latestVideos?.forEach((item) => {
+    if (item.id.videoId) tagMap.set(item.id.videoId, "latest");
+  });
+
+  popularVideos.forEach((item) => {
+    if (item.id.videoId && !tagMap.has(item.id.videoId)) {
+      tagMap.set(item.id.videoId, "popular");
+    }
+  });
+
+  // Step 5: Combine unique videos
+  const allVideoItems = [...latestVideos, ...popularVideos];
+  const uniqueVideoMap = new Map<string, (typeof allVideoItems)[0]>();
+  allVideoItems.forEach((item) => {
+    if (item.id.videoId) {
+      uniqueVideoMap.set(item.id.videoId, item);
+    }
+  });
+
+  const uniqueVideoIds = Array.from(uniqueVideoMap.keys());
+
+  // Step 6: Fetch statistics
+  const statsParams = new URLSearchParams({
+    part: "statistics",
+    id: uniqueVideoIds.join(","),
+    key: apiKey,
+  });
+
+  const statsRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?${statsParams}`);
+  const statsData: YoutubeVideoStatsResponse = await statsRes.json();
+
+  const statsMap = new Map<string, VideoStatistics>(
+    statsData.items.map((item) => [item.id, item.statistics]),
+  );
+
+  // Step 7: Build final video list
+  const finalVideos: Video[] = Array.from(uniqueVideoMap.values()).map((item, index) => {
+    const stats = statsMap.get(item.id.videoId) ?? {};
+    return {
+      channelId,
+      order: index + 1,
+      id: item.id.videoId,
+      videoId: item.id.videoId,
+      title: item.snippet.title,
+      description: item.snippet.description,
+      thumbnail: item.snippet.thumbnails.high.url,
+      publishedAt: item.snippet.publishedAt,
+      views: parseInt(stats.viewCount ?? "0", 10),
+      likes: parseInt(stats.likeCount ?? "0", 10),
+      comments: parseInt(stats.commentCount ?? "0", 10),
+      tag: tagMap.get(item.id.videoId) ?? "popular",
+    };
+  });
+
+  return finalVideos;
+};

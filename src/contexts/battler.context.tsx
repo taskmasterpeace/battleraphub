@@ -1,8 +1,8 @@
 "use client";
 
-import { DB_TABLES } from "@/config";
+import { DB_TABLES, MATERIALIZED_VIEWS } from "@/config";
 import debounce from "lodash.debounce";
-import { BattlerAnalytics, BattlerRating, Battlers } from "@/types";
+import { BattlerAnalytics, BattlerRating, Battlers, TopAssignBadgeByBattler } from "@/types";
 import { supabase } from "@/utils/supabase/client";
 import { useParams } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
@@ -22,6 +22,8 @@ type BattlerContextType = {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   setBattlerRatings: React.Dispatch<React.SetStateAction<BattlerRating[]>>;
+  topBadgesAssignedByBattler: TopAssignBadgeByBattler[];
+  topBadgesAssignedByBattlerLoading: boolean;
 };
 
 const BattlerContext = createContext<BattlerContextType>({
@@ -34,6 +36,8 @@ const BattlerContext = createContext<BattlerContextType>({
   searchQuery: "",
   setSearchQuery: () => {},
   setBattlerRatings: () => {},
+  topBadgesAssignedByBattler: [],
+  topBadgesAssignedByBattlerLoading: false,
 });
 
 export const BattlerProvider = ({ children }: { children: React.ReactNode }) => {
@@ -43,6 +47,11 @@ export const BattlerProvider = ({ children }: { children: React.ReactNode }) => 
   const [battlerAnalytics, setBattlerAnalytics] = useState<BattlerAnalytics[]>([]);
   const [battlersData, setBattlerData] = useState<Battlers[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [topBadgesAssignedByBattler, setTopBadgesAssignedByBattler] = useState<
+    TopAssignBadgeByBattler[]
+  >([]);
+  const [topBadgesAssignedByBattlerLoading, setTopBadgesAssignedByBattlerLoading] =
+    useState<boolean>(false);
   const { user } = useAuth();
   const battlerId = useParams().id;
 
@@ -126,6 +135,27 @@ export const BattlerProvider = ({ children }: { children: React.ReactNode }) => 
     }
   }, [searchQuery, battlerId]);
 
+  // Fetch top badges assigned
+  const fetchTopBadgesAssignedByBattlers = async (battlerId: string) => {
+    setTopBadgesAssignedByBattlerLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.TOP_ASSIGNED_BADGES_BY_BATTLERS)
+        .select("*")
+        .eq("battler_id", battlerId);
+
+      if (error) {
+        console.error("Error fetching top badges assigned by battlers:", error);
+        return;
+      }
+      setTopBadgesAssignedByBattler(data || []);
+    } catch (error) {
+      console.error("Error fetching top badges assigned by battlers:", error);
+    } finally {
+      setTopBadgesAssignedByBattlerLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchBattlerBadges();
   }, [fetchBattlerBadges]);
@@ -146,6 +176,10 @@ export const BattlerProvider = ({ children }: { children: React.ReactNode }) => 
     };
   }, [searchQuery, battlerId, fetchBattlerData]);
 
+  useEffect(() => {
+    fetchTopBadgesAssignedByBattlers(battlerId as string);
+  }, [battlerId]);
+
   return (
     <BattlerContext.Provider
       value={{
@@ -158,6 +192,8 @@ export const BattlerProvider = ({ children }: { children: React.ReactNode }) => 
         setSearchQuery,
         fetchBattlerAnalytics,
         setBattlerRatings,
+        topBadgesAssignedByBattler,
+        topBadgesAssignedByBattlerLoading,
       }}
     >
       {children}

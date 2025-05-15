@@ -24,6 +24,7 @@ import { Battlers, TagsOption } from "@/types";
 import { createBattlersAction, editBattlersAction } from "@/app/actions";
 import ImageUploader from "@/components/pages/battlers/admin-table/ImageUploader";
 import { Loader } from "lucide-react";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 type FormCreateDataType = z.infer<typeof formBattlerCreateSchema>;
 type FormUpdateDataType = z.infer<typeof formBattlerUpdateSchema>;
@@ -49,7 +50,6 @@ const FormBattlers = ({
   const [bannerPreview, setBannerPreview] = useState<string>("");
   const [currentAvatar, setCurrentAvatar] = useState<string>("");
   const [currentBanner, setCurrentBanner] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedTagIds = battlerData?.battler_tags?.map((tag) => tag.tags?.id.toString());
 
@@ -103,9 +103,9 @@ const FormBattlers = ({
     label: tag.name,
     value: tag.id.toString(),
   }));
-  const onSubmit = async (data: FormCreateDataType | FormUpdateDataType) => {
-    setIsSubmitting(true);
-    try {
+
+  const { onSubmit, processing } = useFormSubmit<FormCreateDataType | FormUpdateDataType>(
+    async (data) => {
       const formData = new FormData();
 
       formData.append("name", data.name);
@@ -122,29 +122,23 @@ const FormBattlers = ({
       if (data.avatar?.[0]) formData.append("avatar", data.avatar[0]);
       if (data.banner?.[0]) formData.append("banner", data.banner[0]);
 
-      if (createBattler) {
-        const response = await createBattlersAction(formData);
+      try {
+        const response = createBattler
+          ? await createBattlersAction(formData)
+          : await editBattlersAction(formData);
+
         if (response?.success) {
           toast.success(response.message || "Operation successful");
-          setOpenClose(false);
-          fetchBattlersList();
-        }
-      } else {
-        const response = await editBattlersAction(formData);
-        if (response.success) {
-          toast.success(response.message);
           setOpenClose(false);
           setPopoverOpen?.(false);
           fetchBattlersList();
         }
+      } catch (error) {
+        console.log("error", error);
+        toast.error(`Failed to ${createBattler ? "create" : "update"} battler. Please try again.`);
       }
-    } catch (error) {
-      console.log("error", error);
-      toast.error(`Failed to ${createBattler ? "create" : "update"} battler. Please try again.`);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    },
+  );
 
   return (
     <Form {...form}>
@@ -266,8 +260,8 @@ const FormBattlers = ({
         </div>
 
         <DialogFooter className="flex flex-col gap-3 items-center mt-4">
-          <SubmitButton className="w-full" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? (
+          <SubmitButton className="w-full" type="submit" disabled={processing}>
+            {processing ? (
               <>
                 <Loader className="mr-2 h-4 w-4 animate-spin" />
                 {createBattler ? "Creating..." : "Updating..."}
