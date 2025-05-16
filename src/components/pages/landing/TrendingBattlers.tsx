@@ -47,12 +47,13 @@ export default function TrendingBattlers() {
                 >
                   <Card className="overflow-hidden hover:border-blue-500 transition-all hover:shadow-lg hover:shadow-blue-900/20 group-hover:transform group-hover:translate-y-[-5px] duration-300 h-full">
                     <CardContent className="p-0 h-full flex flex-col">
-                      <div className="relative aspect-square">
+                      <div className="relative aspect-square w-full max-h-[200px] sm:max-h-[280px]">
                         <Image
                           src={battler.avatar || "/placeholder.svg"}
                           alt={battler.name}
-                          fill
-                          className="object-cover w-full"
+                          width={280}
+                          height={280}
+                          className="object-cover w-full h-full"
                         />
                         <div className="absolute top-2 right-2">
                           <Badge

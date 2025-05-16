@@ -257,8 +257,9 @@ export default function FormContentDialog({
                       <Image
                         src={thumbnailPreview || currentThumbnail || "/placeholder.svg"}
                         alt="Thumbnail"
-                        fill
-                        className="object-cover"
+                        height={160}
+                        width={540}
+                        className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-background/50 opacity-0 hover:opacity-100 transition-opacity">
                         <div

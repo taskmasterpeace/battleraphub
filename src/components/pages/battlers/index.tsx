@@ -184,7 +184,7 @@ export default function Battlers({ tags }: { tags: TagsOption[] }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">All Battlers</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-8">All Battlers</h1>
 
       {/* Add the QuickFilterBar component */}
       <div className="mb-6">
@@ -217,12 +217,13 @@ export default function Battlers({ tags }: { tags: TagsOption[] }) {
                 href={`/battlers/${battler.id}`}
                 className="bg-background rounded-lg overflow-hidden border border-border hover:border-primary transition-all hover:shadow-lg hover:shadow-purple-900/20"
               >
-                <div className="aspect-square relative">
+                <div className="aspect-square relative max-w-[206px] max-h-[206px]">
                   <Image
                     src={battler.avatar || "/image/default-avatar-img.jpg"}
                     alt={battler?.name || "Battler Avatar"}
-                    fill
-                    className="object-cover"
+                    width={206}
+                    height={206}
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="p-3">

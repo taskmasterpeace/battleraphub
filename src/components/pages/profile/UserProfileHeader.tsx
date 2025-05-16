@@ -54,8 +54,9 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
         <Image
           src={user.image || "/placeholder.svg?height=200&width=1200"}
           alt={`${user.name}'s banner`}
-          fill
-          className="object-cover"
+          width={1200}
+          height={200}
+          className="h-full w-full object-cover"
           unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent"></div>
@@ -69,8 +70,9 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
             <Image
               src={user.avatar || "/placeholder.svg?height=400&width=400"}
               alt={user.name || "profile-avatar"}
-              fill
-              className="object-cover"
+              width={152}
+              height={152}
+              className="w-full h-full object-cover"
               unoptimized
             />
           </div>
@@ -79,7 +81,7 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
           <div className="flex-1">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-white">{user.name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">{user.name}</h1>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {getRoleBadges().map((badge, index) => (
                     <Badge key={index} className={badge.color}>

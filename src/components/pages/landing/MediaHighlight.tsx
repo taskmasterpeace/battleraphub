@@ -99,24 +99,23 @@ export default function MediaHighlight({ usersData }: MediaHighlightProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {trendingLoading
-                  ? Array(5)
-                      .fill(0)
-                      .map((_, i) => (
-                        <div key={i} className="h-20 bg-muted animate-pulse rounded-md"></div>
-                      ))
-                  : Object.entries(trendingVideoData).flatMap(([userId, videos]) =>
-                      videos.map((content, idx) => {
-                        return (
-                          <TrendingVideoCard
-                            key={idx}
-                            idx={idx}
-                            userId={userId}
-                            content={content}
-                          />
-                        );
-                      }),
-                    )}
+                {trendingLoading ? (
+                  Array(5)
+                    .fill(0)
+                    .map((_, i) => (
+                      <div key={i} className="h-20 bg-muted animate-pulse rounded-md"></div>
+                    ))
+                ) : Object.keys(trendingVideoData).length === 0 ? (
+                  <div className="text-center py-8 text-foreground">No Data Found</div>
+                ) : (
+                  Object.entries(trendingVideoData).flatMap(([userId, videos]) =>
+                    videos.map((content, idx) => {
+                      return (
+                        <TrendingVideoCard key={idx} idx={idx} userId={userId} content={content} />
+                      );
+                    }),
+                  )
+                )}
               </div>
             </CardContent>
           </Card>

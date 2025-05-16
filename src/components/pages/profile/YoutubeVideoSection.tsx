@@ -94,8 +94,9 @@ export default function YouTubeVideoSection({ youtubeHandleUrl }: YouTubeVideoSe
                     <Image
                       src={video?.thumbnail || "/placeholder.svg"}
                       alt={video?.title || "Video thumbnail"}
-                      fill
-                      className="object-cover"
+                      width={300}
+                      height={200}
+                      className="w-full h-full object-cover"
                     />
                     <Badge className="absolute top-2 right-2 bg-destructive-foreground text-destructive border-destructive">
                       YouTube

@@ -71,12 +71,13 @@ const HomePage = ({ usersData }: HomeProps) => {
                   href={`/battlers/${battler.id}`}
                   className="bg-background rounded-lg overflow-hidden border border-border hover:border-amber-500 transition-all hover:shadow-lg hover:shadow-amber-900/20"
                 >
-                  <div className="aspect-square relative">
+                  <div className="aspect-square relative max-h-[206px] max-w-[206px]">
                     <Image
                       src={battler.avatar || "/image/default-avatar-img.jpg"}
                       alt={battler.name || "Battler Avatar"}
-                      fill
-                      className="object-cover"
+                      width={206}
+                      height={206}
+                      className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="p-3">

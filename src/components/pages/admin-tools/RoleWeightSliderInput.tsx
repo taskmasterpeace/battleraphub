@@ -76,7 +76,7 @@ const RoleWeightSliderInput: React.FC<RoleWeightInputProps> = ({
         onValueChange={(values) => debouncedOnChange(values[0])}
         className="`bg-gradient-to-r from-muted"
       />
-      <p className="text-sm text-muted-foreground">{description}</p>
+      <p className="text-xs sm:text-sm text-muted-foreground">{description}</p>
     </div>
   );
 };

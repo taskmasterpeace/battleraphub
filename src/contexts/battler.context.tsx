@@ -7,6 +7,7 @@ import { supabase } from "@/utils/supabase/client";
 import { useParams } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useAuth } from "./auth.context";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 type BattlerBadge = {
   badge_id: number;
@@ -50,8 +51,6 @@ export const BattlerProvider = ({ children }: { children: React.ReactNode }) => 
   const [topBadgesAssignedByBattler, setTopBadgesAssignedByBattler] = useState<
     TopAssignBadgeByBattler[]
   >([]);
-  const [topBadgesAssignedByBattlerLoading, setTopBadgesAssignedByBattlerLoading] =
-    useState<boolean>(false);
   const { user } = useAuth();
   const battlerId = useParams().id;
 
@@ -136,8 +135,10 @@ export const BattlerProvider = ({ children }: { children: React.ReactNode }) => 
   }, [searchQuery, battlerId]);
 
   // Fetch top badges assigned
-  const fetchTopBadgesAssignedByBattlers = async (battlerId: string) => {
-    setTopBadgesAssignedByBattlerLoading(true);
+  const {
+    onSubmit: fetchTopBadgesAssignedByBattlers,
+    processing: topBadgesAssignedByBattlerLoading,
+  } = useFormSubmit(async ({ battlerId }: { battlerId: string }) => {
     try {
       const { data, error } = await supabase
         .from(MATERIALIZED_VIEWS.TOP_ASSIGNED_BADGES_BY_BATTLERS)
@@ -151,10 +152,8 @@ export const BattlerProvider = ({ children }: { children: React.ReactNode }) => 
       setTopBadgesAssignedByBattler(data || []);
     } catch (error) {
       console.error("Error fetching top badges assigned by battlers:", error);
-    } finally {
-      setTopBadgesAssignedByBattlerLoading(false);
     }
-  };
+  });
 
   useEffect(() => {
     fetchBattlerBadges();
@@ -177,8 +176,10 @@ export const BattlerProvider = ({ children }: { children: React.ReactNode }) => 
   }, [searchQuery, battlerId, fetchBattlerData]);
 
   useEffect(() => {
-    fetchTopBadgesAssignedByBattlers(battlerId as string);
-  }, [battlerId]);
+    if (battlerId) {
+      fetchTopBadgesAssignedByBattlers({ battlerId: battlerId as string });
+    }
+  }, [battlerId, fetchTopBadgesAssignedByBattlers]);
 
   return (
     <BattlerContext.Provider

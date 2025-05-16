@@ -84,7 +84,7 @@ export default function TopContributorCards() {
         return (
           <Card key={`${contributor.title}-${userData.user_id}`}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center gap-2">
+              <CardTitle className="text-base sm:text-lg flex items-center gap-2">
                 {getIcon(index)}
                 {contributor.title}
               </CardTitle>
@@ -96,8 +96,9 @@ export default function TopContributorCards() {
                   <Image
                     src={userData.avatar || "/placeholder.svg"}
                     alt={userData.name}
-                    fill
-                    className="object-cover"
+                    width={64}
+                    height={64}
+                    className="h-full w-full object-cover"
                   />
                 </div>
                 <div>

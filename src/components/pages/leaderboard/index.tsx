@@ -13,7 +13,7 @@ const LeaderBoard = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center mb-8">
         <Trophy className="w-6 h-6 mr-2 text-amber-500" />
-        <h1 className="text-3xl font-bold">Community Leaderboard</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">Community Leaderboard</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

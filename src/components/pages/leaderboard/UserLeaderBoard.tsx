@@ -75,7 +75,9 @@ export default function UserLeaderboard({
           <CardHeader>
             <div className="flex flex-col md:flex-row md:items-center md:justify-center gap-6 my-24">
               <div className="text-center">
-                <h3 className="text-3xl font-semibold text-muted-foreground mb-2">Coming Soon</h3>
+                <h3 className="text-2xl sm:text-3xl font-semibold text-muted-foreground mb-2">
+                  Coming Soon
+                </h3>
                 <p className="text-muted-foreground text-lg">
                   We're working on something exciting!
                 </p>
@@ -137,11 +139,9 @@ export default function UserLeaderboard({
                   <LeaderboardSection
                     data={filteredData}
                     valueKey={
-                      tabType === LEADERBOARD_TAB_TYPE.MOST_RATINGS
-                        ? "battlers_rated"
-                        : tabType === LEADERBOARD_TAB_TYPE.MOST_ACCURATE
-                          ? "accuracy_score"
-                          : "ratings_given"
+                      tabType === LEADERBOARD_TAB_TYPE.MOST_ACCURATE
+                        ? "accuracy_score"
+                        : "ratings_given"
                     }
                     valueLabel={
                       tabType === LEADERBOARD_TAB_TYPE.MOST_ACCURATE

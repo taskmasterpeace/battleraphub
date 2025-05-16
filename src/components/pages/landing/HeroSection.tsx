@@ -24,8 +24,9 @@ export default function HeroSection() {
           <Image
             src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/College%20Sign-qk16vXvKdAGqpDYo50e0dLG8VD7jOc.png"
             alt="Algorithm Institute of Battle Rap"
-            fill
-            className="object-cover"
+            width={1920}
+            height={1080}
+            className="w-full h-full object-cover"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent"></div>

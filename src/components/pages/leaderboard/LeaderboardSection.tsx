@@ -31,8 +31,9 @@ export default function LeaderboardSection<T extends FilteredData>({
                 <Image
                   src={entry?.avatar || "/placeholder.svg"}
                   alt={entry?.name || "User Avatar"}
-                  fill
-                  className="object-cover"
+                  width={40}
+                  height={40}
+                  className="h-full w-full object-cover"
                 />
               </div>
               <div>

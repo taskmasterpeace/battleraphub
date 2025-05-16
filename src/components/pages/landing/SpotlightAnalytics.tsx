@@ -80,9 +80,9 @@ export default function SpotlightAnalytics() {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center">
+        <div className="flex items-center gap-1">
           <ChartSquare className="w-5 h-5 mr-2 text-cyan-400" />
-          <h2 className="text-2xl font-bold">Spotlight Analytics</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">Spotlight Analytics</h2>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={prevAnalytic}>
@@ -101,7 +101,7 @@ export default function SpotlightAnalytics() {
               <CardTitle>{currentAnalytic.title}</CardTitle>
               <p className="text-sm text-muted-foreground mt-1">{currentAnalytic.description}</p>
             </div>
-            <Badge variant="outline" className="">
+            <Badge variant="outline" className="w-[60px] sm:w-[50px]">
               {activeIndex + 1} / {spotlightAnalytics.length}
             </Badge>
           </div>

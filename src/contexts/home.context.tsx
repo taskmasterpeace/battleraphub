@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { DB_TABLES, MATERIALIZED_VIEWS } from "@/config";
 import {
@@ -14,6 +14,7 @@ import {
   TopBattlersUnweighted,
 } from "@/types";
 import { useParams } from "next/navigation";
+import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 type HomeContextType = {
   recentBattlers: Battlers[];
@@ -26,7 +27,7 @@ type HomeContextType = {
   highlightBattlers: Battlers[];
   tagsData: Tags[];
   topBadgesAssignedByBattler: TopAssignBadgeByBattler[];
-  fetchTopBadgesAssignedByBattlers: (battlerId: string) => Promise<void>;
+  fetchTopBadgesAssignedByBattlers: (params: { battlerId: string }) => Promise<void>;
   topBadgesAssignedByBattlerLoading: boolean;
   tagsLoading: boolean;
   highlightBattlerLoading: boolean;
@@ -78,80 +79,67 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
   );
   const [highlightBattlers, setHighlightBattlers] = useState<Battlers[]>([]);
   const [tagsData, setTagsData] = useState<Tags[]>([]);
-  const [tagsLoading, setTagsLoading] = useState<boolean>(false);
-  const [highlightBattlerLoading, setHighlightBattlerLoading] = useState<boolean>(false);
-  const [recentBattlerLoading, setRecentBattlerLoading] = useState<boolean>(false);
-  const [mostValuedAttributesLoading, setMostValuedAttributesLoading] = useState<boolean>(false);
-  const [mostAssignBadgesLoading, setMostAssignBadgesLoading] = useState<boolean>(false);
-  const [communityStatsLoading, setCommunityStatsLoading] = useState<boolean>(false);
-  const [avgRatingOverTimeLoading, setAvgRatingOverTimeLoading] = useState<boolean>(false);
-  const [battlerUnweightedLoading, setBattlerUnweightedLoading] = useState<boolean>(false);
-  const [battlerWeightedLoading, setBattlerWeightedLoading] = useState<boolean>(false);
   const [topBadgesAssignedByBattler, setTopBadgesAssignedByBattler] = useState<
     TopAssignBadgeByBattler[]
   >([]);
-  const [topBadgesAssignedByBattlerLoading, setTopBadgesAssignedByBattlerLoading] =
-    useState<boolean>(false);
-  // Fetch recent battlers
-  const fetchRecentBattlers = async () => {
-    setRecentBattlerLoading(true);
-    try {
-      const { data: recentBattlersData, error } = await supabase
-        .from(DB_TABLES.BATTLERS)
-        .select("*")
-        .order("created_at", { ascending: false });
 
-      if (error) {
+  // Fetch recent battlers
+  const { onSubmit: fetchRecentBattlers, processing: recentBattlerLoading } = useFormSubmit(
+    async () => {
+      try {
+        const { data: recentBattlersData, error } = await supabase
+          .from(DB_TABLES.BATTLERS)
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("Error fetching recent battlers:", error);
+        }
+        if (recentBattlersData) {
+          setRecentBattlers(recentBattlersData || []);
+        }
+      } catch (error) {
         console.error("Error fetching recent battlers:", error);
       }
-      if (recentBattlersData) {
-        setRecentBattlers(recentBattlersData || []);
-      }
-    } catch (error) {
-      console.error("Error fetching recent battlers:", error);
-    } finally {
-      setRecentBattlerLoading(false);
-    }
-  };
+    },
+  );
 
   // Fetch highlight battlers
-  const fetchHighlightBattlers = async () => {
-    setHighlightBattlerLoading(true);
-    try {
-      const { data: highlightData, error: highlightError } = await supabase
-        .from(DB_TABLES.HIGHLIGHTS)
-        .select("*");
+  const { onSubmit: fetchHighlightBattlers, processing: highlightBattlerLoading } = useFormSubmit(
+    async () => {
+      try {
+        const { data: highlightData, error: highlightError } = await supabase
+          .from(DB_TABLES.HIGHLIGHTS)
+          .select("*");
 
-      if (highlightError) {
-        console.error("Error fetching highlight battlers:", highlightError);
+        if (highlightError) {
+          console.error("Error fetching highlight battlers:", highlightError);
+        }
+
+        const { data: battlerData, error: battlerError } = await supabase
+          .from(DB_TABLES.BATTLERS)
+          .select(
+            `*, battler_tags (tags(id, name)),
+            battler_analytics !inner(type, score),
+            battler_badges (badges (id, name, description, is_positive, category))`,
+          )
+          .in("id", highlightData?.map(({ entity_id }) => entity_id) || []);
+
+        if (battlerError) {
+          console.error("Error fetching highlighted battlers:", battlerError);
+        }
+        const highlightBattlersWithDetails =
+          highlightData?.map(({ entity_id }) => battlerData?.find((b) => b.id === entity_id)) || [];
+
+        setHighlightBattlers(highlightBattlersWithDetails);
+      } catch (error) {
+        console.error("Error fetching highlighted battlers:", error);
       }
-
-      const { data: battlerData, error: battlerError } = await supabase
-        .from(DB_TABLES.BATTLERS)
-        .select(
-          `*, battler_tags (tags(id, name)),
-          battler_analytics !inner(type, score),
-          battler_badges (badges (id, name, description, is_positive, category))`,
-        )
-        .in("id", highlightData?.map(({ entity_id }) => entity_id) || []);
-
-      if (battlerError) {
-        console.error("Error fetching highlighted battlers:", battlerError);
-      }
-      const highlightBattlersWithDetails =
-        highlightData?.map(({ entity_id }) => battlerData?.find((b) => b.id === entity_id)) || [];
-
-      setHighlightBattlers(highlightBattlersWithDetails);
-    } catch (error) {
-      console.error("Error fetching highlighted battlers:", error);
-    } finally {
-      setHighlightBattlerLoading(false);
-    }
-  };
+    },
+  );
 
   //Fetch tags data
-  const fetchTagsData = async () => {
-    setTagsLoading(true);
+  const { onSubmit: fetchTagsData, processing: tagsLoading } = useFormSubmit(async () => {
     try {
       const { data, error } = await supabase.from(DB_TABLES.TAGS).select("*");
       if (error) {
@@ -161,147 +149,138 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
       setTagsData(data || []);
     } catch (error) {
       console.error("Error fetching tags:", error);
-    } finally {
-      setTagsLoading(false);
     }
-  };
+  });
+
   // Fetch most valued attributes
-  const fetchMostValuedAttributes = async () => {
-    setMostValuedAttributesLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from(MATERIALIZED_VIEWS.MOST_VALUED_ATTRUBUTES)
-        .select("*");
-      if (error) {
+  const { onSubmit: fetchMostValuedAttributes, processing: mostValuedAttributesLoading } =
+    useFormSubmit(async () => {
+      try {
+        const { data, error } = await supabase
+          .from(MATERIALIZED_VIEWS.MOST_VALUED_ATTRUBUTES)
+          .select("*");
+        if (error) {
+          console.error("Error fetching most valued attributes:", error);
+        }
+        setMostValuesAttributes(data || []);
+      } catch (error) {
         console.error("Error fetching most valued attributes:", error);
       }
-      setMostValuesAttributes(data || []);
-    } catch (error) {
-      console.error("Error fetching most valued attributes:", error);
-    } finally {
-      setMostValuedAttributesLoading(false);
-    }
-  };
+    });
 
   // Fetch most assigned badges
-  const fetchMostAssignBadges = async () => {
-    setMostAssignBadgesLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from(MATERIALIZED_VIEWS.MOST_ASSIGNED_BADGES)
-        .select("*");
-      if (error) {
+  const { onSubmit: fetchMostAssignBadges, processing: mostAssignBadgesLoading } = useFormSubmit(
+    async () => {
+      try {
+        const { data, error } = await supabase
+          .from(MATERIALIZED_VIEWS.MOST_ASSIGNED_BADGES)
+          .select("*");
+        if (error) {
+          console.error("Error fetching most valued attributes:", error);
+        }
+        setMostAssignBadges(data || []);
+      } catch (error) {
         console.error("Error fetching most valued attributes:", error);
       }
-      setMostAssignBadges(data || []);
-    } catch (error) {
-      console.error("Error fetching most valued attributes:", error);
-    } finally {
-      setMostAssignBadgesLoading(false);
-    }
-  };
+    },
+  );
 
   // Fetch community stats
-  const fetchCommunityStats = async () => {
-    setCommunityStatsLoading(true);
-    try {
-      const { data, error } = await supabase.from(MATERIALIZED_VIEWS.COMMUNITY_STATS).select("*");
-      if (error) {
+  const { onSubmit: fetchCommunityStats, processing: communityStatsLoading } = useFormSubmit(
+    async () => {
+      try {
+        const { data, error } = await supabase.from(MATERIALIZED_VIEWS.COMMUNITY_STATS).select("*");
+        if (error) {
+          console.error("Error fetching community stats", error);
+        }
+        setCommunityStats(data?.[0] as CommunityStatCards);
+      } catch (error) {
         console.error("Error fetching community stats", error);
       }
-      setCommunityStats(data?.[0] as CommunityStatCards);
-    } catch (error) {
-      console.error("Error fetching community stats", error);
-    } finally {
-      setCommunityStatsLoading(false);
-    }
-  };
+    },
+  );
 
   // Fetch average ratings over time
-  const fetchAvgRatingsOverTime = async () => {
-    setAvgRatingOverTimeLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from(MATERIALIZED_VIEWS.AVERAGE_RATINGS_OVER_TIME)
-        .select("*");
-      if (error) {
+  const { onSubmit: fetchAvgRatingsOverTime, processing: avgRatingOverTimeLoading } = useFormSubmit(
+    async () => {
+      try {
+        const { data, error } = await supabase
+          .from(MATERIALIZED_VIEWS.AVERAGE_RATINGS_OVER_TIME)
+          .select("*");
+        if (error) {
+          console.error("Error fetching average ratings over time data:", error);
+        }
+        setRatingsOverTimeData(data || []);
+      } catch (error) {
         console.error("Error fetching average ratings over time data:", error);
       }
-      setRatingsOverTimeData(data || []);
-    } catch (error) {
-      console.error("Error fetching average ratings over time data:", error);
-    } finally {
-      setAvgRatingOverTimeLoading(false);
-    }
-  };
+    },
+  );
 
   //Fetch top battlers unweighted
-  const fetchTopBattlersUnweighted = async () => {
-    setBattlerUnweightedLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from(MATERIALIZED_VIEWS.TOP_BATTLERS_UNWEIGHTED)
-        .select("*");
+  const { onSubmit: fetchTopBattlersUnweighted, processing: battlerUnweightedLoading } =
+    useFormSubmit(async () => {
+      try {
+        const { data, error } = await supabase
+          .from(MATERIALIZED_VIEWS.TOP_BATTLERS_UNWEIGHTED)
+          .select("*");
 
-      if (error) {
+        if (error) {
+          console.error("Error fetching top battlers unweighted data:", error);
+          return;
+        }
+
+        setTopBattlersUnweightedData(data || []);
+      } catch (error) {
         console.error("Error fetching top battlers unweighted data:", error);
-        return;
       }
-
-      setTopBattlersUnweightedData(data || []);
-    } catch (error) {
-      console.error("Error fetching top battlers unweighted data:", error);
-    } finally {
-      setBattlerUnweightedLoading(false);
-    }
-  };
+    });
 
   //Fetch top battlers weighted
-  const fetchTopBattlersWeighted = async () => {
-    setBattlerWeightedLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from(MATERIALIZED_VIEWS.TOP_BATTLER_WEIGHTED)
-        .select("*");
+  const { onSubmit: fetchTopBattlersWeighted, processing: topBadgesAssignedByBattlerLoading } =
+    useFormSubmit(async () => {
+      try {
+        const { data, error } = await supabase
+          .from(MATERIALIZED_VIEWS.TOP_BATTLER_WEIGHTED)
+          .select("*");
 
-      if (error) {
-        console.error("Error fetching top battlers weighted data:", error);
-        return;
+        if (error) {
+          console.error("Error fetching top battlers weighted data:", error);
+          return;
+        }
+
+        setTopBattlersWeightedData(data || []);
+      } catch (error) {
+        console.error("Error fetching top battlers weighted:", error);
       }
-
-      setTopBattlersWeightedData(data || []);
-    } catch (error) {
-      console.error("Error fetching top battlers weighted:", error);
-    } finally {
-      setBattlerWeightedLoading(false);
-    }
-  };
+    });
 
   // Fetch top badges assigned by battlers
-  const fetchTopBadgesAssignedByBattlers = useCallback(async (battlerId: string) => {
-    setTopBadgesAssignedByBattlerLoading(true);
-    try {
-      if (!battlerId || battlerId.trim() === "") {
-        console.warn("fetchTopBadgesAssignedByBattlers called with invalid battlerId:", battlerId);
-        return;
-      }
+  const { onSubmit: fetchTopBadgesAssignedByBattlers, processing: battlerWeightedLoading } =
+    useFormSubmit(async ({ battlerId }: { battlerId: string }) => {
+      try {
+        if (!battlerId || battlerId.trim() === "") {
+          console.warn(
+            "fetchTopBadgesAssignedByBattlers called with invalid battlerId:",
+            battlerId,
+          );
+          return;
+        }
 
-      const { data, error } = await supabase
-        .from(MATERIALIZED_VIEWS.TOP_ASSIGNED_BADGES_BY_BATTLERS)
-        .select("*")
-        .eq("battler_id", battlerId);
+        const { data, error } = await supabase
+          .from(MATERIALIZED_VIEWS.TOP_ASSIGNED_BADGES_BY_BATTLERS)
+          .select("*")
+          .eq("battler_id", battlerId);
 
-      if (error) {
-        console.error("Error fetching top badges assigned by battlers", error);
-        return;
+        if (error) {
+          console.error("Error fetching top badges assigned by battlers", error);
+          return;
+        }
+        setTopBadgesAssignedByBattler(data as TopAssignBadgeByBattler[]);
+      } catch (err) {
+        console.error("Unexpected error fetching top badges assigned by battlers:", err);
       }
-      setTopBadgesAssignedByBattler(data as TopAssignBadgeByBattler[]);
-    } catch (err) {
-      console.error("Unexpected error fetching top badges assigned by battlers:", err);
-    } finally {
-      setTopBadgesAssignedByBattlerLoading(false);
-    }
-  }, []);
+    });
 
   useEffect(() => {
     fetchRecentBattlers();
@@ -316,7 +295,9 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    fetchTopBadgesAssignedByBattlers(battlerId as string);
+    if (battlerId) {
+      fetchTopBadgesAssignedByBattlers({ battlerId: battlerId as string });
+    }
   }, [battlerId, fetchTopBadgesAssignedByBattlers]);
 
   return (

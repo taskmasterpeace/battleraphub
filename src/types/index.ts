@@ -310,10 +310,10 @@ export interface ActiveRolesByRatings {
 }
 
 export interface TopRaterBattler {
-  user_id?: string;
-  avatar?: string;
-  name?: string;
-  battlers_rated: number;
+  user_id: string;
+  avatar: string;
+  name: string;
+  ratings_given: number;
 }
 
 export interface MostConsistentUsers {
@@ -346,7 +346,6 @@ export interface FilteredData {
   name: string;
   avatar: string;
   ratings_given: number;
-  battlers_rated: number;
   accuracy_score: number;
 }
 

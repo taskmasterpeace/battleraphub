@@ -64,7 +64,8 @@ CREATE MATERIALIZED VIEW IF NOT EXISTS top_raters AS
 SELECT
   u.id AS user_id,
   u.name,
-  COUNT(DISTINCT br.battler_id) AS battlers_rated
+  u.avatar,
+  COUNT(DISTINCT br.battler_id) AS ratings_given
 FROM
   battler_ratings br
 JOIN
@@ -72,7 +73,7 @@ JOIN
 GROUP BY
   u.id
 ORDER BY
-  battlers_rated DESC;
+  ratings_given DESC;
 
 
 -- Most Consistent Users

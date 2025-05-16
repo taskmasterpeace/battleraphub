@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, TrendingUp, MessageSquare, Award } from "lucide-react";
+import { Users, MessageSquare, Award } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -92,14 +92,6 @@ export default function CommunityPulse() {
               <span className="font-bold">
                 {stats?.active_users_last_30_days?.toLocaleString() || "0"}
               </span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <TrendingUp className="w-4 h-4 mr-2 text-success" />
-                <span>Recent Battles</span>
-              </div>
-              <span className="font-bold">-</span>
             </div>
 
             <div className="pt-2">

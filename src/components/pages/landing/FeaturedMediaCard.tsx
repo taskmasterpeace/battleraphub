@@ -25,8 +25,9 @@ const FeaturedMediaCard = ({ user, videos }: FeaturedMediaCardProps) => {
             <Image
               src={user.avatar || "/placeholder.svg"}
               alt={user.name}
-              fill
-              className="object-cover"
+              width={64}
+              height={64}
+              className="h-full w-full object-cover"
             />
           </div>
           <div>
@@ -109,8 +110,9 @@ const FeaturedMediaCard = ({ user, videos }: FeaturedMediaCardProps) => {
                       <Image
                         src={recentVideo.thumbnail || "/placeholder.svg"}
                         alt={recentVideo.title}
-                        fill
-                        className="object-cover rounded-md"
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover rounded-md"
                       />
                     </div>
                   )}

@@ -57,7 +57,7 @@ export const AttributeTabsContent = ({
       <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
         {title}
       </h2>
-      <p className="text-muted-foreground mb-6">{description}</p>
+      <p className="text-sm sm:text-base text-muted-foreground mb-6">{description}</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="grid gap-3">

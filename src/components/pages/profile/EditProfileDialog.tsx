@@ -149,7 +149,8 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                     <Image
                       src={imagePreview || currentImage || "/placeholder.svg"}
                       alt={`preview`}
-                      fill
+                      width={500}
+                      height={500}
                       className="object-cover w-full h-full"
                       unoptimized
                     />
@@ -198,7 +199,8 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                         src={profilePreview || currentAvatar || "/placeholder.svg"}
                         alt={`preview`}
                         className="object-cover"
-                        fill
+                        width={120}
+                        height={120}
                         unoptimized
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-background/50 opacity-0 hover:opacity-100 transition-opacity">

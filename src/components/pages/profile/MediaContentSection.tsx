@@ -187,8 +187,9 @@ function ContentCard({
               <Image
                 src={content.thumbnail_img || "/placeholder.svg"}
                 alt={content.title}
-                fill
-                className="object-cover"
+                width={300}
+                height={168}
+                className="w-full h-full object-cover"
               />
               <Badge className={`absolute top-2 right-2 ${getTypeColor(content.type)}`}>
                 {content.type.charAt(0).toUpperCase() + content.type.slice(1)}

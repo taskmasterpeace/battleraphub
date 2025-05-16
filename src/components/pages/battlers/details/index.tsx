@@ -71,8 +71,9 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
         <Image
           src={battlerData?.banner || "/placeholder.svg"}
           alt={`${battlerData?.name} banner`}
-          fill
-          className="object-cover"
+          width={1000}
+          height={48}
+          className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
       </div>
@@ -84,8 +85,9 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
             <Image
               src={battlerData?.avatar || "/image/default-avatar-img.jpg"}
               alt={battlerData?.name || "NA"}
-              fill
-              className="object-cover"
+              width={160}
+              height={160}
+              className="w-full h-full object-cover"
             />
           </div>
 
@@ -93,7 +95,7 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div className="flex justify-between items-center gap-2">
                 <div>
-                  <h1 className="text-3xl font-bold">{battlerData?.name}</h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold">{battlerData?.name}</h1>
 
                   <p className="text-muted-foreground flex items-center mt-1">
                     <MapPin className="h-4 w-4 mr-1" />
@@ -109,20 +111,25 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
                 </div>
                 <div className="md:hidden bg-muted rounded-lg p-4 text-center">
                   <p className="text-sm text-muted-foreground">Total Rating</p>
-                  <p className="text-3xl font-bold text-primary">{totalRatings.toFixed(1)}</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-primary">
+                    {totalRatings.toFixed(1)}
+                  </p>
                 </div>
               </div>
               <div className="hidden md:block bg-muted rounded-lg p-4 text-center">
                 <p className="text-sm text-muted-foreground">Total Rating</p>
-                <p className="text-3xl font-bold text-primary">{totalRatings.toFixed(1)}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-primary">
+                  {totalRatings.toFixed(1)}
+                </p>
               </div>
             </div>
             {/* Selected badges  */}
-            {(topBadgesAssignedByBattler.some((badge) => badge.is_positive) ||
-              topBadgesAssignedByBattler.some((badge) => !badge.is_positive)) && (
+            {topBadgesAssignedByBattler?.length > 0 && (
               <div className="mt-6">
                 <div className="flex items-center mb-3">
-                  <h3 className="text-sm font-medium text-muted-foreground">Top Assigned Badges</h3>
+                  <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">
+                    Top Assigned Badges
+                  </h3>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -141,7 +148,7 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
                       <TooltipProvider key={`${badge.badge_name}-${index}`}>
                         <Tooltip delayDuration={300}>
                           <TooltipTrigger>
-                            <Badge className="px-3 py-2 text-base bg-success-foreground dark:bg-success/20 text-success border-success hover:bg-success-foreground flex items-center">
+                            <Badge className="px-3 py-2 text-xs sm:text-base bg-success-foreground dark:bg-success/20 text-success border-success hover:bg-success-foreground flex items-center">
                               <CheckCircle className="w-4 h-4 mr-2" />
                               {`${badge.badge_name} (${badge.percentage}%)`}
                             </Badge>
@@ -158,7 +165,7 @@ export default function BattlerPage({ params, badgeData, attributeData }: Battle
                       <TooltipProvider key={`${badge.badge_name}-${index}`}>
                         <Tooltip delayDuration={300}>
                           <TooltipTrigger>
-                            <Badge className="px-3 py-2 text-base bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive hover:bg-destructive-foreground flex items-center">
+                            <Badge className="px-3 py-2 text-xs sm:text-base bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive hover:bg-destructive-foreground flex items-center">
                               <XCircle className="w-4 h-4 mr-2" />
                               {`${badge.badge_name} (${badge.percentage}%)`}
                             </Badge>

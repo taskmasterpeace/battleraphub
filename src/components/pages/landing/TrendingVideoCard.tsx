@@ -35,8 +35,9 @@ const TrendingVideoCard = ({ content, userId, idx }: TrendingVideoCardProps) => 
           <Image
             src={content.thumbnail || "/placeholder.svg"}
             alt={content.title}
-            fill
-            className="object-cover rounded-md"
+            width={80}
+            height={80}
+            className="w-full h-full object-cover rounded-md"
           />
         </div>
       ) : (
@@ -46,7 +47,7 @@ const TrendingVideoCard = ({ content, userId, idx }: TrendingVideoCardProps) => 
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 ">
-          <Badge className="bg-primary text-primary-foreground border-primary">
+          <Badge className="bg-primary text-[10px] sm:text-xs text-primary-foreground border-primary">
             {content.title}
           </Badge>
           <Badge variant="outline">{content.tag}</Badge>
