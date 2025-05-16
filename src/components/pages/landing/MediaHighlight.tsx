@@ -78,8 +78,8 @@ export default function MediaHighlight({ usersData }: MediaHighlightProps) {
               ? Array(3)
                   .fill(0)
                   .map((_, i) => (
-                    <Card key={i} className="bg-muted animate-pulse">
-                      <CardContent className="p-0 bg-muted h-80"></CardContent>
+                    <Card key={i + "featured_loading"} className="bg-muted animate-pulse">
+                      <CardContent className="p-0 bg-muted h-80" />
                     </Card>
                   ))
               : usersData
@@ -87,7 +87,9 @@ export default function MediaHighlight({ usersData }: MediaHighlightProps) {
                   ?.slice(0, 3)
                   ?.map((user) => {
                     const videos = videoData[user.id] || [];
-                    return <FeaturedMediaCard user={user} videos={videos} key={user.id} />;
+                    return (
+                      <FeaturedMediaCard user={user} videos={videos} key={user.id + "featured"} />
+                    );
                   })}
           </div>
         </TabsContent>
@@ -103,7 +105,10 @@ export default function MediaHighlight({ usersData }: MediaHighlightProps) {
                   Array(5)
                     .fill(0)
                     .map((_, i) => (
-                      <div key={i} className="h-20 bg-muted animate-pulse rounded-md"></div>
+                      <div
+                        key={i + "trending_loading"}
+                        className="h-20 bg-muted animate-pulse rounded-md"
+                      ></div>
                     ))
                 ) : Object.keys(trendingVideoData).length === 0 ? (
                   <div className="text-center py-8 text-foreground">No Data Found</div>
@@ -111,7 +116,12 @@ export default function MediaHighlight({ usersData }: MediaHighlightProps) {
                   Object.entries(trendingVideoData).flatMap(([userId, videos]) =>
                     videos.map((content, idx) => {
                       return (
-                        <TrendingVideoCard key={idx} idx={idx} userId={userId} content={content} />
+                        <TrendingVideoCard
+                          key={userId + "trending" + idx}
+                          idx={idx}
+                          userId={userId}
+                          content={content}
+                        />
                       );
                     }),
                   )
