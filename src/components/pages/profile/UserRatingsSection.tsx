@@ -64,8 +64,9 @@ export default function UserRatingsSection({ userId }: UserRatingsSectionProps) 
                     <Image
                       src={rating.avatar || "/placeholder.svg"}
                       alt={rating.name || "Avatar"}
-                      fill
-                      className="object-cover"
+                      width={64}
+                      height={64}
+                      className="w-full h-full object-cover"
                       unoptimized
                     />
                   </Link>

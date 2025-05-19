@@ -73,7 +73,9 @@ export default function BadgeSection({
                     onMouseLeave={() => setHoveredBadge(null)}
                   >
                     <div className="flex flex-col items-center text-center">
-                      <span className="text-base font-medium mb-2">{badgeItem.badge}</span>
+                      <span className="text-sm sm:text-base font-medium mb-2">
+                        {badgeItem.badge}
+                      </span>
 
                       {/* Show a preview of description on hover */}
                       <div>

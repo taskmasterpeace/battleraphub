@@ -7,7 +7,7 @@ import RoleWeightsContent from "@/components/pages/admin-tools/RoleWeightsConten
 const AdminTools = () => {
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Admin Tools</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6">Admin Tools</h1>
 
       <Tabs defaultValue="weights">
         <TabsList className="mb-6">

@@ -16,21 +16,32 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { useHome } from "@/contexts/home.context";
-import { Battlers } from "@/types";
+import { Battlers, TopAssignBadgeByBattler } from "@/types";
+import { MATERIALIZED_VIEWS } from "@/config";
+import { supabase } from "@/utils/supabase/client";
+import useSWR from "swr";
 
 export default function HighlightedBattler() {
-  const {
-    highlightBattlers,
-    tagsData,
-    highlightBattlerLoading,
-    topBadgesAssignedByBattler,
-    fetchTopBadgesAssignedByBattlers,
-  } = useHome();
+  const { highlightBattlers, tagsData, highlightBattlerLoading } = useHome();
   const [filteredBattlers, setFilteredBattlers] = useState<Battlers[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const currentBattler = filteredBattlers[currentIndex];
+
+  const { data: topBadgesAssignedByBattler = [], isLoading: topBadgesLoading } = useSWR(
+    currentBattler?.id ? `topBadgesAssignedByBattler/${currentBattler.id}` : null,
+    async () => {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.TOP_ASSIGNED_BADGES_BY_BATTLERS)
+        .select("*")
+        .eq("battler_id", currentBattler.id);
+
+      if (error) throw error;
+      return data as TopAssignBadgeByBattler[];
+    },
+  );
+
   const battlerBadges = topBadgesAssignedByBattler?.filter(
     (item) => item.battler_id === currentBattler?.id,
   );
@@ -66,13 +77,7 @@ export default function HighlightedBattler() {
     }
   };
 
-  useEffect(() => {
-    if (currentBattler?.id) {
-      fetchTopBadgesAssignedByBattlers(currentBattler.id);
-    }
-  }, [currentBattler?.id, fetchTopBadgesAssignedByBattlers]);
-
-  if (highlightBattlerLoading) {
+  if (highlightBattlerLoading || topBadgesLoading) {
     return (
       <Card className="bg-muted animate-pulse h-full">
         <CardContent className="bg-muted p-0 h-96"></CardContent>
@@ -126,7 +131,7 @@ export default function HighlightedBattler() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between mb-4">
         <div className="flex items-center">
           <Award className="w-5 h-5 mr-2 text-destructive" />
           <h2 className="text-2xl font-bold">Highlighted Battler</h2>
@@ -181,14 +186,16 @@ export default function HighlightedBattler() {
         <Card className="overflow-hidden h-full">
           <CardContent className="p-0 h-full">
             <div className="flex flex-col md:flex-row h-full">
-              <div className="md:w-1/3 relative">
+              <div className="md:w-1/3 relative max-h-[206px] max-w-[206px]">
                 <div className="aspect-square relative">
                   <Image
                     src={currentBattler?.avatar || "/image/default-avatar-img.jpg"}
                     alt={currentBattler?.name || "battler-avatar"}
-                    fill
-                    className="object-cover"
+                    width={206}
+                    height={206}
+                    className="h-full w-full object-cover rounded-md"
                   />
+
                   <div className="absolute top-4 right-4 bg-foreground/90 text-white dark:bg-muted backdrop-blur-sm rounded-full p-1 px-3">
                     <div className="flex items-center">
                       <Star className="w-5 h-5 text-blue-500 fill-blue-500 mr-1" />
@@ -223,7 +230,7 @@ export default function HighlightedBattler() {
 
                   <div>
                     {currentBattler?.bio ? (
-                      <p className={`text-foreground my-4 text-ellipsis h-[250px] overflow-y-auto`}>
+                      <p className={`text-foreground my-4 text-ellipsis h-[220px] overflow-y-auto`}>
                         {currentBattler?.bio}
                       </p>
                     ) : (

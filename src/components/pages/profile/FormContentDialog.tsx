@@ -1,10 +1,5 @@
-"use client";
-
-import type React from "react";
-
-import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -39,7 +34,8 @@ import { addUserContentAction, editMediaContentAction } from "@/app/actions";
 import { toast } from "sonner";
 import { MediaContent } from "@/types";
 import { SubmitButton } from "@/components/submit-button";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
+import Image from "next/image";
+import useSWRMutation from "swr/mutation";
 
 interface formContentDialogProps {
   open: boolean;
@@ -89,52 +85,74 @@ export default function FormContentDialog({
     }
   }, [isContentCreate, contentData, setValue]);
 
-  const { onSubmit, processing } = useFormSubmit<FormCreateDataType | FormUpdateDataType>(
-    async (data) => {
-      const formData = new FormData();
-
-      if (userId) formData.append("userId", userId);
-      formData.append("type", data.type);
-      formData.append("title", data.title);
-      formData.append("description", data.description);
-      formData.append("link", data.link);
-      formData.append("date", data.date?.toISOString() ?? new Date().toISOString());
-
-      if (!isContentCreate && contentData?.id) {
-        formData.append("contentId", contentData.id);
-        if (currentThumbnail) formData.append("currentThumbnail", currentThumbnail);
+  const { trigger: addContent, isMutating: isAdding } = useSWRMutation(
+    "/api/content/add",
+    async (url, { arg }: { arg: FormData }) => {
+      const result = await addUserContentAction(arg);
+      if (result?.success) {
+        toast.success(result.message);
+        reset();
+        setThumbnailPreview("");
+        setCurrentThumbnail("");
+        onOpenChange?.(false);
+        fetchContent?.();
+        router.refresh();
+      } else {
+        toast.error(result?.message || "Failed to add content.");
       }
-
-      if (data.thumbnail_img?.[0]) {
-        formData.append("thumbnail_img", data.thumbnail_img[0]);
-      }
-
-      try {
-        const response = isContentCreate
-          ? await addUserContentAction(formData)
-          : await editMediaContentAction(formData);
-
-        if (response?.success) {
-          toast.success(response.message);
-          reset();
-          setThumbnailPreview("");
-          setCurrentThumbnail("");
-          onOpenChange?.(false);
-          fetchContent?.();
-          router.refresh();
-        } else {
-          toast.error(
-            response?.message || `Failed to ${isContentCreate ? "create" : "update"} content`,
-          );
-        }
-      } catch (error) {
-        console.error("error", error);
-        toast.error(
-          `Failed to ${isContentCreate ? "create" : "update"} media content. Please try again.`,
-        );
-      }
+      return result;
     },
   );
+
+  const { trigger: updateContent, isMutating: isUpdating } = useSWRMutation(
+    "/api/content/edit",
+    async (url, { arg }: { arg: FormData }) => {
+      const result = await editMediaContentAction(arg);
+      if (result?.success) {
+        toast.success(result.message);
+        reset();
+        setThumbnailPreview("");
+        setCurrentThumbnail("");
+        onOpenChange?.(false);
+        fetchContent?.();
+        router.refresh();
+      } else {
+        toast.error(result?.message || "Failed to update content.");
+      }
+      return result;
+    },
+  );
+
+  const onSubmit = async (data: FormCreateDataType | FormUpdateDataType) => {
+    const formData = new FormData();
+
+    if (userId) formData.append("userId", userId);
+    formData.append("type", data.type);
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("link", data.link);
+    formData.append("date", data.date?.toISOString() ?? new Date().toISOString());
+
+    if (!isContentCreate && contentData?.id) {
+      formData.append("contentId", contentData.id);
+      if (currentThumbnail) formData.append("currentThumbnail", currentThumbnail);
+    }
+
+    if (data.thumbnail_img?.[0]) {
+      formData.append("thumbnail_img", data.thumbnail_img[0]);
+    }
+
+    try {
+      if (isContentCreate) {
+        await addContent(formData);
+      } else {
+        await updateContent(formData);
+      }
+    } catch (error) {
+      console.error("Error in onSubmit:", error);
+      toast.error("Failed to submit form.");
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -257,8 +275,9 @@ export default function FormContentDialog({
                       <Image
                         src={thumbnailPreview || currentThumbnail || "/placeholder.svg"}
                         alt="Thumbnail"
-                        fill
-                        className="object-cover"
+                        height={160}
+                        width={540}
+                        className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-background/50 opacity-0 hover:opacity-100 transition-opacity">
                         <div
@@ -288,7 +307,7 @@ export default function FormContentDialog({
                   setThumbnailPreview("");
                   setCurrentThumbnail("");
                 }}
-                disabled={processing}
+                disabled={isAdding || isUpdating}
               >
                 <X className="w-4 h-4 mr-2" />
                 Cancel
@@ -297,7 +316,7 @@ export default function FormContentDialog({
                 className="h-10 px-4 py-2"
                 type="submit"
                 pendingText={isContentCreate ? "Adding..." : "Updating..."}
-                disabled={processing}
+                disabled={isAdding || isUpdating}
               >
                 <Upload className="w-4 h-4 mr-2" />
                 {isContentCreate ? "Add Content" : "Edit Content"}

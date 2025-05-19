@@ -120,7 +120,7 @@ export default function KeyboardShortcutsHelper() {
           <HelpCircle className="h-3 w-3 absolute bottom-0 right-0 text-blue-400" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[550px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="w-[calc(100%-2rem)] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Keyboard Shortcuts</DialogTitle>
           <DialogDescription>

@@ -53,10 +53,10 @@ export default function Login() {
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md mx-3">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            <h1 className="text-3xl font-bold text-amber-500">ALGORITHM INSTITUTE</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-amber-500">ALGORITHM INSTITUTE</h1>
           </div>
           <CardTitle className="text-2xl text-center">Login</CardTitle>
           <CardDescription className="text-center">

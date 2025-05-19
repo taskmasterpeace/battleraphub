@@ -31,7 +31,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
+import useSWRMutation from "swr/mutation";
 
 interface EditProfileDialogProps {
   open: boolean;
@@ -64,6 +64,14 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
 
   const { control, handleSubmit, setValue } = form;
 
+  const { trigger, isMutating } = useSWRMutation(
+    "/api/profile",
+    async (url, { arg }: { arg: FormData }) => {
+      const response = await updateUserProfileAction(arg);
+      return response;
+    },
+  );
+
   useEffect(() => {
     if (user) {
       setCurrentAvatar(user.avatar || "");
@@ -75,7 +83,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
     }
   }, [setValue, user]);
 
-  const { onSubmit, processing } = useFormSubmit<FormProfileSchema>(async (data) => {
+  const onSubmit = async (data: FormProfileSchema) => {
     const formData = new FormData();
 
     if (currentAvatar) formData.append("currentAvatar", currentAvatar);
@@ -90,7 +98,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
     if (data.image?.[0]) formData.append("image", data.image[0]);
 
     try {
-      const response = await updateUserProfileAction(formData);
+      const response = await trigger(formData);
       if (response.success) {
         toast.success("Profile updated successfully!");
         onOpenChange(false);
@@ -100,7 +108,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
       console.error("error", error);
       toast.error("Failed to edit profile. Please try again.");
     }
-  });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -149,7 +157,8 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                     <Image
                       src={imagePreview || currentImage || "/placeholder.svg"}
                       alt={`preview`}
-                      fill
+                      width={500}
+                      height={500}
                       className="object-cover w-full h-full"
                       unoptimized
                     />
@@ -198,7 +207,8 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                         src={profilePreview || currentAvatar || "/placeholder.svg"}
                         alt={`preview`}
                         className="object-cover"
-                        fill
+                        width={120}
+                        height={120}
                         unoptimized
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-background/50 opacity-0 hover:opacity-100 transition-opacity">
@@ -298,9 +308,9 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                   <X className="w-4 h-4 mr-2" />
                   Cancel
                 </Button>
-                <Button type="submit" className="w-auto" disabled={processing}>
+                <Button type="submit" className="w-auto" disabled={isMutating}>
                   <Upload className="w-4 h-4 mr-2" />
-                  {processing ? "Updating..." : "Save Changes"}
+                  {isMutating ? "Updating..." : "Save Changes"}
                 </Button>
               </DialogFooter>
             </form>

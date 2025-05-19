@@ -2,21 +2,40 @@ import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { User } from "@/types";
-import { Video } from "@/types/youtube";
 import { ExternalLink, ThumbsUp } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Youtube from "../../../../public/image/youtube.svg";
 import PlatformX from "../../../../public/image/twitter-x.svg";
 import Instagram from "../../../../public/image/instagram.svg";
+import { supabase } from "@/utils/supabase/client";
+import { DB_TABLES } from "@/config";
+import useSWR from "swr";
 
 interface FeaturedMediaCardProps {
   user: User;
-  videos: Video[];
 }
-const FeaturedMediaCard = ({ user, videos }: FeaturedMediaCardProps) => {
-  const recentVideo = videos?.[0];
+const FeaturedMediaCard = ({ user }: FeaturedMediaCardProps) => {
+  const { data: recentVideo } = useSWR(
+    user.youtube ? `/api/media-content/${user.id}` : null,
+    async () => {
+      const { data: recentPublishedVideo, error } = await supabase
+        .from(DB_TABLES.MEDIA_CONTENT)
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("type", "youtube_video")
+        .eq("tag", "latest")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
 
+      if (error) {
+        throw new Error("Error fetching YouTube video: " + error.message);
+      }
+
+      return recentPublishedVideo || null;
+    },
+  );
   return (
     <Card key={user.id} className="overflow-hidden hover:border-primary transition-all">
       <CardContent className="p-0">
@@ -25,8 +44,9 @@ const FeaturedMediaCard = ({ user, videos }: FeaturedMediaCardProps) => {
             <Image
               src={user.avatar || "/placeholder.svg"}
               alt={user.name}
-              fill
-              className="object-cover"
+              width={64}
+              height={64}
+              className="h-full w-full object-cover"
             />
           </div>
           <div>
@@ -37,7 +57,11 @@ const FeaturedMediaCard = ({ user, videos }: FeaturedMediaCardProps) => {
         </div>
 
         <div className="p-4">
-          <p className="text-sm text-foreground/50 mb-4 line-clamp-5">{user.bio}</p>
+          {user.bio ? (
+            <p className="text-sm text-muted-foreground mb-2 h-[80px] line-clamp-4">{user.bio}</p>
+          ) : (
+            <p className="text-sm text-muted-foreground mb-2 h-[80px]">No bio found</p>
+          )}
 
           <div className="flex gap-4 mb-4">
             {user.youtube && (
@@ -98,19 +122,20 @@ const FeaturedMediaCard = ({ user, videos }: FeaturedMediaCardProps) => {
           <div className="space-y-2">
             {recentVideo ? (
               <Link
-                href={`https://www.youtube.com/watch?v=${recentVideo.videoId}` || "#"}
+                href={recentVideo?.link || "#"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block hover:bg-muted text-muted-foreground p-2 rounded-md transition-colors"
               >
                 <div className="flex gap-3">
-                  {recentVideo.thumbnail && (
+                  {recentVideo.thumbnail_img && (
                     <div className="relative w-16 h-16 flex-shrink-0">
                       <Image
-                        src={recentVideo.thumbnail || "/placeholder.svg"}
+                        src={recentVideo.thumbnail_img || "/placeholder.svg"}
                         alt={recentVideo.title}
-                        fill
-                        className="object-cover rounded-md"
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover rounded-md"
                       />
                     </div>
                   )}
@@ -126,8 +151,8 @@ const FeaturedMediaCard = ({ user, videos }: FeaturedMediaCardProps) => {
                       </div>
                       <span className="mx-2">•</span>
                       <span>
-                        {recentVideo?.publishedAt
-                          ? new Date(recentVideo.publishedAt).toLocaleDateString("en-US", {
+                        {recentVideo?.date
+                          ? new Date(recentVideo.date).toLocaleDateString("en-US", {
                               year: "numeric",
                               month: "short",
                               day: "numeric",
@@ -147,5 +172,4 @@ const FeaturedMediaCard = ({ user, videos }: FeaturedMediaCardProps) => {
     </Card>
   );
 };
-
 export default FeaturedMediaCard;

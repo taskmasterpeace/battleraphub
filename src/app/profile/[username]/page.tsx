@@ -26,41 +26,42 @@ export default async function UserProfilePage({ params }: { params: UserProfileP
     <div className="container mx-auto px-4 py-8">
       <UserProfileHeader user={userDetails} />
       <Tabs defaultValue={isMediaUser ? "videos" : "ratings"} className="mt-12">
-        <TabsList className="mb-6">
-          {isMediaUser && (
-            <>
-              <TabsTrigger value="videos">
-                <Youtube className="h-4 w-4 mr-2" />
-                YouTube Videos
-              </TabsTrigger>
+        <div className="w-full overflow-x-auto max-w-[700px]">
+          <TabsList className="mb-6">
+            {isMediaUser && (
+              <>
+                <TabsTrigger value="videos">
+                  <Youtube className="h-4 w-4 mr-2" />
+                  YouTube Videos
+                </TabsTrigger>
 
-              <TabsTrigger value="content">
-                <Video className="h-4 w-4 mr-2" />
-                Media Content
-              </TabsTrigger>
-            </>
-          )}
+                <TabsTrigger value="content">
+                  <Video className="h-4 w-4 mr-2" />
+                  Media Content
+                </TabsTrigger>
+              </>
+            )}
 
-          <TabsTrigger value="ratings">
-            <Trophy className="h-4 w-4 mr-2" />
-            Ratings
-          </TabsTrigger>
+            <TabsTrigger value="ratings">
+              <Trophy className="h-4 w-4 mr-2" />
+              Ratings
+            </TabsTrigger>
 
-          <TabsTrigger value="badges">
-            <Trophy className="h-4 w-4 mr-2" />
-            Badges
-          </TabsTrigger>
+            <TabsTrigger value="badges">
+              <Trophy className="h-4 w-4 mr-2" />
+              Badges
+            </TabsTrigger>
 
-          <TabsTrigger value="about">
-            <User className="h-4 w-4 mr-2" />
-            About
-          </TabsTrigger>
-        </TabsList>
-
+            <TabsTrigger value="about">
+              <User className="h-4 w-4 mr-2" />
+              About
+            </TabsTrigger>
+          </TabsList>
+        </div>
         {isMediaUser && (
           <>
             <TabsContent value="videos">
-              <YouTubeVideoSection youtubeHandleUrl={userDetails?.youtube} />
+              <YouTubeVideoSection />
             </TabsContent>
 
             <TabsContent value="content">

@@ -191,16 +191,17 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
                     <Card className="hover:border-primary transition-colors">
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="relative w-12 h-12 rounded-full overflow-hidden">
+                          <div className="relative rounded-full overflow-hidden w-12 h-12">
                             {battler?.avatar ? (
                               <Image
                                 src={battler?.avatar || "/defaultAvatar.jpeg"}
                                 alt={battler?.name || "Battler Image"}
-                                fill
-                                className="object-cover"
+                                width={48}
+                                height={48}
+                                className="w-12 h-12 object-cover"
                               />
                             ) : (
-                              <CircleUser className="w-full h-full" />
+                              <CircleUser className="w-12 h-12" />
                             )}
                           </div>
                           <div className="flex-1">

@@ -11,15 +11,16 @@ const RatingCard = ({ rating }: { rating: MyRating }) => {
   return (
     <>
       <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-6">
+        <CardContent className="p-3 md:p-6">
+          <div className="flex flex-col md:flex-row gap-2 md:gap-6">
             <div className="flex items-center gap-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden">
                 <Image
                   src={rating?.avatar || "/placeholder.svg"}
                   alt={rating?.name || "Battler Avatar"}
-                  fill
-                  className="object-cover"
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-cover"
                 />
               </div>
               <div>

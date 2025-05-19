@@ -66,15 +66,16 @@ export default function YouTubeFeature() {
     <div className="relative h-full w-full">
       <Card className="overflow-hidden h-full">
         <CardContent className="p-0 relative h-full">
-          <div className="relative aspect-video h-full">
+          <div className="relative aspect-video w-full h-full">
             <Image
               src={
                 currentVideo?.thumbnail ||
                 "/placeholder.svg?height=180&width=320&text=Battle+Rap+Stories"
               }
               alt={currentVideo?.title || "Battle Rap Stories"}
-              fill
-              className="object-cover"
+              width={320}
+              height={180}
+              className="h-full w-full object-cover"
             />
             <div
               className="absolute inset-0 flex items-center justify-center cursor-pointer"

@@ -23,7 +23,7 @@ import {
 import { toast } from "sonner";
 import Image from "next/image";
 import PlatformX from "../../../../public/image/twitter-x.svg";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
+import useSWRMutation from "swr/mutation";
 
 interface SocialLinksSectionProps {
   user: User;
@@ -56,7 +56,15 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
 
   const isOwnProfile = currentUser?.id === user.id;
 
-  const { onSubmit, processing } = useFormSubmit<FormProfileSchema>(async (data) => {
+  const { trigger, isMutating } = useSWRMutation(
+    "updateProfile",
+    async (_, { arg }: { arg: FormData }) => {
+      const response = await updateUserProfileAction(arg);
+      return response;
+    },
+  );
+
+  const onSubmit = async (data: FormProfileSchema) => {
     const formData = new FormData();
     formData.append("userId", user.id || "");
     formData.append("website", data.website || "");
@@ -65,7 +73,7 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
     formData.append("instagram", data.instagram || "");
 
     try {
-      const response = await updateUserProfileAction(formData);
+      const response = await trigger(formData);
       if (response.success) {
         toast.success("Social media links updated successfully!");
         setIsEditing(false);
@@ -75,7 +83,7 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
       console.error("Error updating social links:", error);
       toast.error("Failed to update social links. Please try again.");
     }
-  });
+  };
 
   return (
     <div className="bg-background rounded-lg p-6 border border-border">
@@ -197,14 +205,14 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsEditing(false)}
-                disabled={processing}
+                disabled={isMutating}
               >
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>
-              <Button type="submit" size="sm" disabled={processing}>
+              <Button type="submit" size="sm" disabled={isMutating}>
                 <Save className="w-4 h-4 mr-2" />
-                {processing ? "Saving..." : "Save"}
+                {isMutating ? "Saving..." : "Save"}
               </Button>
             </div>
           </form>

@@ -143,10 +143,14 @@ const BattlersListTable = () => {
   };
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-start justify-between gap-2 py-4">
-        <h1 className="text-3xl font-bold text-nowrap">Battlers List</h1>
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-2 py-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-nowrap">Battlers List</h1>
         <div className="flex items-center gap-2">
-          <Button variant="secondary" onClick={() => setToggleHighlighter((prev) => !prev)}>
+          <Button
+            className="text-xs sm:text-sm"
+            variant="secondary"
+            onClick={() => setToggleHighlighter((prev) => !prev)}
+          >
             <span className="flex items-center gap-2 font-medium">
               {toggleHighlighter ? (
                 <>
@@ -163,7 +167,9 @@ const BattlersListTable = () => {
           </Button>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button variant="default">Create Battlers</Button>
+              <Button className="text-xs sm:text-sm" variant="default">
+                Create Battlers
+              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <FormBattlers

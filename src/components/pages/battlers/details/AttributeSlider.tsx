@@ -57,7 +57,7 @@ export default function AttributeSlider({
     <div className="bg-background rounded-lg p-4 border border-border">
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center">
-          <h3 className="font-semibold mr-2">{title}</h3>
+          <h3 className="text-xs sm:text-base font-semibold mr-2">{title}</h3>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
@@ -69,7 +69,9 @@ export default function AttributeSlider({
             </Tooltip>
           </TooltipProvider>
         </div>
-        <span className={`px-2 py-1 bg-accent rounded-full text-sm font-medium ${getColor()}`}>
+        <span
+          className={`px-2 py-1 bg-accent rounded-full text-xs sm:text-sm font-medium ${getColor()}`}
+        >
           {localValue?.toFixed(2) || 0}
         </span>
       </div>

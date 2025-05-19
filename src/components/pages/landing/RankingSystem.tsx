@@ -92,8 +92,9 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
                         <Image
                           src={battler.avatar || "/placeholder.svg"}
                           alt={battler.name}
-                          fill
-                          className="object-cover"
+                          width={48}
+                          height={48}
+                          className="w-full h-full object-cover"
                         />
                       </div>
                       <div className="flex-1 min-w-0">

@@ -699,6 +699,7 @@ export const getUserContentAction = async (userId: string): Promise<MediaContent
   const { data: mediaContent, error } = await supabase
     .from(DB_TABLES.MEDIA_CONTENT)
     .select("*")
+    .neq("type", "youtube_video")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 

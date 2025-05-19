@@ -152,7 +152,7 @@ const UserListTable = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="py-4">
-        <h1 className="text-3xl font-bold text-nowrap">User List</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-nowrap">User List</h1>
       </div>
       <Table>
         <TableHeader>

@@ -62,7 +62,7 @@ const MyRatings = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">My Ratings</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-8">My Ratings</h1>
 
       <Tabs defaultValue="all">
         <TabsList className="mb-6">

@@ -310,10 +310,10 @@ export interface ActiveRolesByRatings {
 }
 
 export interface TopRaterBattler {
-  user_id?: string;
-  avatar?: string;
-  name?: string;
-  battlers_rated: number;
+  user_id: string;
+  avatar: string;
+  name: string;
+  ratings_given: number;
 }
 
 export interface MostConsistentUsers {
@@ -346,7 +346,6 @@ export interface FilteredData {
   name: string;
   avatar: string;
   ratings_given: number;
-  battlers_rated: number;
   accuracy_score: number;
 }
 
@@ -402,4 +401,16 @@ export interface TopAssignBadgeByBattler {
   assign_count: number;
   percentage: number;
   description: string;
+}
+
+export interface YoutubeVideoType {
+  id: string;
+  date?: string;
+  link?: string;
+  thumbnail_img?: string;
+  title: string;
+  tag: string;
+  description?: string;
+  likes: number;
+  views?: number;
 }

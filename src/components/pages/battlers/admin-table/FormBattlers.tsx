@@ -24,7 +24,8 @@ import { Battlers, TagsOption } from "@/types";
 import { createBattlersAction, editBattlersAction } from "@/app/actions";
 import ImageUploader from "@/components/pages/battlers/admin-table/ImageUploader";
 import { Loader } from "lucide-react";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
+import useSWR, { useSWRConfig } from "swr";
+import useSWRMutation from "swr/mutation";
 
 type FormCreateDataType = z.infer<typeof formBattlerCreateSchema>;
 type FormUpdateDataType = z.infer<typeof formBattlerUpdateSchema>;
@@ -50,6 +51,7 @@ const FormBattlers = ({
   const [bannerPreview, setBannerPreview] = useState<string>("");
   const [currentAvatar, setCurrentAvatar] = useState<string>("");
   const [currentBanner, setCurrentBanner] = useState<string>("");
+  const { mutate } = useSWRConfig();
 
   const selectedTagIds = battlerData?.battler_tags?.map((tag) => tag.tags?.id.toString());
 
@@ -85,27 +87,20 @@ const FormBattlers = ({
     }
   }, [createBattler, battlerData, setValue]);
 
-  const fetchTagsData = async () => {
+  const { data: tags, error: tagsError } = useSWR("tags", async () => {
     const { data, error } = await supabase.from(DB_TABLES.TAGS).select("*");
-    if (error) {
-      console.error("Error fetching tags:", error);
-      toast.error("Failed to fetch tags. Please try again.");
-    } else {
-      setTagsData(data || []);
-    }
-  };
+    if (error) throw error;
+    return data;
+  });
 
   useEffect(() => {
-    fetchTagsData();
-  }, []);
+    if (tags) setTagsData(tags);
+    if (tagsError) toast.error("Failed to fetch tags. Please try again.");
+  }, [tags, tagsError]);
 
-  const tagOptions = tagsData.map((tag) => ({
-    label: tag.name,
-    value: tag.id.toString(),
-  }));
-
-  const { onSubmit, processing } = useFormSubmit<FormCreateDataType | FormUpdateDataType>(
-    async (data) => {
+  const { trigger: submitForm, isMutating: processing } = useSWRMutation(
+    "battlers",
+    async (key, { arg: data }: { arg: FormCreateDataType | FormUpdateDataType }) => {
       const formData = new FormData();
 
       formData.append("name", data.name);
@@ -122,23 +117,34 @@ const FormBattlers = ({
       if (data.avatar?.[0]) formData.append("avatar", data.avatar[0]);
       if (data.banner?.[0]) formData.append("banner", data.banner[0]);
 
-      try {
-        const response = createBattler
-          ? await createBattlersAction(formData)
-          : await editBattlersAction(formData);
+      const response = createBattler
+        ? await createBattlersAction(formData)
+        : await editBattlersAction(formData);
 
-        if (response?.success) {
-          toast.success(response.message || "Operation successful");
-          setOpenClose(false);
-          setPopoverOpen?.(false);
-          fetchBattlersList();
-        }
-      } catch (error) {
-        console.log("error", error);
-        toast.error(`Failed to ${createBattler ? "create" : "update"} battler. Please try again.`);
+      if (response?.success) {
+        toast.success(response.message || "Operation successful");
+        setOpenClose(false);
+        setPopoverOpen?.(false);
+        fetchBattlersList();
+        mutate("battlers");
       }
+      return response;
     },
   );
+
+  const tagOptions = tagsData.map((tag) => ({
+    label: tag.name,
+    value: tag.id.toString(),
+  }));
+
+  const onSubmit = async (data: FormCreateDataType | FormUpdateDataType) => {
+    try {
+      await submitForm(data);
+    } catch (error) {
+      console.log("error", error);
+      toast.error(`Failed to ${createBattler ? "create" : "update"} battler. Please try again.`);
+    }
+  };
 
   return (
     <Form {...form}>

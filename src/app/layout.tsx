@@ -10,7 +10,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Battle Rap Algorithm",
+  title: "BattleRapHub: Home of correct battle rap opinions",
   description: "Rate and analyze battle rap performances",
 };
 
