@@ -103,23 +103,4 @@ This section contains **top contributors** based on different filters:
 
 ---
 
-## 🚀 How to Improve Your Scores
-
-* Be thoughtful: Avoid rating in a rush or with bias.
-* Stay informed: Watch battles or read transcripts before rating.
-* Aim for objectivity: Rate based on content, not popularity.
-* Be active: Rate more battlers to increase your impact.
-
----
-
-## ✉️ Questions or Feedback?
-
-Contact support or reach out in the community forum to report issues or suggest features for the leaderboard.
-
----
-
-Stay fair. Stay sharp. Help build a more accurate and community-driven battle rating system.
-
----
-
 **Last Updated:** May 2025
