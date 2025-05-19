@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS media_content;
 DROP TYPE IF EXISTS media_type;
 
-CREATE TYPE media_type AS ENUM ('video', 'article');
+CREATE TYPE media_type AS ENUM ('video', 'article', 'youtube_video');
 create table media_content (
     id uuid default uuid_generate_v4() primary key,
     user_id UUID REFERENCES users (id) not null,
@@ -11,6 +11,9 @@ create table media_content (
     description text,
     thumbnail_img text,
     link text,
+    views int,
+    likes int,
+    tag text,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -43,3 +46,21 @@ UPDATE TO authenticated USING (auth.uid() = id);
 -- read policy to public user
 CREATE POLICY "Enable read access to public" ON media_content AS PERMISSIVE FOR
 SELECT TO public USING (true);
+
+
+-- Create random_media_users_view
+DROP MATERIALIZED VIEW IF EXISTS random_media_users_view;
+
+CREATE MATERIALIZED VIEW random_media_users_view AS
+SELECT * FROM users
+WHERE role_id = 3
+ORDER BY RANDOM()
+LIMIT 3;
+
+SELECT cron.schedule(
+    'weekly-random-media-user-change',
+    '0 0 */7 * *',  -- Run every 7 days at midnight
+    $$ 
+    REFRESH MATERIALIZED VIEW CONCURRENTLY random_media_users_view;
+    $$
+);

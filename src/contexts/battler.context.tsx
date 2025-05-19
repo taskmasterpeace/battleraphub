@@ -1,13 +1,12 @@
 "use client";
 
 import { DB_TABLES, MATERIALIZED_VIEWS } from "@/config";
-import debounce from "lodash.debounce";
 import { BattlerAnalytics, BattlerRating, Battlers, TopAssignBadgeByBattler } from "@/types";
 import { supabase } from "@/utils/supabase/client";
 import { useParams } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useAuth } from "./auth.context";
-import { useFormSubmit } from "@/hooks/useFormSubmit";
+import useSWR from "swr";
 
 type BattlerBadge = {
   badge_id: number;
@@ -42,15 +41,8 @@ const BattlerContext = createContext<BattlerContextType>({
 });
 
 export const BattlerProvider = ({ children }: { children: React.ReactNode }) => {
-  const [battlerBadges, setBattlerBadges] = useState<BattlerBadge[]>([]);
   const [battlerRatings, setBattlerRatings] = useState<BattlerRating[]>([]);
-  const [totalRatings, setTotalRatings] = useState<number>(0);
-  const [battlerAnalytics, setBattlerAnalytics] = useState<BattlerAnalytics[]>([]);
-  const [battlersData, setBattlerData] = useState<Battlers[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [topBadgesAssignedByBattler, setTopBadgesAssignedByBattler] = useState<
-    TopAssignBadgeByBattler[]
-  >([]);
   const { user } = useAuth();
   const battlerId = useParams().id;
 
@@ -65,10 +57,56 @@ export const BattlerProvider = ({ children }: { children: React.ReactNode }) => 
       console.error("Error fetching battler badges:", error);
     }
 
-    if (data) {
-      setBattlerBadges(data);
-    }
+    if (error) throw error;
+    return data as BattlerBadge[];
   }, [battlerId]);
+
+  const { data: battlerBadges = [] } = useSWR("battlerBadges?published=true", fetchBattlerBadges);
+
+  const fetchBattlerAnalytics = async (battlerId: string) => {
+    const { data, error } = await supabase
+      .from(DB_TABLES.BATTLER_ANALYTICS)
+      .select("*")
+      .eq("battler_id", battlerId);
+
+    if (error) throw error;
+    return data as BattlerAnalytics[];
+  };
+
+  const { data: allBattlerAnalytics = [] } = useSWR(
+    battlerId ? `battlerAnalytics/${battlerId}` : null,
+    () => fetchBattlerAnalytics(battlerId as string),
+  );
+
+  const battlerAnalytics = allBattlerAnalytics.filter((item) => item.type === 0);
+  const totalRatings = allBattlerAnalytics.find((item) => item.type === 1)?.score || 0;
+
+  // Fetch battler data
+  const { data: battlersData = [] } = useSWR(
+    `battlersData?query=${searchQuery || ""}`,
+    async () => {
+      const { data, error } = await supabase
+        .from(DB_TABLES.BATTLERS)
+        .select("id, name, avatar")
+        .limit(10)
+        .ilike("name", `%${searchQuery}%`)
+        .neq("id", battlerId);
+
+      if (error) throw error;
+      return data as Battlers[];
+    },
+  );
+
+  const { data: topBadgesAssignedByBattler = [], isLoading: topBadgesAssignedByBattlerLoading } =
+    useSWR(battlerId ? `topBadgesAssignedByBattler/${battlerId}` : null, async () => {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.TOP_ASSIGNED_BADGES_BY_BATTLERS)
+        .select("*")
+        .eq("battler_id", battlerId);
+
+      if (error) throw error;
+      return data as TopAssignBadgeByBattler[];
+    });
 
   // Fetch battler ratings
   const fetchBattlerRatings = useCallback(async () => {
@@ -91,95 +129,9 @@ export const BattlerProvider = ({ children }: { children: React.ReactNode }) => 
     }
   }, [battlerId, user?.id]);
 
-  // Fetch battler analytics
-  const fetchBattlerAnalytics = async (
-    battlerId: string,
-    store: boolean = true,
-  ): Promise<BattlerAnalytics[]> => {
-    const { data, error } = await supabase
-      .from(DB_TABLES.BATTLER_ANALYTICS)
-      .select("*")
-      .eq("battler_id", battlerId);
-
-    if (error) {
-      console.error("Error fetching battler analytics:", error);
-    }
-
-    if (data) {
-      const totalRatings = data.find((item) => item.type === 1);
-      setTotalRatings(totalRatings?.score || 0);
-      const analytics = data.filter((item) => item.type === 0);
-      if (store) {
-        setBattlerAnalytics(analytics);
-      }
-      return analytics;
-    }
-    return [];
-  };
-
-  const fetchBattlerData = useCallback(async () => {
-    try {
-      const { data: battlersData } = await supabase
-        .from(DB_TABLES.BATTLERS)
-        .select("id, name, avatar")
-        .limit(10)
-        .ilike("name", `%${searchQuery}%`)
-        .neq("id", battlerId);
-
-      if (battlersData) {
-        setBattlerData(battlersData || []);
-      }
-    } catch (error) {
-      console.error("Error fetching battler data:", error);
-    }
-  }, [searchQuery, battlerId]);
-
-  // Fetch top badges assigned
-  const {
-    onSubmit: fetchTopBadgesAssignedByBattlers,
-    processing: topBadgesAssignedByBattlerLoading,
-  } = useFormSubmit(async ({ battlerId }: { battlerId: string }) => {
-    try {
-      const { data, error } = await supabase
-        .from(MATERIALIZED_VIEWS.TOP_ASSIGNED_BADGES_BY_BATTLERS)
-        .select("*")
-        .eq("battler_id", battlerId);
-
-      if (error) {
-        console.error("Error fetching top badges assigned by battlers:", error);
-        return;
-      }
-      setTopBadgesAssignedByBattler(data || []);
-    } catch (error) {
-      console.error("Error fetching top badges assigned by battlers:", error);
-    }
-  });
-
-  useEffect(() => {
-    fetchBattlerBadges();
-  }, [fetchBattlerBadges]);
-
   useEffect(() => {
     fetchBattlerRatings();
   }, [fetchBattlerRatings]);
-
-  useEffect(() => {
-    fetchBattlerAnalytics(battlerId as string);
-  }, [battlerId]);
-
-  useEffect(() => {
-    const debouncedFetchBattlerData = debounce(fetchBattlerData, 500);
-    debouncedFetchBattlerData();
-    return () => {
-      debouncedFetchBattlerData.cancel();
-    };
-  }, [searchQuery, battlerId, fetchBattlerData]);
-
-  useEffect(() => {
-    if (battlerId) {
-      fetchTopBadgesAssignedByBattlers({ battlerId: battlerId as string });
-    }
-  }, [battlerId, fetchTopBadgesAssignedByBattlers]);
 
   return (
     <BattlerContext.Provider

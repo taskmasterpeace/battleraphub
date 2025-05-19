@@ -1,45 +1,33 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, ThumbsUp, MessageSquare, Eye, Calendar } from "lucide-react";
-import { Video } from "@/types/youtube";
-import { getLatestVideosFromYoutubeChannel } from "@/lib/youtube-service";
+import { ExternalLink, ThumbsUp, Eye, Calendar } from "lucide-react";
+import { supabase } from "@/utils/supabase/client";
+import { DB_TABLES } from "@/config";
+import useSWR from "swr";
+import { YoutubeVideoType } from "@/types";
 
-interface YouTubeVideoSectionProps {
-  youtubeHandleUrl: string;
-}
+export default function YouTubeVideoSection() {
+  const { data: videos = [], isLoading } = useSWR<YoutubeVideoType[]>(
+    `${DB_TABLES.MEDIA_CONTENT}?type=youtube_video&tag=latest&limit=3`,
+    async () => {
+      const { data, error } = await supabase
+        .from(DB_TABLES.MEDIA_CONTENT)
+        .select("*")
+        .eq("type", "youtube_video")
+        .eq("tag", "latest")
+        .limit(3);
 
-export default function YouTubeVideoSection({ youtubeHandleUrl }: YouTubeVideoSectionProps) {
-  const [videos, setVideos] = useState<Video[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchVideos = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getLatestVideosFromYoutubeChannel(youtubeHandleUrl);
-        setVideos(data || []);
-      } catch (error) {
-        console.error("Error fetching videos:", error);
-      } finally {
-        setIsLoading(false);
+      if (error) {
+        throw error;
       }
-    };
 
-    fetchVideos();
-  }, [youtubeHandleUrl]);
-
-  if (!youtubeHandleUrl || youtubeHandleUrl.length === 0) {
-    return (
-      <div className="text-center py-12 text-muted-foreground">
-        No YouTube channels have been added yet.
-      </div>
-    );
-  }
+      return data || [];
+    },
+  );
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -92,14 +80,14 @@ export default function YouTubeVideoSection({ youtubeHandleUrl }: YouTubeVideoSe
                 <div className="flex flex-col">
                   <div className="relative h-48 w-full">
                     <Image
-                      src={video?.thumbnail || "/placeholder.svg"}
+                      src={video?.thumbnail_img || "/placeholder.svg"}
                       alt={video?.title || "Video thumbnail"}
                       width={300}
                       height={200}
                       className="w-full h-full object-cover"
                     />
                     <Badge className="absolute top-2 right-2 bg-destructive-foreground text-destructive border-destructive">
-                      YouTube
+                      {video?.tag}
                     </Badge>
                   </div>
 
@@ -112,7 +100,7 @@ export default function YouTubeVideoSection({ youtubeHandleUrl }: YouTubeVideoSe
                     <div className="flex justify-between items-center">
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Calendar className="w-4 h-4 mr-1" />
-                        {formatDate(video?.publishedAt || "")}
+                        {formatDate(video?.date || "")}
                       </div>
 
                       <div className="flex gap-3 text-sm text-muted-foreground">
@@ -124,20 +112,12 @@ export default function YouTubeVideoSection({ youtubeHandleUrl }: YouTubeVideoSe
                           <ThumbsUp className="w-3 h-3" />
                           {formatCount(video?.likes)}
                         </div>
-                        <div className="flex items-center gap-1">
-                          <MessageSquare className="w-3 h-3" />
-                          {formatCount(video?.comments)}
-                        </div>
                       </div>
                     </div>
 
                     <div className="mt-4">
                       <Button asChild variant="outline" size="sm" className="w-full">
-                        <a
-                          href={`https://youtube.com/watch?v=${video?.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a href={video?.link || "#"} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="w-4 h-4 mr-2" />
                           Watch on YouTube
                         </a>

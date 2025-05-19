@@ -1,21 +1,19 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Video as VideoType } from "@/types/youtube";
+import { YoutubeVideoType } from "@/types";
 import { ExternalLink, ThumbsUp, Video } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 interface TrendingVideoCardProps {
-  content: VideoType;
+  content: YoutubeVideoType;
   userId: string;
   idx: number;
 }
-
 const TrendingVideoCard = ({ content, userId, idx }: TrendingVideoCardProps) => {
-  const videoUrl = `https://www.youtube.com/watch?v=${content.videoId}`;
-  const date = content.publishedAt
-    ? new Date(content.publishedAt).toLocaleDateString("en-US", {
+  const date = content.date
+    ? new Date(content.date).toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
         day: "numeric",
@@ -25,15 +23,15 @@ const TrendingVideoCard = ({ content, userId, idx }: TrendingVideoCardProps) => 
   return (
     <Link
       key={`${userId}-${idx}`}
-      href={videoUrl || "#"}
+      href={content.link || "#"}
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center gap-4 p-4 bg-background rounded-lg border border-border hover:border-primary transition-all"
     >
-      {content.thumbnail ? (
+      {content.thumbnail_img ? (
         <div className="relative w-20 h-20 flex-shrink-0">
           <Image
-            src={content.thumbnail || "/placeholder.svg"}
+            src={content.thumbnail_img || "/placeholder.svg"}
             alt={content.title}
             width={80}
             height={80}

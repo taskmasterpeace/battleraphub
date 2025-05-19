@@ -62,6 +62,7 @@ const MATERIALIZED_VIEWS = {
   MOST_CONSISTENT_USERS: "most_consistent_users",
   MOST_ACCURATE_USERS: "most_accurate_users",
   TOP_ASSIGNED_BADGES_BY_BATTLERS: "top_assigned_badges_by_battlers",
+  RANDOM_MEDIA_USERS_VIEW: "random_media_users_view",
 };
 
 const RPC_FUNCTIONS = {

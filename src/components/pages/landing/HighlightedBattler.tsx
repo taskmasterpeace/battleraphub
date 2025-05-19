@@ -16,21 +16,32 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { useHome } from "@/contexts/home.context";
-import { Battlers } from "@/types";
+import { Battlers, TopAssignBadgeByBattler } from "@/types";
+import { MATERIALIZED_VIEWS } from "@/config";
+import { supabase } from "@/utils/supabase/client";
+import useSWR from "swr";
 
 export default function HighlightedBattler() {
-  const {
-    highlightBattlers,
-    tagsData,
-    highlightBattlerLoading,
-    topBadgesAssignedByBattler,
-    fetchTopBadgesAssignedByBattlers,
-  } = useHome();
+  const { highlightBattlers, tagsData, highlightBattlerLoading } = useHome();
   const [filteredBattlers, setFilteredBattlers] = useState<Battlers[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const currentBattler = filteredBattlers[currentIndex];
+
+  const { data: topBadgesAssignedByBattler = [], isLoading: topBadgesLoading } = useSWR(
+    currentBattler?.id ? `topBadgesAssignedByBattler/${currentBattler.id}` : null,
+    async () => {
+      const { data, error } = await supabase
+        .from(MATERIALIZED_VIEWS.TOP_ASSIGNED_BADGES_BY_BATTLERS)
+        .select("*")
+        .eq("battler_id", currentBattler.id);
+
+      if (error) throw error;
+      return data as TopAssignBadgeByBattler[];
+    },
+  );
+
   const battlerBadges = topBadgesAssignedByBattler?.filter(
     (item) => item.battler_id === currentBattler?.id,
   );
@@ -66,13 +77,7 @@ export default function HighlightedBattler() {
     }
   };
 
-  useEffect(() => {
-    if (currentBattler?.id) {
-      fetchTopBadgesAssignedByBattlers({ battlerId: currentBattler?.id });
-    }
-  }, [currentBattler?.id, fetchTopBadgesAssignedByBattlers]);
-
-  if (highlightBattlerLoading) {
+  if (highlightBattlerLoading || topBadgesLoading) {
     return (
       <Card className="bg-muted animate-pulse h-full">
         <CardContent className="bg-muted p-0 h-96"></CardContent>

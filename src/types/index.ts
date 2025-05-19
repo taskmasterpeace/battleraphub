@@ -402,3 +402,15 @@ export interface TopAssignBadgeByBattler {
   percentage: number;
   description: string;
 }
+
+export interface YoutubeVideoType {
+  id: string;
+  date?: string;
+  link?: string;
+  thumbnail_img?: string;
+  title: string;
+  tag: string;
+  description?: string;
+  likes: number;
+  views?: number;
+}

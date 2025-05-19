@@ -15,6 +15,7 @@ import { DB_TABLES, ROLE } from "@/config";
 import { supabase } from "@/utils/supabase/client";
 import { useAuth } from "@/contexts/auth.context";
 import { RoleDataType } from "@/types";
+import useSWR, { mutate } from "swr";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
 
 type RoleWeightsFormValues = z.infer<typeof roleWeightsSchema>;
@@ -22,7 +23,19 @@ type RoleWeightsFormValues = z.infer<typeof roleWeightsSchema>;
 const RoleWeightsContent = () => {
   const { user } = useAuth();
   const userId = user?.id;
-  const [roleData, setRoleData] = React.useState<RoleDataType[]>([]);
+
+  const { data: roleData = [] } = useSWR<RoleDataType[]>("role-weights", async () => {
+    const { data, error } = await supabase
+      .from(DB_TABLES.RATING_ROLE_WEIGHTS)
+      .select("role_id, weight");
+
+    if (error) {
+      throw new Error("Failed to fetch data");
+    }
+
+    return data || [];
+  });
+
   const form = useForm<RoleWeightsFormValues>({
     resolver: zodResolver(roleWeightsSchema),
     defaultValues: {
@@ -34,27 +47,6 @@ const RoleWeightsContent = () => {
     },
   });
   const { setValue } = form;
-
-  const fetchData = async () => {
-    try {
-      const { data: weights, error } = await supabase
-        .from(DB_TABLES.RATING_ROLE_WEIGHTS)
-        .select("role_id, weight");
-
-      if (error) {
-        toast.error("Failed to fetch data");
-      }
-
-      setRoleData(weights || []);
-    } catch (error) {
-      console.log("Error fetching data:", error);
-      toast.error(error as string);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   useEffect(() => {
     setValue("fan", roleData.find((item) => item.role_id === ROLE.FAN)?.weight || 0);
@@ -87,6 +79,7 @@ const RoleWeightsContent = () => {
       const data = await ratingRoleWeightsActions(formData);
       if (data.success) {
         toast.success(data.message);
+        mutate("role-weights");
       } else {
         toast.error(data.message);
       }

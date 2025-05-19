@@ -61,7 +61,7 @@ export default async function UserProfilePage({ params }: { params: UserProfileP
         {isMediaUser && (
           <>
             <TabsContent value="videos">
-              <YouTubeVideoSection youtubeHandleUrl={userDetails?.youtube} />
+              <YouTubeVideoSection />
             </TabsContent>
 
             <TabsContent value="content">
