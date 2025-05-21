@@ -3,7 +3,7 @@ import { BattlerProvider } from "@/contexts/battler.context";
 import { DB_TABLES } from "@/config";
 import { protectedCreateClient } from "@/utils/supabase/protected-server";
 
-export default async function BattlerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function BattlerDetailPage() {
   const supabase = await protectedCreateClient();
   const { data: badgeData, error } = await supabase.from(DB_TABLES.BADGES).select("*");
 
@@ -22,8 +22,8 @@ export default async function BattlerDetailPage({ params }: { params: Promise<{ 
   }
 
   return (
-    <BattlerProvider>
-      <BattlerDetails params={params} badgeData={badgeData} attributeData={attributeData} />
+    <BattlerProvider badgeData={badgeData} attributeData={attributeData}>
+      <BattlerDetails />
     </BattlerProvider>
   );
 }

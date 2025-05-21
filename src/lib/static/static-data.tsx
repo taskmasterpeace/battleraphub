@@ -1,5 +1,6 @@
 import { ROLE, ROLES_NAME } from "@/config";
 import { ChartConfig, ChartData, ComparisonChartData, Rating, rolesWeights } from "@/types";
+import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 
 export const rolesWeightData: rolesWeights[] = [
   {
@@ -122,4 +123,34 @@ export const generateComparisonChartData = (
   });
 
   return mergedData;
+};
+
+export const getComparisonIndicator = (current: number, comparison: number) => {
+  const diff = current - comparison;
+  if (Math.abs(diff) < 0.2) return <Minus className="h-4 w-4 text-muted-foreground" />;
+  return diff > 0 ? (
+    <TrendingUp className="h-4 w-4 text-success" />
+  ) : (
+    <TrendingDown className="h-4 w-4 text-destructive" />
+  );
+};
+
+export const getColorClasses = (color: string) => {
+  const colorMap: Record<string, { text: string; badge: string }> = {
+    purple: { text: "text-primary", badge: "bg-purple-500 text-white" },
+    green: { text: "text-success", badge: "bg-green-500 text-white" },
+    amber: { text: "text-amber-400", badge: "bg-amber-400 text-black" },
+    blue: { text: "text-accent", badge: "bg-blue-500 text-white" },
+  };
+
+  return {
+    text: colorMap[color]?.text || colorMap.purple.text,
+    badge: colorMap[color]?.badge || colorMap.purple.badge,
+  };
+};
+
+export const getComparisonColorClass = (current: number, comparison: number) => {
+  const diff = current - comparison;
+  if (Math.abs(diff) < 0.2) return "text-muted-foreground";
+  return diff > 0 ? "text-success" : "text-destructive";
 };
