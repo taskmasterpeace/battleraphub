@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, ChevronDown, ChevronUp, XCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { fadeIn, staggerContainer } from "@/lib/static/framer-motion";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface BadgeItem {
   badge: string;
@@ -24,10 +27,7 @@ export default function BadgeSection({
   selectedBadges,
   onSelectBadge,
 }: BadgeSectionProps) {
-  // Track which badge is being hovered
-  const [hoveredBadge, setHoveredBadge] = useState<string | null>(null);
-
-  // Get color scheme based on positive/negative
+  const [showAllBadges, setShowAllBadges] = useState(false);
   const getColorScheme = (isSelected: boolean) => {
     if (isPositive) {
       return isSelected
@@ -40,8 +40,10 @@ export default function BadgeSection({
     }
   };
 
+  const visibleBadges = showAllBadges ? badges : badges.slice(0, 6);
+
   return (
-    <div>
+    <motion.div className="mt-10" variants={fadeIn}>
       <h3
         className={`text-lg font-semibold mb-4 flex items-center ${isPositive ? "text-success" : "text-destructive"}`}
       >
@@ -53,51 +55,36 @@ export default function BadgeSection({
         {title}
       </h3>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {badges.map((badgeItem, index) => {
+      <motion.div className="grid grid-cols-2 md:grid-cols-3 gap-3" variants={staggerContainer}>
+        {visibleBadges.map((badgeItem, index) => {
           const isSelected = selectedBadges.includes(badgeItem.badge);
-          const isHovered = hoveredBadge === badgeItem.badge;
-
           return (
             <TooltipProvider key={`${badgeItem.badge}-${index}`}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div
                     className={`
-                      relative cursor-pointer p-4 rounded-lg border-2 transition-all duration-300 h-full
+                      relative cursor-pointer p-3 rounded-lg border-2 transition-all duration-300 h-full
                       transform hover:scale-105 active:scale-95
                       ${getColorScheme(isSelected)}
                     `}
                     onClick={() => onSelectBadge(badgeItem.badge, isPositive)}
-                    onMouseEnter={() => setHoveredBadge(badgeItem.badge)}
-                    onMouseLeave={() => setHoveredBadge(null)}
                   >
                     <div className="flex flex-col items-center text-center">
-                      <span className="text-sm sm:text-base font-medium mb-2">
-                        {badgeItem.badge}
-                      </span>
-
-                      {/* Show a preview of description on hover */}
-                      <div>
-                        <p
-                          className={`text-xs text-muted-foreground line-clamp-2 transition-opacity duration-200 ${isHovered ? "opacity-100" : "opacity-0"}`}
-                        >
-                          {badgeItem.description}
-                        </p>
-                      </div>
-
-                      {/* Selection indicator */}
+                      <span className="text-sm sm:text-base text-center">{badgeItem.badge}</span>
                       {isSelected && (
-                        <div
-                          className={`absolute -top-2 -right-2 rounded-full p-1 
-                            ${isPositive ? "bg-success" : "bg-destructive"}`}
+                        <motion.div
+                          className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center ${isPositive ? "bg-success" : "bg-destructive"}`}
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.2 + index * 0.05 }}
                         >
                           {isPositive ? (
-                            <CheckCircle className="w-4 h-4 text-white" />
+                            <CheckCircle className="w-3 h-3 text-white" />
                           ) : (
-                            <XCircle className="w-4 h-4 text-white" />
+                            <XCircle className="w-3 h-3 text-white" />
                           )}
-                        </div>
+                        </motion.div>
                       )}
                     </div>
                   </div>
@@ -109,7 +96,25 @@ export default function BadgeSection({
             </TooltipProvider>
           );
         })}
-      </div>
-    </div>
+      </motion.div>
+
+      {badges.length > 6 && (
+        <div className="mt-3 text-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowAllBadges(!showAllBadges)}
+            className="text-primary hover:text-primary-foreground"
+          >
+            {showAllBadges ? "Show Less" : "Show All"}{" "}
+            {showAllBadges ? (
+              <ChevronUp className="h-4 w-4 ml-1" />
+            ) : (
+              <ChevronDown className="h-4 w-4 ml-1" />
+            )}
+          </Button>
+        </div>
+      )}
+    </motion.div>
   );
 }

@@ -36,6 +36,7 @@ export interface Attribute {
   category: Category;
   name: string;
   description?: string;
+  value?: number;
 }
 
 export interface CommunityStats {
@@ -97,6 +98,7 @@ export interface Battlers {
   banner?: string;
   users?: {
     added_by: string;
+    role_id?: number;
   };
   created_at?: string;
 }
@@ -394,6 +396,7 @@ export interface ComparisonChartData {
 export type Rating = { attribute_id: number; score: number };
 
 export interface TopAssignBadgeByBattler {
+  score: number;
   battler_id: string;
   badge_id: string;
   badge_name: string;
@@ -413,4 +416,18 @@ export interface YoutubeVideoType {
   description?: string;
   likes: number;
   views?: number;
+}
+
+export interface SkillData {
+  name: string;
+  value: number;
+  info: string;
+}
+
+export interface BattlerData {
+  id: string;
+  name: string;
+  writing: Attribute[];
+  performance: Attribute[];
+  personal: Attribute[];
 }

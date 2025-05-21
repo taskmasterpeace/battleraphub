@@ -75,3 +75,34 @@
 .header-container {
   padding-left: calc(100vw - 100%);
 }
+
+
+/* Custom styles for Battle Rap Hub */
+.rating-glow {
+  text-shadow: 0 0 10px rgba(124, 58, 237, 0.7);
+  animation: pulse 2s infinite alternate;
+}
+
+@keyframes pulse {
+  0% {
+    text-shadow: 0 0 10px rgba(124, 58, 237, 0.4);
+  }
+  100% {
+    text-shadow: 0 0 20px rgba(124, 58, 237, 0.8), 0 0 30px rgba(124, 58, 237, 0.4);
+  }
+}
+
+.badge-hover {
+  transition: all 0.3s ease;
+}
+
+.badge-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
