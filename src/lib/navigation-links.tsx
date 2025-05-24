@@ -1,7 +1,17 @@
 import { PAGES, PERMISSIONS, ROLE } from "@/config";
 import { NavItem, NavList } from "@/types";
 import { User } from "@supabase/supabase-js";
-import { Trophy, Database, Users, BarChart2, Video, Home, Award, Star } from "lucide-react";
+import {
+  Trophy,
+  Database,
+  Users,
+  BarChart2,
+  Video,
+  Home,
+  Award,
+  Star,
+  Newspaper,
+} from "lucide-react";
 
 export const NAV_LINKS: NavList[] = [
   { href: PAGES.HOME, label: "Home", icon: null, roles: [], permissions: [], children: [] },
@@ -47,11 +57,25 @@ export const NAV_LINKS: NavList[] = [
         permissions: [],
         icon: null,
       },
+      {
+        label: "News Tools",
+        href: PAGES.NEWS_PROMPTS,
+        roles: [ROLE.ADMIN],
+        permissions: [],
+        icon: null,
+      },
     ],
     roles: [],
     permissions: [],
   },
   { href: PAGES.DIAGNOSTICS, label: "Diagnostics", icon: null, roles: [], permissions: [] },
+  {
+    href: PAGES.NEWS,
+    label: "News",
+    icon: <Newspaper className="w-4 h-4 mr-1" />,
+    roles: [],
+    permissions: [],
+  },
 ];
 
 export const mainNavItems: NavList[] = [
@@ -135,6 +159,13 @@ export const secondaryNavItems: NavList[] = [
         icon: null,
       },
     ],
+    roles: [],
+    permissions: [],
+  },
+  {
+    href: PAGES.NEWS,
+    label: "News",
+    icon: <Newspaper className="w-5 h-5 mr-3" />,
     roles: [],
     permissions: [],
   },

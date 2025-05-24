@@ -92,6 +92,17 @@ const ATTRIBUTE_CATEGORIES = {
   PERSONAL: "personal",
 };
 
+const PROMPT_MANAGEMENT_KEYS = {
+  CONTENT_GENERATION: "news:CONTENT_GENERATION",
+  CONTENT_SYNTHESIS: "news:CONTENT_SYNTHESIS",
+  CROSS_TOPIC_ANALYSIS: "news:CROSS_TOPIC_ANALYSIS",
+  INITIAL_TOPIC_ANALYSIS: "news:INITIAL_TOPIC_ANALYSIS",
+  TOPIC_EXPANSION: "news:TOPIC_EXPANSION",
+  YOUTUBE_CONTEXT: "news:YOUTUBE_CONTEXT",
+};
+
+const PROMPT_KEY = Object.values(PROMPT_MANAGEMENT_KEYS);
+
 const PAGES = {
   SIGN_UP: "/auth/signup",
   LOGIN: "/auth/login",
@@ -111,6 +122,8 @@ const PAGES = {
   DIAGNOSTICS: "/diagnostics",
   MY_RATINGS: "/my-ratings",
   PROFILE: "/profile",
+  NEWS: "/news",
+  NEWS_PROMPTS: "/admin/news-prompts",
 };
 
 const CATEGORY_TYPES = {
@@ -133,5 +146,7 @@ export {
   RANKING_TYPE,
   BUCKET_NAME,
   PERMISSIONS,
+  PROMPT_MANAGEMENT_KEYS,
+  PROMPT_KEY,
   CATEGORY_TYPES,
 };

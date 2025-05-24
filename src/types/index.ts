@@ -431,3 +431,47 @@ export interface BattlerData {
   performance: Attribute[];
   personal: Attribute[];
 }
+
+export interface KeyFigure {
+  name: string;
+  role: string;
+}
+
+export interface NewsItem {
+  id: number;
+  headline: string;
+  summary: string;
+  key_figures: KeyFigure[];
+  core_topics: string[];
+  community_reaction: {
+    sentiment: string;
+    engagement_metrics: {
+      volume: number;
+      intensity: number;
+    };
+  };
+  notable_content: string[];
+  predictions: string[];
+  connection_strength: number;
+  cultural_significance: number;
+  contentType: string;
+  time: string;
+  category: string;
+  publishDate?: string;
+  fullAnalysis?: string;
+  relatedTopics?: string[];
+  isBreaking?: boolean;
+}
+
+export interface RelatedAnalysisItem {
+  id: number;
+  emoji: string;
+  title: string;
+  daysAgo: number;
+}
+
+export interface Cluster {
+  headline: string;
+  connection_strength: number;
+  core_topics: string[];
+}

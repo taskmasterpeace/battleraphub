@@ -12,6 +12,7 @@ import {
 } from "@/utils/response";
 import { uploadFileToStorage } from "@/lib/uploadFileToStorage";
 import { Battlers, MediaContent, MyRating, User, UserBadge } from "@/types";
+import { kv } from "@vercel/kv";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -881,5 +882,15 @@ export const highlightedBattlerAction = async (isChecked: boolean, battler: Batt
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Something went wrong";
     return errorResponse(errorMessage);
+  }
+};
+
+export const setRedisKey = async (name: string, content: string) => {
+  try {
+    await kv.set(name, content);
+    return successResponse("Prompt saved successfully");
+  } catch (error) {
+    console.error("Error setting prompt:", error);
+    return errorResponse("Error setting prompt");
   }
 };
