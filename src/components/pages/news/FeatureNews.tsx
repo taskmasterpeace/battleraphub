@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useNews } from "@/contexts/news.context";
+import { formatDate } from "@/lib/utils";
 
 const FeatureNews = () => {
   const { newsItems: filteredNews } = useNews();
@@ -78,7 +79,9 @@ const FeatureNews = () => {
                             🔄 {filteredNews[0].community_reaction.engagement_metrics.retweets}
                           </span>
                         </div>
-                        <span className="ml-auto">{filteredNews[0].published_at}</span>
+                        <span className="ml-auto">
+                          {formatDate(filteredNews[0].published_at || "")}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -163,7 +166,7 @@ const FeatureNews = () => {
                               </div>
                             </div>
                             <span className="text-muted-foreground text-xs">
-                              {item.published_at}
+                              {formatDate(item.published_at || "")}
                             </span>
                           </div>
                         </div>

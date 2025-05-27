@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Bookmark, Brain, Calendar, Share2, Target } from "lucide-react";
 import { NewsItem } from "@/types";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/lib/utils";
 
 const NewsAnalysisDetails = ({ newsItem }: { newsItem: NewsItem }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -25,7 +26,7 @@ const NewsAnalysisDetails = ({ newsItem }: { newsItem: NewsItem }) => {
             </div>
             <div className="flex items-center gap-1 bg-accent px-3 py-1.5 rounded-full text-sm">
               <Calendar size={16} />
-              <span>{newsItem.event_date}</span>
+              <span>{formatDate(newsItem.event_date || "")}</span>
             </div>
             <div className="flex items-center gap-1 bg-accent px-3 py-1.5 rounded-full text-sm">
               <span>📍 {newsItem.location}</span>

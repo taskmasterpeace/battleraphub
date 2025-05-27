@@ -28,8 +28,6 @@ export async function getBattleRapPrompts(): Promise<Record<string, string> | nu
 
       result[key] = data;
     }
-
-    console.info("[KV] News prompts successfully retrieved.");
     console.log("kv data", result);
     return result;
   } catch (error) {

@@ -175,7 +175,7 @@ export class NewsAggregatorAgent {
     return json as { [key: string]: unknown };
   }
 
-  async generateContent(narrativeCluster: unknown): Promise<{ [key: string]: unknown }> {
+  async generateContent(narrativeCluster: unknown): Promise<{ [key: string]: unknown }[]> {
     console.log("Phase 6: Content generation...");
 
     const prompt = await this.getPrompt("CONTENT_GENERATION");
@@ -185,10 +185,10 @@ export class NewsAggregatorAgent {
     ]);
     const json = this.extractJson(response);
     console.log("Phase 6: Content generation", json);
-    return json as { [key: string]: unknown };
+    return json as { [key: string]: unknown }[];
   }
 
-  async analyzeTopics(xAccounts: string[]): Promise<{ [key: string]: unknown }> {
+  async analyzeTopics(xAccounts: string[]): Promise<{ [key: string]: unknown }[]> {
     try {
       // Phase 1: Initial Analysis
       const initialAnalyses = await Promise.all(

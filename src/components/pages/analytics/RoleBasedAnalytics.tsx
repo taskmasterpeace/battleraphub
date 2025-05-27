@@ -48,7 +48,6 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
           selectedCategory,
           selectedAttribute,
         );
-        console.log("");
         setTopBattlers(data || []);
       } catch (error) {
         console.error("Error fetching top battlers:", error);

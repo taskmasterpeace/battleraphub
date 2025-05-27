@@ -33,9 +33,9 @@ export const rolesWeightData: rolesWeights[] = [
   },
   {
     id: 3,
-    role_id: ROLE.BATTLE,
+    role_id: ROLE.ARTIST,
     formKey: "battler",
-    key: ROLES_NAME[ROLE.BATTLE],
+    key: ROLES_NAME[ROLE.ARTIST],
     label: "Battler",
     color: "green",
     backgroundColor: "bg-success",

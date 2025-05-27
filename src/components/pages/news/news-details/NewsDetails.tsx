@@ -1,6 +1,6 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Zap } from "lucide-react";
 import Link from "next/link";
@@ -13,37 +13,30 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/utils/supabase/client";
 import { DB_TABLES } from "@/config";
+import useSWR from "swr";
 const NewsDetails = () => {
-  const [newsItem, setNewsItem] = useState<NewsItem | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const params = useParams();
   const router = useRouter();
   const { id } = params;
 
-  useEffect(() => {
-    const fetchNewsContentById = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from(DB_TABLES.NEWS_CONTENTS)
-          .select("*")
-          .eq("id", id);
-        if (error) {
-          console.error("Error fetching news content:", error);
-        }
-        if (data) {
-          setNewsItem(data[0]);
-        }
-      } catch (error) {
-        console.error("Error fetching news content:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchNewsContentById();
-  }, [id]);
+  const fetchNewsItem = async (id: string): Promise<NewsItem | null> => {
+    const { data, error } = await supabase
+      .from(DB_TABLES.NEWS_CONTENTS)
+      .select("*")
+      .eq("id", id)
+      .single();
 
-  if (loading) {
+    if (error) {
+      throw error;
+    }
+    return data;
+  };
+
+  const { data: newsItem, isLoading } = useSWR(id ? [`newsItem`, id] : null, () =>
+    fetchNewsItem(id as string),
+  );
+
+  if (isLoading) {
     return <LoadingSpinner />;
   }
 

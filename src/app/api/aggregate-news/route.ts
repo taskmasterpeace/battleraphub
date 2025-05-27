@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { NewsAggregatorAgent } from ".";
+import { DB_TABLES } from "@/config";
+import { protectedCreateClient } from "@/utils/supabase/protected-server";
 
 const xAccounts = ["urltv", "KingOfTheDot"];
 
 // This route is protected by a cron secret, get youtube videos from AlgorithmInstituteofBR channel for home page videos with vercel cron job
 export async function GET(request: Request) {
+  const supabase = await protectedCreateClient();
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response("Unauthorized", {
@@ -14,7 +17,38 @@ export async function GET(request: Request) {
   try {
     const newsAgent = new NewsAggregatorAgent();
     const result = await newsAgent.analyzeTopics(xAccounts);
-    console.log("Result", result);
+
+    // need to updated with result data into this supabase db to add this bellow data with actual result
+    const newsItems = result.map((item) => ({
+      type: item.type,
+      headline: item.headline,
+      published_at: new Date(item.published_at as string),
+      event_date: new Date(item.event_date as string),
+      location: item.location,
+      league: item.league,
+      tags: item.tags || [],
+      core_topics: item.topics || [],
+      main_event: item.main_event || {},
+      format_innovation: item.format_innovation || {},
+      community_reaction: item.community_reaction || {},
+      cultural_significance: item.cultural_significance || {},
+      social_impact: item.social_impact || {},
+      ai_predictions: item.predictions || [],
+      notable_content: item.notable_content || [],
+      executive_summary: item.summary || {},
+      related_analysis: item.related_analysis || {},
+      actions: item.suggested_actions || {},
+      created_at: new Date(),
+    }));
+
+    const { error } = await supabase.from(DB_TABLES.NEWS_CONTENTS).insert(newsItems);
+    if (error) {
+      console.error("Error inserting news content into Supabase:", error);
+      return NextResponse.json(
+        { error: "Failed to insert news content into Supabase" },
+        { status: 500 },
+      );
+    }
     return NextResponse.json({ message: "Videos updated successfully", result });
   } catch (error) {
     console.error("Error fetching YouTube videos:", error);

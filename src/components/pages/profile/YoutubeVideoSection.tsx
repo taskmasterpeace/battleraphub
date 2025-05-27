@@ -9,6 +9,7 @@ import { supabase } from "@/utils/supabase/client";
 import { DB_TABLES } from "@/config";
 import useSWR from "swr";
 import { YoutubeVideoType } from "@/types";
+import { formatDate } from "@/lib/utils";
 
 export default function YouTubeVideoSection() {
   const { data: videos = [], isLoading } = useSWR<YoutubeVideoType[]>(
@@ -28,12 +29,6 @@ export default function YouTubeVideoSection() {
       return data || [];
     },
   );
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-  };
 
   const formatCount = (count: number | undefined) => {
     if (!count) return "0";

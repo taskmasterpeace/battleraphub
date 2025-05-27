@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Calendar, CheckCircle, XCircle } from "lucide-react";
 import { MyRating } from "@/types";
 import { getUserRatings } from "@/app/actions";
+import { formatDate } from "@/lib/utils";
 
 interface UserRatingsSectionProps {
   userId: string;
@@ -31,11 +32,6 @@ export default function UserRatingsSection({ userId }: UserRatingsSectionProps) 
 
     fetchRatings();
   }, [userId]);
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-  };
 
   return (
     <div>

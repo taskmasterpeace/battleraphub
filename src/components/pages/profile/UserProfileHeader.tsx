@@ -8,7 +8,7 @@ import { Edit, MapPin, Calendar, ExternalLink } from "lucide-react";
 import { User } from "@/types";
 import { useAuth } from "@/contexts/auth.context";
 import EditProfileDialog from "@/components/pages/profile/EditProfileDialog";
-import { ROLE } from "@/config";
+import { ROLE, ROLES_NAME } from "@/config";
 
 interface UserProfileHeaderProps {
   user: User;
@@ -26,23 +26,27 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
 
     if (user.role_id === ROLE.ADMIN)
       badges.push({
-        label: "Admin",
+        label: ROLES_NAME[user.role_id],
         color:
           "bg-destructive-foreground dark:bg-destructive/10 text-destructive border-destructive",
       });
-    if (user?.role_id === ROLE.MEDIA) badges.push({ label: "Media", color: "text-foreground" });
-    if (user?.role_id === ROLE.BATTLE)
+    if (user?.role_id === ROLE.MEDIA)
+      badges.push({ label: ROLES_NAME[user.role_id], color: "text-foreground" });
+    if (user?.role_id === ROLE.ARTIST)
       badges.push({
-        label: "Battler",
+        label: ROLES_NAME[user.role_id],
         color: "bg-success-foreground dark:bg-success/20 text-success border-success",
       });
     if (user.role_id === ROLE.LEAGUE_OWNER_INVESTOR)
       badges.push({
-        label: "League Owner",
+        label: ROLES_NAME[user.role_id],
         color: "bg-amber-900/30 text-amber-400 border-amber-700",
       });
     if (badges.length === 0 || user.role_id === ROLE.FAN)
-      badges.push({ label: "Fan", color: "bg-blue-900/30 text-blue-400 border-blue-700" });
+      badges.push({
+        label: ROLES_NAME[user.role_id || ROLE.FAN],
+        color: "bg-blue-900/30 text-blue-400 border-blue-700",
+      });
 
     return badges;
   };

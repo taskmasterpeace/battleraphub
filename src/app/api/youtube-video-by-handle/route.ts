@@ -2,7 +2,7 @@ import { extractYouTubeHandle, jsonResponse } from "@/lib/utils";
 import { getVideosFromYoutubeHandle } from "@/lib/youtube-service";
 import { NextResponse } from "next/server";
 import { protectedCreateClient } from "@/utils/supabase/protected-server";
-import { DB_TABLES } from "@/config";
+import { DB_TABLES, ROLE } from "@/config";
 
 // This route is protected by a cron secret, get youtube videos channel name with vercel cron job which is run on every days (vercel.json)
 export async function GET(request: Request) {
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const { data: userData, error: userError } = await supabase
       .from(DB_TABLES.USERS)
       .select("id, youtube")
-      .eq("role_id", 3)
+      .eq("role_id", ROLE.MEDIA)
       .not("youtube", "is", null)
       .neq("youtube", "");
     // Return error if there's an issue fetching user data
@@ -81,27 +81,11 @@ export async function GET(request: Request) {
           continue;
         }
 
-        if (existing) {
-          // Update existing video
-          const { error: updateError } = await supabase
-            .from(DB_TABLES.MEDIA_CONTENT)
-            .update({
-              date: video.publishedAt,
-              title: video.title,
-              description: video.description,
-              thumbnail_img: video.thumbnail,
-              views: video.views,
-              likes: video.likes,
-              tag: video.tag,
-            })
-            .eq("id", existing.id);
-
-          if (updateError) {
-            console.error(`Error updating video for user ${user.id}:`, updateError.message);
-          }
-        } else {
-          // Insert new video
-          const { error: insertError } = await supabase.from(DB_TABLES.MEDIA_CONTENT).insert({
+        // Upsert video
+        const { error: upsertError } = await supabase
+          .from(DB_TABLES.MEDIA_CONTENT)
+          .upsert({
+            id: existing?.id,
             user_id: user.id,
             type: "youtube_video",
             date: video.publishedAt,
@@ -112,11 +96,11 @@ export async function GET(request: Request) {
             views: video.views,
             likes: video.likes,
             tag: video.tag,
-          });
+          })
+          .match({ id: existing?.id });
 
-          if (insertError) {
-            console.error(`Insert error for user ${user.id}:`, insertError.message);
-          }
+        if (upsertError) {
+          console.error(`Error upserting video for user ${user.id}:`, upsertError.message);
         }
       }
     }

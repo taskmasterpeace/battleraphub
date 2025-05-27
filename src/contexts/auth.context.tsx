@@ -69,37 +69,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  // const signUp = async (email: string, password: string, roles: UserRoles) => {
-  //   // First create the auth user
-  //   const { data, error } = await supabase.auth.signUp({
-  //     email,
-  //     password,
-  //     options: {
-  //       data: {
-  //         roles: roles,
-  //       },
-  //     },
-  //   })
-
-  //   if (!error && data.user) {
-  //     // Create the user profile with roles
-  //     const { error: profileError } = await supabase.from("user_profiles").insert({
-  //       id: data.user.id,
-  //       email: data.user.email,
-  //       displayName: email.split("@")[0],
-  //       roles: roles,
-  //       verified: false,
-  //       createdAt: new Date().toISOString(),
-  //     })
-
-  //     if (profileError) {
-  //       console.error("Error creating user profile:", profileError)
-  //     }
-  //   }
-
-  //   return { data, error }
-  // }
-
   const signInWithGoogle = async (redirectTo?: string) => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({

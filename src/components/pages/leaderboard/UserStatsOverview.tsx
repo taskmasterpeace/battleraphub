@@ -98,7 +98,7 @@ export default function UserStatsOverview() {
                           className={`h-full ${
                             role.role_id === ROLE.MEDIA
                               ? "bg-primary"
-                              : role.role_id === ROLE.BATTLE
+                              : role.role_id === ROLE.ARTIST
                                 ? "bg-success"
                                 : role.role_id === ROLE.LEAGUE_OWNER_INVESTOR
                                   ? "bg-amber-500"

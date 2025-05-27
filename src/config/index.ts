@@ -1,6 +1,6 @@
 const ROLE = {
   ADMIN: 1,
-  BATTLE: 2,
+  ARTIST: 2,
   MEDIA: 3,
   FAN: 4,
   LEAGUE_OWNER_INVESTOR: 5,
@@ -10,7 +10,7 @@ const ROLES = Object.values(ROLE);
 
 const ROLES_NAME = {
   [ROLE.ADMIN]: "Admin",
-  [ROLE.BATTLE]: "Battler",
+  [ROLE.ARTIST]: "Artist",
   [ROLE.MEDIA]: "Media",
   [ROLE.FAN]: "Fan",
   [ROLE.LEAGUE_OWNER_INVESTOR]: "League Owner/Investor",

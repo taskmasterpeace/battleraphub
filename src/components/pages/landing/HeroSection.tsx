@@ -88,7 +88,7 @@ export default function HeroSection() {
       {/* YouTube Feature for mobile - below the hero text */}
       {isMobile && (
         <motion.div
-          className="w-full px-4"
+          className="w-full sm:px-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.6 }}

@@ -57,7 +57,7 @@ export default function Header() {
                   <DropdownMenu key={link.href}>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className={`text-sm font-medium transition-colors hover:text-primary outline-none ${
+                        className={`text-sm flex items-center gap-2 font-medium transition-colors hover:text-primary outline-none ${
                           isActive ? "text-primary" : "text-muted-foreground"
                         }`}
                       >

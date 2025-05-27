@@ -1,12 +1,3 @@
-export interface YoutubeResponse {
-  kind: string;
-  etag: string;
-  nextPageToken: string;
-  regionCode: string;
-  pageInfo: PageInfo;
-  items: Item[];
-}
-
 export interface Item {
   kind: string;
   etag: string;
@@ -42,11 +33,6 @@ export interface Default {
   height: number;
 }
 
-export interface PageInfo {
-  totalResults: number;
-  resultsPerPage: number;
-}
-
 export interface Video {
   title: string;
   videoId: string;
@@ -60,4 +46,10 @@ export interface Video {
   likes?: number;
   comments?: number;
   tag?: "latest" | "popular";
+}
+
+export interface VideoStatistics {
+  viewCount?: string;
+  likeCount?: string;
+  commentCount?: string;
 }

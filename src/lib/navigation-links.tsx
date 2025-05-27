@@ -34,7 +34,7 @@ export const NAV_LINKS: NavList[] = [
   {
     href: PAGES.ADMIN_TOOLS,
     label: "Admin",
-    icon: <Database className="w-4 h-4 inline mr-1" />,
+    icon: <Database className="w-4 h-4 inline -mr-1" />,
     children: [
       {
         label: "Admin Tools",
