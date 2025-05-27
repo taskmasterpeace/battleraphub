@@ -1,25 +1,19 @@
 "use client";
-import {
-  categories,
-  contentTypes,
-  narrativeClusterData,
-  newsItems,
-} from "@/lib/static/static-data";
+import { contentTypes } from "@/lib/static/static-data";
 import { ArrowUp, Zap } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import NewsHeroSection from "./NewsHeroSection";
 import FeatureNews from "./FeatureNews";
-import { NewsItem } from "@/types";
 import { LatestAnalysis } from "./LatestAnalytics";
 import { NarrativeClusterCard } from "./NarrativeClusterCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useNews } from "@/contexts/news.context";
 
 const News = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const { newsItems: filteredNews } = useNews();
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("all");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,56 +32,16 @@ const News = () => {
     });
   };
 
-  const filteredNews: NewsItem[] = newsItems.filter((item) => {
-    const matchesSearch =
-      item.headline.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.key_figures.some((figure) =>
-        figure.name.toLowerCase().includes(searchQuery.toLowerCase()),
-      ) ||
-      item.core_topics.some((topic) => topic.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCategory = activeCategory === "all" || item.category === activeCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  const clusters = narrativeClusterData.flatMap((d) => d.narrative_clusters);
-
   return (
     <main className="min-h-screen bg-background text-accent-muted">
       {/* Hero Section */}
-      <NewsHeroSection setSearchQuery={setSearchQuery} searchQuery={searchQuery} />
-
-      {/* Category Navigation */}
-      <section className="sticky top-[60px] z-30 bg-background backdrop-blur-md border-b border-border py-4 shadow-md">
-        <div className="container px-4 mx-auto">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {categories.map((category) => (
-              <Button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
-                  activeCategory === category.id
-                    ? "bg-amber-400 hover:bg-amber-500 text-muted"
-                    : "bg-background text-muted-foreground hover:bg-background/70"
-                }`}
-              >
-                {category.name}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </section>
+      <NewsHeroSection />
 
       {/* Featured Analysis */}
-      <FeatureNews filteredNews={filteredNews} />
+      <FeatureNews />
 
       {/* Latest Analysis Feed */}
-      <LatestAnalysis
-        filteredNews={filteredNews}
-        searchQuery={searchQuery}
-        contentTypes={contentTypes}
-        categories={categories}
-      />
+      <LatestAnalysis contentTypes={contentTypes} />
 
       {/* Active Narrative Clusters */}
       <section className="w-full py-12 bg-background">
@@ -97,8 +51,12 @@ const News = () => {
             <span className="absolute bottom-0 left-0 w-1/2 h-1 bg-amber-400"></span>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {clusters.map((cluster, index) => (
-              <NarrativeClusterCard key={cluster.headline} cluster={cluster} index={index} />
+            {filteredNews.map((cluster, index) => (
+              <NarrativeClusterCard
+                key={cluster.headline}
+                cluster={cluster.cultural_significance}
+                index={index}
+              />
             ))}
           </div>
         </div>

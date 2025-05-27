@@ -17,3 +17,17 @@ export function isCommunityManager(permission: string) {
 export function isAdminOrCommunityManager(role: number, permission: string) {
   return isAdmin(role) || isCommunityManager(permission);
 }
+
+export function jsonResponse(body: Record<string, unknown>, status: number) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+export function extractYouTubeHandle(url: string) {
+  const match = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/@([a-zA-Z0-9_-]+)/i);
+  return match ? match[1] : null;
+}

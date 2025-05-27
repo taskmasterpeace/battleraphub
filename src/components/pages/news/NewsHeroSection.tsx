@@ -3,16 +3,14 @@ import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { breakingNews } from "@/lib/static/static-data";
+import { useNews } from "@/contexts/news.context";
+import { Input } from "@/components/ui/input";
 
-const NewsHeroSection = ({
-  searchQuery,
-  setSearchQuery,
-}: {
-  setSearchQuery: (query: string) => void;
-  searchQuery: string;
-}) => {
+const NewsHeroSection = () => {
+  const { searchQuery, setSearchQuery } = useNews();
   return (
     <>
+      {/* breaking news headlines */}
       {breakingNews.length > 0 && (
         <div className="bg-amber-400 text-muted py-2">
           <div className="container px-4 mx-auto">
@@ -37,6 +35,8 @@ const NewsHeroSection = ({
           </div>
         </div>
       )}
+
+      {/* Hero Section */}
       <section className="relative w-full h-[50vh] min-h-[400px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
@@ -71,7 +71,7 @@ const NewsHeroSection = ({
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <Search className="w-5 h-5 text-muted-foreground" />
               </div>
-              <input
+              <Input
                 type="search"
                 placeholder="Search topics, battlers, events..."
                 value={searchQuery}

@@ -9,30 +9,6 @@ const kv = createClient({
   automaticDeserialization: true,
 });
 
-// Define the type of the prompt object
-// export type BattleRapPrompts = typeof battleRapPrompts;
-
-// Extract keys of battleRapPrompts as an array of its keys
-// const PROMPT_KEYS = Object.keys(battleRapPrompts) as (keyof BattleRapPrompts)[];
-
-/**
- * Stores each battle rap prompt in the KV store.
- * Overwrites existing keys with new data from the local `battleRapPrompts` object.
- */
-// export async function storePrompts(): Promise<void> {
-//   for (const key of PROMPT_KEYS) {
-//     const kvKey = `news:${key}`; // Prefix the key with "news:"
-//     const newPrompt = battleRapPrompts[key];
-
-//     try {
-//       await kv.set(kvKey, newPrompt);
-//       console.info(`[KV] Prompt "${kvKey}" successfully stored.`);
-//     } catch (error) {
-//       console.error(`[KV] Failed to store prompt "${kvKey}":`, error);
-//     }
-//   }
-// }
-
 /**
  * Retrieves all battle rap prompts from the KV store.
  * Reconstructs the object to match the shape of `BattleRapPrompts`.
@@ -59,5 +35,15 @@ export async function getBattleRapPrompts(): Promise<Record<string, string> | nu
   } catch (error) {
     console.error("[KV] Error retrieving news prompts:", error);
     return null;
+  }
+}
+
+export async function getKey(key: string): Promise<string> {
+  try {
+    const data = await kv.get<string>(key);
+    return data || "";
+  } catch (error) {
+    console.error("[KV] Error retrieving key:", error);
+    return "";
   }
 }

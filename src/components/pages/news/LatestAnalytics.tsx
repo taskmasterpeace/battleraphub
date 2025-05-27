@@ -1,20 +1,13 @@
-import { NewsItem } from "@/types";
 import { motion } from "framer-motion";
 import { NewsCard } from "./NewsCard";
+import { useNews } from "@/contexts/news.context";
 
 interface LatestAnalysisProps {
-  filteredNews: NewsItem[];
-  searchQuery: string;
   contentTypes: { name: string; icon: string }[];
-  categories: { id: string; name: string }[];
 }
 
-export function LatestAnalysis({
-  filteredNews,
-  searchQuery,
-  contentTypes,
-  categories,
-}: LatestAnalysisProps) {
+export function LatestAnalysis({ contentTypes }: LatestAnalysisProps) {
+  const { newsItems: filteredNews, searchQuery } = useNews();
   return (
     <section className="w-full py-12 bg-background">
       <div className="container px-4 mx-auto">
@@ -31,12 +24,7 @@ export function LatestAnalysis({
             </motion.h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredNews.slice(2).map((item) => (
-                <NewsCard
-                  key={item.id}
-                  item={item}
-                  contentTypes={contentTypes}
-                  categories={categories}
-                />
+                <NewsCard key={item.id} item={item} contentTypes={contentTypes} />
               ))}
             </div>
           </>

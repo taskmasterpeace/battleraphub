@@ -894,3 +894,14 @@ export const setRedisKey = async (name: string, content: string) => {
     return errorResponse("Error setting prompt");
   }
 };
+
+// for getting home page youtube videos for "AlgorithmInstituteofBR"
+export const getAlgoInstituteLatestVideos = async () => {
+  try {
+    const videos = await kv.get("recent_algo_institute_videos");
+    return videos;
+  } catch (error) {
+    console.error("Error getting youtube video from kv store:", error);
+    return errorResponse("Error getting youtube video from kv store");
+  }
+};

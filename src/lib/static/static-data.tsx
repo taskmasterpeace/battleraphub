@@ -7,7 +7,6 @@ import {
   Rating,
   rolesWeights,
   NewsItem,
-  RelatedAnalysisItem,
 } from "@/types";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 
@@ -166,124 +165,76 @@ export const getComparisonColorClass = (current: number, comparison: number) => 
 
 export const newsItems: NewsItem[] = [
   {
-    id: 1,
-    headline: "The Greatness Debate: Who Reigns Supreme in Modern Rap?",
-    core_topics: ["Greatness in Rap", "Drake's Legacy and Impact", "Comparison of Artists"],
-    summary:
-      "The discussion surrounding what defines 'greatness' in rap has intensified, particularly through the lens of prominent artists like Drake and Kendrick Lamar. Their respective legacies and influences spark ongoing debates among fans and critics alike on social media, as comparisons often lead to passionate arguments about their contributions to hip-hop culture.",
-    key_figures: [
-      { name: "Drake", role: "Icon and Dominant Force in Rap" },
-      { name: "Kendrick Lamar", role: "Lyrical Innovator and Cultural Commentator" },
-      { name: "Lil Wayne", role: "Influential Mentor and Rap Veteran" },
-      { name: "Joey Bada$", role: "Emerging Artist Seeking Recognition" },
-    ],
-    community_reaction: {
-      sentiment: "mixed",
-      engagement_metrics: { volume: 50, intensity: 65 },
+    id: "e1d79086-85dc-428a-b682-7956b148ec50",
+    type: "topic_roundup",
+    headline: 'URL’s "Voices of the Block" Series Amplifies Social Justice Through Battle Rap',
+    published_at: "2023-11-02T15:30:00+00:00",
+    event_date: "2023-10-28T00:00:00+00:00",
+    location: "Atlanta, GA",
+    league: "Ultimate Rap League (URL)",
+    tags: ["Social Justice", "Emotional Storytelling", "Community Impact"],
+    core_topics: ["Activism in Battle Rap", "Mental Health", "Cultural Identity"],
+    main_event: {
+      title: "Voices of the Block - Volume 1",
+      description: "Main Event: Loaded Lux vs. B Dot",
     },
+    format_innovation: {
+      quote: "This isn’t just battle rap — it’s lyrical activism.",
+      title: "Thematic Emphasis on Social Justice",
+      description:
+        "URL pioneers content-driven battles highlighting real-world issues like racial equity, mental health, and inner-city violence.",
+    },
+    community_reaction: {
+      summary:
+        "Fans and critics praised the blend of artistry and advocacy, noting the emotional impact and powerful messaging of the event.",
+      overall_sentiment: "Inspiring",
+      engagement_metrics: {
+        likes: 120,
+        retweets: 55,
+      },
+    },
+    cultural_significance: {
+      score: 10,
+      narrative:
+        "This event marked a cultural pivot in battle rap, using the platform for advocacy and real-world storytelling, drawing mainstream media attention.",
+    },
+    social_impact: {
+      quote: "Lux and B Dot aren’t just spitting bars — they’re dropping knowledge.",
+      highlight: "Youth engagement in inner cities through battle rap workshops",
+      community_response: "Positive reception from educators, activists, and fans alike",
+    },
+    ai_predictions: [
+      "Battle rap will increasingly intersect with activism and education.",
+      "Expect more collaboration between leagues and nonprofit organizations addressing community issues.",
+    ],
     notable_content: [
-      "Defining 'greatness' in rap is tough—awards, sales, and impact all weigh differently...",
-      "Kendrick and Drake were the 'big three'; Joey never gets mentioned in that...",
+      "Lux’s closing round: “We turn pain into poetry, and struggle into soundtracks.”",
+      "B Dot’s rebuttal: “I don’t need props to be powerful — just truth.”",
     ],
-    predictions: [
-      "As new artists emerge and social media continues to amplify these debates, expect rising challengers like Joey Bada$ to reshape narratives around greatness in rap.",
-      "The influence of historical heavyweights like Nas and Jay-Z will persist, fostering discussions about the evolution of artistic standards.",
+    executive_summary: {
+      title: "Voices of the Block Recap",
+      body: "URL’s socially driven battle series bridges battle culture with community empowerment, offering a powerful commentary on issues affecting urban youth. With thoughtful lyricism and civic themes, this event sets a new gold standard for conscious performance in the scene.",
+    },
+    related_analysis: [
+      {
+        icon: "✊",
+        title: "Why Battle Rap Needs More Social Themes",
+        published: "3 days ago",
+      },
+      {
+        icon: "🧠",
+        title: "Behind the Bars: The Psychology of Powerful Rounds",
+        published: "5 days ago",
+      },
     ],
-    connection_strength: 9,
-    cultural_significance: 8,
-    contentType: "Cultural Analysis",
-    time: "2 hours ago",
-    category: "analysis",
+    actions: {
+      narrative:
+        "Use your voice. Share this event to amplify conscious storytelling in hip-hop culture.",
+      save_enabled: true,
+      share_enabled: true,
+    },
+    contentType: "article",
     isBreaking: true,
-  },
-  {
-    id: 2,
-    headline: "Mentorship: A Crucial Thread in Battle Rap Culture",
-    core_topics: ["Impact of Mentorship in Rap Culture", "URL vs SMACK"],
-    summary:
-      "Mentorship in the battle rap scene is pivotal, particularly for newcomers transitioning from URL to the more prestigious SMACK events. Discussions highlight how established rappers mentor emerging talents, shaping the future landscape of battle rap and ensuring the continuity of skills and styles vital to competitive success.",
-    key_figures: [
-      { name: "Established Battle Rappers", role: "Mentors in the Scene" },
-      { name: "Rising URL Stars", role: "Emerging Talents Seeking Guidance" },
-    ],
-    community_reaction: {
-      sentiment: "positive",
-      engagement_metrics: { volume: 40, intensity: 55 },
-    },
-    notable_content: [
-      "Discussions in recent forums highlight how established battle rappers often take emerging talents under their wing.",
-      "A notable example includes how certain SMACK-affiliated veterans have been mentoring URL's rising stars.",
-    ],
-    predictions: [
-      "As mentorship practices expand, expect a new generation of battle rappers to emerge with refined skills and unique styles, potentially influencing the competitive dynamics between URL and SMACK.",
-      "Increased collaboration between veteran artists and newcomers will likely shift audience preferences and expectations in future battles.",
-    ],
-    connection_strength: 8,
-    cultural_significance: 7,
-    contentType: "Community Analysis",
-    time: "6 hours ago",
-    category: "analysis",
-    isBreaking: false,
-  },
-  {
-    id: 3,
-    headline: "Platform Wars: The Battle for Hip-Hop Streaming Dominance",
-    core_topics: ["Streaming Platforms", "Artist Revenue", "Industry Competition"],
-    summary:
-      "The competition between streaming platforms has intensified as they vie for exclusive content and artist partnerships. Recent developments show platforms offering unprecedented deals to secure top-tier talent, fundamentally changing how artists approach content distribution and fan engagement.",
-    key_figures: [
-      { name: "Spotify", role: "Market Leader in Music Streaming" },
-      { name: "Apple Music", role: "Premium Platform Competitor" },
-      { name: "Independent Artists", role: "Beneficiaries of Platform Competition" },
-    ],
-    community_reaction: {
-      sentiment: "positive",
-      engagement_metrics: { volume: 35, intensity: 45 },
-    },
-    notable_content: [
-      "Artists are now leveraging platform competition to secure better deals and maintain creative control.",
-      "The shift towards exclusive content is reshaping how fans consume music and discover new artists.",
-    ],
-    predictions: [
-      "Expect more platforms to enter the exclusive content space, driving up artist compensation.",
-      "Traditional record labels will need to adapt their strategies to compete with platform-direct deals.",
-    ],
-    connection_strength: 7,
-    cultural_significance: 6,
-    contentType: "Industry Analysis",
-    time: "1 day ago",
-    category: "industry",
-    isBreaking: false,
-  },
-  {
-    id: 4,
-    headline: "The Evolution of Lyricism: From Wordplay to Social Commentary",
-    core_topics: ["Lyrical Evolution", "Social Commentary in Rap", "Artistic Innovation"],
-    summary:
-      "Modern rap has witnessed a significant shift from traditional wordplay-focused lyricism to more socially conscious and politically aware content. This evolution reflects broader cultural changes and demonstrates how artists use their platforms to address contemporary issues while maintaining artistic integrity.",
-    key_figures: [
-      { name: "J. Cole", role: "Socially Conscious Lyricist" },
-      { name: "Kendrick Lamar", role: "Political Commentary Pioneer" },
-      { name: "Nas", role: "Lyrical Foundation and Influence" },
-    ],
-    community_reaction: {
-      sentiment: "positive",
-      engagement_metrics: { volume: 45, intensity: 60 },
-    },
-    notable_content: [
-      "The new generation of rappers seamlessly blends entertainment with education, creating impactful messages.",
-      "Social media has amplified the reach of conscious rap, making political commentary more accessible to younger audiences.",
-    ],
-    predictions: [
-      "Expect continued growth in socially conscious rap as artists respond to current events and social movements.",
-      "Traditional battle rap may incorporate more social commentary elements to stay relevant with evolving audience expectations.",
-    ],
-    connection_strength: 8,
-    cultural_significance: 9,
-    contentType: "Cultural Analysis",
-    time: "2 days ago",
-    category: "analysis",
-    isBreaking: false,
   },
 ];
 
@@ -296,182 +247,4 @@ export const contentTypes = [
   { name: "Industry Analysis", icon: "💼", color: "bg-primary" },
   { name: "Speculation Report", icon: "🔮", color: "bg-orange-600" },
   { name: "Community Analysis", icon: "👥", color: "bg-teal-600" },
-];
-
-// Categories for filtering
-export const categories = [
-  { id: "all", name: "All Content" },
-  { id: "events", name: "Events" },
-  { id: "analysis", name: "Analysis" },
-  { id: "announcements", name: "Announcements" },
-  { id: "industry", name: "Industry" },
-];
-
-export const mockNewsItems: NewsItem[] = [
-  {
-    id: 1,
-    headline: "The Greatness Debate: Who Reigns Supreme in Modern Rap?",
-    core_topics: ["Greatness in Rap", "Drake's Legacy and Impact", "Comparison of Artists"],
-    summary:
-      "The discussion surrounding what defines 'greatness' in rap has intensified, particularly through the lens of prominent artists like Drake and Kendrick Lamar. Their respective legacies and influences spark ongoing debates among fans and critics alike on social media, as comparisons often lead to passionate arguments about their contributions to hip-hop culture.",
-    key_figures: [
-      { name: "Drake", role: "Icon and Dominant Force in Rap" },
-      { name: "Kendrick Lamar", role: "Lyrical Innovator and Cultural Commentator" },
-      { name: "Lil Wayne", role: "Influential Mentor and Rap Veteran" },
-      { name: "Joey Bada$", role: "Emerging Artist Seeking Recognition" },
-    ],
-    community_reaction: {
-      sentiment: "mixed",
-      engagement_metrics: { volume: 50, intensity: 65 },
-    },
-    notable_content: [
-      "Defining 'greatness' in rap is tough—awards, sales, and impact all weigh differently...",
-      "Kendrick and Drake were the 'big three'; Joey never gets mentioned in that...",
-    ],
-    predictions: [
-      "As new artists emerge and social media continues to amplify these debates, expect rising challengers like Joey Bada$ to reshape narratives around greatness in rap.",
-      "The influence of historical heavyweights like Nas and Jay-Z will persist, fostering discussions about the evolution of artistic standards.",
-    ],
-    connection_strength: 9,
-    cultural_significance: 8,
-    contentType: "Cultural Analysis",
-    publishDate: "June 15, 2023",
-    time: "2 hours ago",
-    category: "analysis",
-    fullAnalysis: "<h3>Executive Summary</h3><p>Our comprehensive analysis...</p>",
-    relatedTopics: ["Hip-Hop Legacy", "Artist Comparisons", "Cultural Impact"],
-  },
-];
-
-export const narrativeClusterData = [
-  {
-    narrative_clusters: [
-      {
-        headline: "The Clash of Titans: Drake vs Kendrick Lamar in the Battle for Greatness",
-        core_topics: [
-          "discussions on greatness in rap between Drake and Kendrick Lamar",
-          "commercial success vs artistry in rap",
-          "impact of accolades in hip-hop",
-        ],
-        summary:
-          "The ongoing debate over who reigns supreme in the rap world—Drake or Kendrick Lamar—centers around their contrasting contributions to the genre. While Drake's commercial success is undeniable, Kendrick's artistry and profound cultural impact carve out a unique legacy that questions the true nature of 'greatness' in hip-hop. These themes intertwine as fans and critics analyze the significance of accolades and awards in defining rap excellence.",
-        key_figures: [
-          { name: "Drake", role: "Commercial Success Icon" },
-          { name: "Kendrick Lamar", role: "Artistic Visionary" },
-          { name: "Eminem", role: "Benchmark of Success and Skill" },
-          { name: "Jay-Z", role: "Influential Authority on Legacy" },
-        ],
-        community_reaction: {
-          sentiment: "mixed",
-          engagement_metrics: { volume: 50, intensity: 70 },
-        },
-        notable_content: [
-          "Multiple tweets questioning if accolades matter when evaluating artistry.",
-          "YouTube video 'Kendrick vs Drake battle?' exploring their rivalry.",
-          "Comparative lyric analyses showcasing strengths and weaknesses in both artists' discographies.",
-        ],
-        predictions: [
-          "Expect increased public discourse as new albums drop from both artists.",
-          "More debates dissecting the relevance of awards in hip-hop will emerge.",
-          "Collaborations or beefs could reignite tensions and elevate the conversation.",
-        ],
-        connection_strength: 8,
-        cultural_significance: 9,
-      },
-      {
-        headline: "Artistry or Sales: The Great Hip-Hop Debate",
-        core_topics: [
-          "Drake's commercial success vs Kendrick's artistry",
-          "impact of accolades in hip-hop",
-        ],
-        summary:
-          "This narrative delves into the tension between commercial success and artistic integrity in rap, as Drake's chart-topping hits contrast sharply with Kendrick's critically acclaimed storytelling. Fans grapple with whether record sales and awards should overshadow the deeper messages and cultural commentary that Kendrick brings to the table.",
-        key_figures: [
-          { name: "Drake", role: "Chart-Topping Hitmaker" },
-          { name: "Kendrick Lamar", role: "Lyrical Innovator" },
-          { name: "Billboard Charts", role: "Industry Authority on Success" },
-        ],
-        community_reaction: {
-          sentiment: "negative",
-          engagement_metrics: { volume: 30, intensity: 60 },
-        },
-        notable_content: [
-          "A viral Twitter thread dissecting the perceived disparity between the two artists.",
-          "YouTube video 'Battle Rapper Breaks Down Kendrick Lamar VS Drake' focusing on lyrical analysis.",
-          "Memes highlighting the debate over their credibility in the eyes of fans.",
-        ],
-        predictions: [
-          "As streaming influences growth, the discussion may shift towards the role of platforms in shaping perception.",
-          "Future battles in the lyrical arena may influence how fans view both artists' legacies.",
-          "Critical reviews of respective upcoming projects could escalate or settle the ongoing debate.",
-        ],
-        connection_strength: 9,
-        cultural_significance: 8,
-      },
-      {
-        headline: "Accolades and Impact: Decoding Hip-Hop's Greatness",
-        core_topics: ["impact of accolades in hip-hop", "greatness and impact in rap"],
-        summary:
-          "An exploration of how accolades function as a benchmark for evaluating excellence in hip-hop as discussions reveal that the significance of awards is frequently contested. This highlights the ongoing complexities of measuring success in a genre where artistic impact can sometimes rival—or even outshine—commercial achievements.",
-        key_figures: [
-          { name: "Jay-Z", role: "Award Record Holder" },
-          { name: "Eminem", role: "Cultural Marker" },
-          { name: "Drake", role: "Accolade Accumulator" },
-          { name: "Kendrick Lamar", role: "Cultural Commentator" },
-        ],
-        community_reaction: {
-          sentiment: "neutral",
-          engagement_metrics: { volume: 25, intensity: 50 },
-        },
-        notable_content: [
-          "A podcast episode analyzing the impact of major awards on artist standing.",
-          "Discussion threads highlighting differences in fan bases regarding accolades' significance.",
-          "Reports on the evolving nature of recognition in hip-hop.",
-        ],
-        predictions: [
-          "Increased scrutiny over award shows, possibly leading to different award categories focused on artistry.",
-          "Future artists will likely grapple with balancing commercial success against artistic integrity as they rise in the industry.",
-          "Anticipated changes in industry awards criteria due to mixed community sentiments.",
-        ],
-        connection_strength: 7,
-        cultural_significance: 7,
-      },
-    ],
-    content_highlights: {
-      tweets: [
-        "Defining 'greatness' in rap is tough—awards, sales, and impact all weigh differently.",
-        "If accolades don’t matter because they’re not yours, then why bring up Kendrick at all?",
-      ],
-      videos: [
-        "Drake vs Kendrick Lamar (How will this end) - Humble King Reloaded",
-        "Kendrick vs Drake battle? - cousinfikTV",
-        "Battle Rapper Breaks Down Kendrick Lamar VS Drake… (Part 1) - Jalopy Bungus",
-      ],
-      discussions: [
-        "The generational divide in fan perceptions with older fans favoring Kendrick and younger fans favoring Drake.",
-        "Impact of recent Kendrick singles and how they shift the narrative between the two artists.",
-      ],
-    },
-  },
-];
-
-export const relatedAnalysisData: RelatedAnalysisItem[] = [
-  {
-    id: 1,
-    emoji: "📊",
-    title: "Tay Roc vs Rum Nitty Hype Analysis",
-    daysAgo: 1,
-  },
-  {
-    id: 2,
-    emoji: "⚡",
-    title: "KOTD Toronto Impact Assessment",
-    daysAgo: 2,
-  },
-  {
-    id: 3,
-    emoji: "🔮",
-    title: "Platform Wars: Streaming Battle",
-    daysAgo: 3,
-  },
 ];

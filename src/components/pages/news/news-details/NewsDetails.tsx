@@ -1,35 +1,49 @@
 "use client";
-import { mockNewsItems, relatedAnalysisData } from "@/lib/static/static-data";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Zap } from "lucide-react";
 import Link from "next/link";
-import { NewsItem } from "@/types";
+import { NewsItem, RelatedAnalysisItem } from "@/types";
 import LoadingSpinner from "./LoadingSpinner";
 import NotFound from "./NotFound";
 
 import NewsAnalysisDetails from "./NewsAnalysisDetails";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/utils/supabase/client";
+import { DB_TABLES } from "@/config";
 const NewsDetails = () => {
+  const [newsItem, setNewsItem] = useState<NewsItem | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const params = useParams();
   const router = useRouter();
   const { id } = params;
-  const [newsItem, setNewsItem] = useState<NewsItem | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsLoading(true);
-
-    const timer = setTimeout(() => {
-      const foundItem = mockNewsItems.find((item) => item.id === Number(id));
-      setNewsItem(foundItem || mockNewsItems[0]);
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    const fetchNewsContentById = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from(DB_TABLES.NEWS_CONTENTS)
+          .select("*")
+          .eq("id", id);
+        if (error) {
+          console.error("Error fetching news content:", error);
+        }
+        if (data) {
+          setNewsItem(data[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching news content:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNewsContentById();
   }, [id]);
 
-  if (isLoading) {
+  if (loading) {
     return <LoadingSpinner />;
   }
 
@@ -42,33 +56,33 @@ const NewsDetails = () => {
       <main className="min-h-screen bg-background text-accent-foreground pb-16">
         {/* Hero Section */}
         <div className="relative w-full h-[40vh] min-h-[300px] bg-gradient-to-br from-amber-400/20 to-purple-600/20">
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-muted via-muted/60 to-transparent"></div>
           <div className="absolute top-6 left-6 z-10">
-            <button
-              onClick={() => router.back()}
-              className="flex items-center text-accent-foreground bg-background/60 backdrop-blur-sm px-4 py-2 rounded-full hover:bg-background transition-colors duration-200"
+            <Button
+              onClick={() => router.push("/news")}
+              className="flex items-center text-muted-foreground bg-background/60 backdrop-blur-sm px-4 py-2 rounded-full hover:bg-background/80 transition-colors duration-200"
             >
               <ArrowLeft size={18} className="mr-2" />
               <span>Back</span>
-            </button>
+            </Button>
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <div className="text-8xl mb-4">
-                {newsItem.contentType === "News Article"
+                {newsItem.type === "news_article"
                   ? "📰"
-                  : newsItem.contentType === "Controversy Analysis"
+                  : newsItem.type === "controversy_analysis"
                     ? "⚡"
-                    : newsItem.contentType === "Topic Roundup"
+                    : newsItem.type === "topic_roundup"
                       ? "📊"
-                      : newsItem.contentType === "Industry Analysis"
+                      : newsItem.type === "industry_analysis"
                         ? "💼"
-                        : newsItem.contentType === "Speculation Report"
+                        : newsItem.type === "speculation_report"
                           ? "🔮"
                           : "👥"}
               </div>
               <div className="bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full text-lg font-medium">
-                {newsItem.contentType}
+                {newsItem.actions.narrative}
               </div>
             </div>
           </div>
@@ -95,7 +109,7 @@ const NewsDetails = () => {
                   {newsItem.core_topics.map((topic: string) => (
                     <div
                       key={topic}
-                      className="bg-background rounded-lg p-3 hover:bg-background transition-colors duration-200 cursor-pointer"
+                      className="bg-accent rounded-lg p-3 hover:bg-accent/80 transition-colors duration-200 cursor-pointer"
                     >
                       <span className="font-medium">{topic}</span>
                     </div>
@@ -109,23 +123,41 @@ const NewsDetails = () => {
                   Related Analysis
                 </h3>
                 <div className="space-y-4">
-                  {relatedAnalysisData.map((item) => (
-                    <Link href={`/news/${item.id}`} key={item.id} className="block group">
+                  {newsItem.related_analysis.map((item: RelatedAnalysisItem, index: number) => (
+                    <Link href={`/news/${index + 2}`} key={index} className="block group">
                       <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-background transition-colors duration-200">
                         <div className="w-12 h-12 bg-gradient-to-br from-amber-400/20 to-purple-600/20 rounded-lg flex items-center justify-center text-xl">
-                          {item.emoji}
+                          {item.icon}
                         </div>
                         <div>
                           <h4 className="font-medium group-hover:text-amber-400 transition-colors duration-200">
                             {item.title}
                           </h4>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {item.daysAgo} day{item.daysAgo !== 1 ? "s" : ""} ago
-                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">{item.published}</p>
                         </div>
                       </div>
                     </Link>
                   ))}
+                </div>
+              </div>
+              <div className="bg-background rounded-xl overflow-hidden border border-border shadow-lg p-6">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <span className="w-1.5 h-6 bg-amber-400 rounded-full inline-block"></span>
+                  Get AI Insights
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Subscribe to receive weekly AI-powered battle rap analysis and predictions.
+                </p>
+                <div className="space-y-3">
+                  <Input
+                    type="email"
+                    placeholder="Your email address"
+                    className="w-full px-4 py-3 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all duration-300"
+                  />
+                  <Button className="w-full bg-amber-400 hover:bg-amber-400 text-accent-foreground font-medium px-6 py-3 rounded-md transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2">
+                    <Zap size={16} />
+                    Subscribe
+                  </Button>
                 </div>
               </div>
             </motion.div>

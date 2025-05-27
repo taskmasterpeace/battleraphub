@@ -1,11 +1,12 @@
-import { categories, contentTypes } from "@/lib/static/static-data";
+import { contentTypes } from "@/lib/static/static-data";
 import { BarChart3, ChevronRight, Zap } from "lucide-react";
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { NewsItem } from "@/types";
+import { useNews } from "@/contexts/news.context";
 
-const FeatureNews = ({ filteredNews }: { filteredNews: NewsItem[] }) => {
+const FeatureNews = () => {
+  const { newsItems: filteredNews } = useNews();
   return (
     <section className="w-full py-12">
       <div className="container px-4 mx-auto">
@@ -44,55 +45,65 @@ const FeatureNews = ({ filteredNews }: { filteredNews: NewsItem[] }) => {
                     <div className="absolute inset-0 bg-gradient-to-t from-muted via-muted to-transparent"></div>
                     <div className="absolute bottom-0 left-0 right-0 p-6">
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="bg-amber-400 text-muted px-2 py-1 rounded text-sm font-medium">
-                          {categories.find((c) => c.id === filteredNews[0].category)?.name ||
-                            filteredNews[0].category}
+                        <div className="bg-amber-400 text-accent-foreground px-2 py-1 rounded text-sm font-medium">
+                          {filteredNews[0].league}
                         </div>
                         {filteredNews[0].isBreaking && (
-                          <div className="bg-destructive text-accent-muted px-2 py-1 rounded text-sm font-medium flex items-center gap-1">
+                          <div className="bg-destructive text-accent-foreground px-2 py-1 rounded text-sm font-medium flex items-center gap-1">
                             <Zap size={12} />
                             Breaking
                           </div>
                         )}
                         <div className="bg-background/80 backdrop-blur-sm px-2 py-1 rounded text-sm">
-                          Cultural Impact: {filteredNews[0].cultural_significance}/10
+                          Cultural Impact: {filteredNews[0].cultural_significance.score}/10
+                        </div>
+                        <div className="bg-background/80 backdrop-blur-sm px-2 py-1 rounded text-sm">
+                          📍 {filteredNews[0].location}
                         </div>
                       </div>
-                      <h3 className="text-2xl font-bold mb-2 text-accent-muted group-hover:text-amber-400 transition-colors duration-200">
+                      <h3 className="text-2xl font-bold mb-2 text-white group-hover:text-amber-400 transition-colors duration-200">
                         {filteredNews[0].headline}
                       </h3>
+                      <p className="text-muted-foreground text-sm mb-2">
+                        {filteredNews[0].main_event.title}
+                      </p>
                       <div className="flex items-center gap-4 text-muted-foreground text-sm">
                         <div className="flex items-center gap-1">
-                          <BarChart3 size={14} />
-                          <span>Connection: {filteredNews[0].connection_strength}/10</span>
+                          <span>
+                            👍 {filteredNews[0].community_reaction.engagement_metrics.likes}
+                          </span>
                         </div>
-                        <span className="ml-auto">{filteredNews[0].time}</span>
+                        <div className="flex items-center gap-1">
+                          <span>
+                            🔄 {filteredNews[0].community_reaction.engagement_metrics.retweets}
+                          </span>
+                        </div>
+                        <span className="ml-auto">{filteredNews[0].published_at}</span>
                       </div>
                     </div>
                   </div>
                   <div className="p-6">
                     <div className="flex flex-wrap gap-2 mb-3">
-                      {filteredNews[0].key_figures.slice(0, 3).map((figure) => (
+                      {filteredNews[0].tags.slice(0, 3).map((tag: string) => (
                         <span
-                          key={figure.name}
+                          key={tag}
                           className="text-xs bg-background px-2 py-1 rounded-full text-muted-foreground"
-                          title={figure.role}
                         >
-                          {figure.name}
+                          {tag}
                         </span>
                       ))}
-                      {filteredNews[0].key_figures.length > 3 && (
+                      {filteredNews[0].tags.length > 3 && (
                         <span className="text-xs bg-background px-2 py-1 rounded-full text-muted-foreground">
-                          +{filteredNews[0].key_figures.length - 3} more
+                          +{filteredNews[0].tags.length - 3} more
                         </span>
                       )}
                     </div>
                     <p className="text-muted-foreground mb-4 line-clamp-3">
-                      {filteredNews[0].summary}
+                      {filteredNews[0].executive_summary.body}
                     </p>
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-muted-foreground">
-                        Sentiment: {filteredNews[0].community_reaction.sentiment}
+                        Sentiment: {filteredNews[0].community_reaction.overall_sentiment}
                       </div>
                       <span className="text-amber-400 hover:underline flex items-center group text-sm font-medium">
                         Read Analysis
@@ -128,28 +139,32 @@ const FeatureNews = ({ filteredNews }: { filteredNews: NewsItem[] }) => {
                         </div>
                         <div className="p-5 flex flex-col w-2/3">
                           <div className="flex items-center gap-2 mb-2">
-                            <div className="bg-amber-400 text-muted px-2 py-1 rounded text-xs font-medium">
-                              {categories.find((c) => c.id === item.category)?.name ||
-                                item.category}
+                            <div className="bg-amber-400 text-accent-foreground px-2 py-1 rounded text-xs font-medium">
+                              {item.league}
                             </div>
-                            <div className="bg-background px-2 py-1 rounded text-xs">
-                              {item.contentType}
+                            <div className="bg-background/80 backdrop-blur-sm px-2 py-1 rounded text-xs">
+                              {item.type.replace("_", " ")}
                             </div>
                           </div>
                           <h3 className="text-lg font-bold mb-2 group-hover:text-amber-400 transition-colors duration-200 line-clamp-2">
                             {item.headline}
                           </h3>
                           <p className="text-muted-foreground text-sm mb-3 line-clamp-2 flex-grow">
-                            {item.summary}
+                            {item.executive_summary.body}
                           </p>
                           <div className="flex items-center justify-between mt-auto pt-2 border-t border-border">
                             <div className="flex items-center gap-2 text-muted-foreground text-xs">
                               <div className="flex items-center gap-1">
+                                <span>👍 {item.community_reaction.engagement_metrics.likes}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
                                 <BarChart3 size={12} />
-                                <span>{item.cultural_significance}/10</span>
+                                <span>{item.cultural_significance.score}/10</span>
                               </div>
                             </div>
-                            <span className="text-muted-foreground text-xs">{item.time}</span>
+                            <span className="text-muted-foreground text-xs">
+                              {item.published_at}
+                            </span>
                           </div>
                         </div>
                       </div>

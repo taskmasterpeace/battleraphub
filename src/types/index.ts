@@ -432,46 +432,64 @@ export interface BattlerData {
   personal: Attribute[];
 }
 
-export interface KeyFigure {
-  name: string;
-  role: string;
+export interface RelatedAnalysisItem {
+  title: string;
+  published: string;
+  icon: string;
 }
-
 export interface NewsItem {
-  id: number;
+  id: string;
   headline: string;
-  summary: string;
-  key_figures: KeyFigure[];
+  type: string;
+  published_at?: string;
+  actions: {
+    narrative: string;
+    share_enabled: boolean;
+    save_enabled: boolean;
+  };
+  league: string;
+  event_date: string;
+  location: string;
+  related_analysis: RelatedAnalysisItem[];
   core_topics: string[];
   community_reaction: {
-    sentiment: string;
+    overall_sentiment: string;
+    summary: string;
     engagement_metrics: {
-      volume: number;
-      intensity: number;
+      likes: number;
+      retweets: number;
     };
   };
+  executive_summary: {
+    title: string;
+    body: string;
+  };
+  format_innovation: {
+    title: string;
+    description: string;
+    quote: string;
+  };
   notable_content: string[];
-  predictions: string[];
-  connection_strength: number;
-  cultural_significance: number;
+  ai_predictions: string[];
+  cultural_significance: {
+    narrative: string;
+    score: number;
+  };
+  social_impact: {
+    highlight: string;
+    community_response: string;
+    quote: string;
+  };
+  main_event: {
+    title: string;
+    description: string;
+  };
+  tags: string[];
   contentType: string;
-  time: string;
-  category: string;
-  publishDate?: string;
-  fullAnalysis?: string;
-  relatedTopics?: string[];
   isBreaking?: boolean;
 }
 
-export interface RelatedAnalysisItem {
-  id: number;
-  emoji: string;
-  title: string;
-  daysAgo: number;
-}
-
 export interface Cluster {
-  headline: string;
-  connection_strength: number;
-  core_topics: string[];
+  narrative: string;
+  score: number;
 }

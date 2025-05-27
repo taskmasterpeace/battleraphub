@@ -1,20 +1,19 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { KeyFigure, NewsItem } from "@/types";
+import { NewsItem } from "@/types";
 
 interface NewsCardProps {
   item: NewsItem;
   contentTypes: { name: string; icon: string }[];
-  categories: { id: string; name: string }[];
 }
 
-export function NewsCard({ item, contentTypes, categories }: NewsCardProps) {
+export function NewsCard({ item, contentTypes }: NewsCardProps) {
   return (
     <motion.div
       key={item.id}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 * item.id }}
+      transition={{ delay: 0.1 * Number(item.id) }}
       whileHover={{ y: -5 }}
     >
       <Link href={`/news/${item.id}`} className="block h-full">
@@ -24,31 +23,29 @@ export function NewsCard({ item, contentTypes, categories }: NewsCardProps) {
               {contentTypes.find((type) => type.name === item.contentType)?.icon || "📰"}
             </div>
             <div className="absolute top-2 left-2 bg-background/80 backdrop-blur-sm px-2 py-1 rounded text-xs">
-              {item.contentType}
-            </div>
-            <div className="absolute top-2 right-2 bg-amber-400 text-muted px-2 py-1 rounded text-xs font-medium">
-              {categories.find((c) => c.id === item.category)?.name || item.category}
+              {item.contentType || "Event Analysis"}
             </div>
           </div>
           <div className="p-5">
             <h3 className="text-lg font-bold mb-2 group-hover:text-amber-400 transition-colors duration-200 line-clamp-2">
               {item.headline}
             </h3>
-            <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{item.summary}</p>
+            <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+              {item.executive_summary.body}
+            </p>
 
             <div className="flex flex-wrap gap-1 mb-4">
-              {item.key_figures.slice(0, 2).map((figure: KeyFigure) => (
+              {item.tags.slice(0, 2).map((tag) => (
                 <span
-                  key={figure.name}
-                  className="text-xs bg-background px-2 py-1 rounded-full text-muted-foreground"
-                  title={figure.role}
+                  key={tag}
+                  className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground"
                 >
-                  {figure.name}
+                  {tag}
                 </span>
               ))}
-              {item.key_figures.length > 2 && (
-                <span className="text-xs bg-background px-2 py-1 rounded-full text-muted-foreground">
-                  +{item.key_figures.length - 2}
+              {item.tags.length > 2 && (
+                <span className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground">
+                  +{item.tags.length - 2}
                 </span>
               )}
             </div>
@@ -56,23 +53,27 @@ export function NewsCard({ item, contentTypes, categories }: NewsCardProps) {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Cultural Impact</span>
-                <span className="text-amber-400">{item.cultural_significance}/10</span>
+                <span className="text-amber-400">{item.cultural_significance.score}/10</span>
               </div>
-              <div className="w-full bg-background rounded-full h-1">
+              <div className="w-full bg-muted rounded-full h-1">
                 <div
                   className="bg-amber-400 h-1 rounded-full"
-                  style={{ width: `${(item.cultural_significance / 10) * 100}%` }}
-                />
+                  style={{ width: `${(item.cultural_significance.score / 10) * 100}%` }}
+                ></div>
               </div>
             </div>
 
             <div className="flex items-center justify-between border-t border-border pt-3">
               <div className="flex items-center gap-3 text-muted-foreground text-xs">
                 <div className="flex items-center gap-1">
-                  <span>Sentiment: {item.community_reaction.sentiment}</span>
+                  <span>👍 {item.community_reaction.engagement_metrics.likes}</span>
                 </div>
+                <div className="flex items-center gap-1">
+                  <span>🔄 {item.community_reaction.engagement_metrics.retweets}</span>
+                </div>
+                <div className="text-xs">📍 {item.location}</div>
               </div>
-              <span className="text-muted-foreground text-xs">{item.time}</span>
+              <span className="text-muted-foreground text-xs">{item.published_at}</span>
             </div>
           </div>
         </div>
