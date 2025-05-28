@@ -1,6 +1,5 @@
 import { extractYouTubeHandle, jsonResponse } from "@/lib/utils";
 import { getVideosFromYoutubeHandle } from "@/lib/youtube-service";
-import { NextResponse } from "next/server";
 import { protectedCreateClient } from "@/utils/supabase/protected-server";
 import { DB_TABLES, ROLE } from "@/config";
 
@@ -23,6 +22,7 @@ export async function GET(request: Request) {
       .neq("youtube", "");
     // Return error if there's an issue fetching user data
     if (userError) {
+      console.error("Error fetching user data:", userError);
       return jsonResponse(
         {
           status: 500,
@@ -34,73 +34,50 @@ export async function GET(request: Request) {
       );
     }
     // Iterate over the fetched users
+    // Inside the GET function, replace the for loop with this:
     for (const user of userData) {
       const handle = extractYouTubeHandle(user.youtube);
-      // Skip user if YouTube handle extraction fails
       if (!handle) {
-        console.warn(`Invalid YouTube URL: ${user.youtube}`);
+        console.error("Invalid YouTube URL for user:", user.id);
         continue;
       }
-      // Check for existing YouTube videos linked to the user
-      const { data: existingVideos, error: existingError } = await supabase
+
+      // Step 1: Get the latest 6 videos from YouTube
+      const videos = await getVideosFromYoutubeHandle(handle);
+      const latestVideos = videos.slice(0, 6); // Get first 6 videos
+
+      // Step 2: Delete all previous videos for this user
+      const { error: deleteError } = await supabase
         .from(DB_TABLES.MEDIA_CONTENT)
-        .select("id")
+        .delete()
         .eq("user_id", user.id)
         .eq("type", "youtube_video");
-      // Log and continue if error fetching existing videos
-      if (existingError) {
-        console.error(`Error checking existing videos for user ${user.id}:`, existingError.message);
+
+      if (deleteError) {
+        console.error("Error deleting old videos:", deleteError);
         continue;
       }
-      const existingCount = existingVideos?.length || 0;
-      // Skip user if they already have 5 or more YouTube videos
-      if (existingCount >= 6) {
-        console.log(`User ${handle} ${user.id} already has ${existingCount} videos. Skipping.`);
-        continue;
-      }
-      // Fetch the latest videos from YouTube for the user
-      const videos = await getVideosFromYoutubeHandle(handle);
-      const videosToInsert = videos.slice(0, 6 - existingCount);
-      // Insert the fetched videos into the database
-      for (const video of videosToInsert) {
-        const existingLink = `https://www.youtube.com/watch?v=${video.videoId}`;
 
-        // Check if this video already exists
-        const { data: existing, error: existingCheckError } = await supabase
-          .from(DB_TABLES.MEDIA_CONTENT)
-          .select("id")
-          .eq("user_id", user.id)
-          .eq("link", existingLink)
-          .single();
+      // Step 3: Insert the new videos
+      for (const video of latestVideos) {
+        const videoLink = `https://www.youtube.com/watch?v=${video.videoId}`;
 
-        if (existingCheckError && existingCheckError.code !== "PGRST116") {
-          console.error(
-            `Error checking for existing video ${existingLink}:`,
-            existingCheckError.message,
-          );
+        const { error: insertError } = await supabase.from(DB_TABLES.MEDIA_CONTENT).insert({
+          user_id: user.id,
+          type: "youtube_video",
+          date: video.publishedAt,
+          title: video.title,
+          description: video.description,
+          thumbnail_img: video.thumbnail,
+          link: videoLink,
+          views: video.views,
+          likes: video.likes,
+          tag: video.tag,
+        });
+
+        if (insertError) {
+          console.error("Error inserting new videos:", insertError);
           continue;
-        }
-
-        // Upsert video
-        const { error: upsertError } = await supabase
-          .from(DB_TABLES.MEDIA_CONTENT)
-          .upsert({
-            id: existing?.id,
-            user_id: user.id,
-            type: "youtube_video",
-            date: video.publishedAt,
-            title: video.title,
-            description: video.description,
-            thumbnail_img: video.thumbnail,
-            link: existingLink,
-            views: video.views,
-            likes: video.likes,
-            tag: video.tag,
-          })
-          .match({ id: existing?.id });
-
-        if (upsertError) {
-          console.error(`Error upserting video for user ${user.id}:`, upsertError.message);
         }
       }
     }
@@ -115,6 +92,14 @@ export async function GET(request: Request) {
     );
   } catch (error) {
     console.error("Error fetching YouTube videos:", error);
-    return NextResponse.json({ error: "Failed to fetch YouTube videos" }, { status: 500 });
+    return jsonResponse(
+      {
+        status: 500,
+        success: false,
+        error: error as string,
+        message: "Failed to fetch YouTube videos",
+      },
+      500,
+    );
   }
 }

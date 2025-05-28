@@ -410,12 +410,13 @@ export const BattlerProvider = ({
   useEffect(() => {
     if (battlerRatings.length || battlerAnalytics.length) {
       const ratingMap: Record<string, { id: string; score: number }> = {};
-      (battlerRatings.length > 0 ? battlerRatings : battlerAnalytics).forEach((rating) => {
+      const ratingsData = userId ? battlerRatings : battlerAnalytics;
+      ratingsData.forEach((rating) => {
         ratingMap[rating.attribute_id] = { id: rating.id, score: Number(rating.score) };
       });
       setRatings(ratingMap);
     }
-  }, [JSON.stringify(battlerRatings), JSON.stringify(battlerAnalytics)]);
+  }, [JSON.stringify(battlerRatings), JSON.stringify(battlerAnalytics), userId]);
 
   // Update selected badges when battlerBadges or topBadgesAssignedByBattler change
   useEffect(() => {

@@ -76,8 +76,8 @@ export const AttributeTabsContent = ({
     battlerAnalytics,
     battlerRatings,
     chartConfig,
-    "rating-score",
     "community-score",
+    "rating-score",
   );
 
   // Get the section from the title
@@ -166,7 +166,7 @@ export const AttributeTabsContent = ({
                             {userId && (
                               <Radar
                                 name="My Rating"
-                                dataKey="community-score"
+                                dataKey="rating-score"
                                 stroke="hsl(var(--primary))"
                                 fill="hsl(var(--primary))"
                                 strokeWidth={3}
@@ -175,7 +175,7 @@ export const AttributeTabsContent = ({
                             )}
                             <Radar
                               name="Community Rating"
-                              dataKey="rating-score"
+                              dataKey="community-score"
                               stroke="hsl(var(--success))"
                               strokeWidth={3}
                               fill="hsl(var(--success))"
