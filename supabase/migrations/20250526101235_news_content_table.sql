@@ -2,46 +2,13 @@ CREATE TABLE IF NOT EXISTS news_contents(
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 
   -- Basic Metadata
-  type TEXT,
+  reading_time TEXT,
   headline TEXT,
+  blurb TEXT,
   published_at TIMESTAMPTZ,
   event_date TIMESTAMPTZ,
-  location TEXT,
-  league TEXT,
-
-  -- Tags and Topics
   tags TEXT[],
-  core_topics TEXT[],
-
-  -- Main Event Details
-  main_event JSONB,
-  
-  -- Format Innovation
-  format_innovation JSONB,
-
-  -- Community Reaction
-  community_reaction JSONB,
-
-  -- Cultural Significance
-  cultural_significance JSONB,
-
-  -- Social Impact
-  social_impact JSONB,
-
-  -- AI Predictions
-  ai_predictions TEXT[],
-
-  -- Notable Content
-  notable_content TEXT[],
-
-  -- Executive Summary
-  executive_summary JSONB,
-
-  -- Related Analysis
-  related_analysis JSONB,
-
-  -- Actions
-  actions JSONB,
+  main_content TEXT,
 
   -- Timestamps
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

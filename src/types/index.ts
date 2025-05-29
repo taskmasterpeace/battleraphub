@@ -377,53 +377,14 @@ export interface RelatedAnalysisItem {
 export interface NewsItem {
   id: string;
   headline: string;
-  type: string;
   published_at?: string;
-  actions: {
-    narrative: string;
-    share_enabled: boolean;
-    save_enabled: boolean;
-  };
-  league: string;
+  updated_at: string;
+  created_at: string;
   event_date: string;
-  location: string;
-  related_analysis: RelatedAnalysisItem[];
-  core_topics: string[];
-  community_reaction: {
-    overall_sentiment: string;
-    summary: string;
-    engagement_metrics: {
-      likes: number;
-      retweets: number;
-    };
-  };
-  executive_summary: {
-    title: string;
-    body: string;
-  };
-  format_innovation: {
-    title: string;
-    description: string;
-    quote: string;
-  };
-  notable_content: string[];
-  ai_predictions: string[];
-  cultural_significance: {
-    narrative: string;
-    score: number;
-  };
-  social_impact: {
-    highlight: string;
-    community_response: string;
-    quote: string;
-  };
-  main_event: {
-    title: string;
-    description: string;
-  };
   tags: string[];
-  contentType: string;
-  isBreaking?: boolean;
+  reading_time: string;
+  blurb: string;
+  main_content: string;
 }
 
 export interface Cluster {

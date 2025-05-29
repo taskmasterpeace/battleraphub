@@ -20,24 +20,13 @@ export async function GET(request: Request) {
 
     // need to updated with result data into this supabase db to add this bellow data with actual result
     const newsItems = result.map((item) => ({
-      type: item.type,
+      reading_time: item.reading_time,
       headline: item.headline,
+      blurb: item.blurb,
       published_at: new Date(item.published_at as string),
       event_date: new Date(item.event_date as string),
-      location: item.location,
-      league: item.league,
-      tags: item.tags || [],
-      core_topics: item.topics || [],
-      main_event: item.main_event || {},
-      format_innovation: item.format_innovation || {},
-      community_reaction: item.community_reaction || {},
-      cultural_significance: item.cultural_significance || {},
-      social_impact: item.social_impact || {},
-      ai_predictions: item.predictions || [],
-      notable_content: item.notable_content || [],
-      executive_summary: item.summary || {},
-      related_analysis: item.related_analysis || {},
-      actions: item.suggested_actions || {},
+      tags: item.tags,
+      main_content: item.main_content,
       created_at: new Date(),
     }));
 

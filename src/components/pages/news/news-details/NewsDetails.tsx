@@ -2,18 +2,18 @@
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Zap } from "lucide-react";
-import Link from "next/link";
-import { NewsItem, RelatedAnalysisItem } from "@/types";
+import { ArrowLeft, Calendar, Clock, Copy, Facebook, Instagram, Twitter } from "lucide-react";
+import { NewsItem } from "@/types";
 import LoadingSpinner from "./LoadingSpinner";
 import NotFound from "./NotFound";
-
-import NewsAnalysisDetails from "./NewsAnalysisDetails";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/utils/supabase/client";
 import { DB_TABLES } from "@/config";
 import useSWR from "swr";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { formatDate } from "@/lib/utils";
+
 const NewsDetails = () => {
   const params = useParams();
   const router = useRouter();
@@ -46,113 +46,118 @@ const NewsDetails = () => {
 
   return (
     <>
-      <main className="min-h-screen bg-background text-accent-foreground pb-16">
-        {/* Hero Section */}
-        <div className="relative w-full h-[40vh] min-h-[300px] bg-gradient-to-br from-amber-400/20 to-purple-600/20">
-          <div className="absolute inset-0 bg-gradient-to-t from-muted via-muted/60 to-transparent"></div>
-          <div className="absolute top-6 left-6 z-10">
+      <main className="min-h-screen bg-background text-accent-foreground">
+        {/* Navigation */}
+        <div className="sticky top-0 z-50 bg-background/90 backdrop-blur-md mt-[1px] border-b border-border">
+          <div className="container mx-auto px-4 sm:py-4 py-2">
             <Button
+              variant="ghost"
               onClick={() => router.push("/news")}
-              className="flex items-center text-muted-foreground bg-background/60 backdrop-blur-sm px-4 py-2 rounded-full hover:bg-background/80 transition-colors duration-200"
+              className="flex items-center text-muted-foreground hover:!text-amber-400 text-base transition-colors duration-200 hover:!bg-transparent"
             >
-              <ArrowLeft size={18} className="mr-2" />
-              <span>Back</span>
+              <ArrowLeft size={20} className="mr-2" />
+              <span>Back to news</span>
             </Button>
           </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl mb-4">
-                {newsItem.type === "news_article"
-                  ? "📰"
-                  : newsItem.type === "controversy_analysis"
-                    ? "⚡"
-                    : newsItem.type === "topic_roundup"
-                      ? "📊"
-                      : newsItem.type === "industry_analysis"
-                        ? "💼"
-                        : newsItem.type === "speculation_report"
-                          ? "🔮"
-                          : "👥"}
-              </div>
-              <div className="bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full text-lg font-medium">
-                {newsItem.actions.narrative}
-              </div>
+        </div>
+
+        {/* Hero Section */}
+        <div className="relative w-full h-[40vh] md:h-[50vh]">
+          <Image
+            src={"/placeholder.svg"}
+            alt={newsItem?.headline || ""}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#040b14] via-[#040b14]/60 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 container mx-auto sm:pb-8 pb-4">
+            <div className="max-w-4xl">
+              <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-4 leading-tight text-primary-foreground">
+                {newsItem?.headline}
+              </h1>
+              <p className="text-base sm:text-xl text-primary-foreground mb-6 leading-relaxed">
+                {newsItem?.blurb}
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="container mx-auto px-4 -mt-20 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main content */}
-            <NewsAnalysisDetails newsItem={newsItem} />
-
-            {/* Sidebar */}
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            {/* Main Content */}
             <motion.div
-              className="lg:col-span-1"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
+              transition={{ duration: 0.4 }}
             >
-              <div className="bg-background rounded-xl overflow-hidden border border-border shadow-lg p-6 mb-6 top-20">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-amber-400 rounded-full inline-block"></span>
-                  Core Topics
-                </h3>
-                <div className="space-y-2">
-                  {newsItem.core_topics.map((topic: string) => (
-                    <div
-                      key={topic}
-                      className="bg-accent rounded-lg p-3 hover:bg-accent/80 transition-colors duration-200 cursor-pointer"
-                    >
-                      <span className="font-medium">{topic}</span>
+              <article className="bg-muted rounded-xl sm:p-8 p-4 border border-border text-foreground">
+                {/* Article Meta */}
+                <div className="flex flex-wrap items-center gap-6 mb-8 pb-6 border-b border-border">
+                  <div className="flex items-center gap-4 text-sm text-foreground">
+                    <div className="flex items-center gap-1">
+                      <Calendar size={16} />
+                      <span>{formatDate(newsItem?.created_at || "")}</span>
                     </div>
-                  ))}
+                    <div className="flex items-center gap-1">
+                      <Clock size={16} />
+                      <span>{newsItem?.reading_time}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="bg-background rounded-xl overflow-hidden border border-border shadow-lg p-6 mb-6">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-amber-400 rounded-full inline-block"></span>
-                  Related Analysis
-                </h3>
-                <div className="space-y-4">
-                  {newsItem.related_analysis.map((item: RelatedAnalysisItem, index: number) => (
-                    <Link href={`/news/${index + 2}`} key={index} className="block group">
-                      <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-background transition-colors duration-200">
-                        <div className="w-12 h-12 bg-gradient-to-br from-amber-400/20 to-purple-600/20 rounded-lg flex items-center justify-center text-xl">
-                          {item.icon}
-                        </div>
-                        <div>
-                          <h4 className="font-medium group-hover:text-amber-400 transition-colors duration-200">
-                            {item.title}
-                          </h4>
-                          <p className="text-xs text-muted-foreground mt-1">{item.published}</p>
-                        </div>
-                      </div>
-                    </Link>
+                {/* Article Content */}
+                <div className="article-content max-w-none mb-8 text-foreground">
+                  <div dangerouslySetInnerHTML={{ __html: newsItem?.main_content || "" }} />
+                </div>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-8">
+                  {newsItem?.tags?.map((tag: string) => (
+                    <span
+                      key={tag}
+                      className="bg-background px-3 py-1 rounded-full text-sm transition-colors duration-200 cursor-pointer text-foreground border border-border"
+                    >
+                      #{tag}
+                    </span>
                   ))}
                 </div>
-              </div>
-              <div className="bg-background rounded-xl overflow-hidden border border-border shadow-lg p-6">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-amber-400 rounded-full inline-block"></span>
-                  Get AI Insights
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  Subscribe to receive weekly AI-powered battle rap analysis and predictions.
-                </p>
-                <div className="space-y-3">
-                  <Input
-                    type="email"
-                    placeholder="Your email address"
-                    className="w-full px-4 py-3 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400 transition-all duration-300"
-                  />
-                  <Button className="w-full bg-amber-400 hover:bg-amber-400 text-accent-foreground font-medium px-6 py-3 rounded-md transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2">
-                    <Zap size={16} />
-                    Subscribe
+
+                {/* Share Buttons */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-foreground mr-2">Share:</span>
+                  <Button
+                    variant="default"
+                    className="p-2 h-full bg-background rounded-lg transition-colors duration-200 text-foreground border border-border"
+                  >
+                    <Twitter size={16} />
+                  </Button>
+                  <Button
+                    variant="default"
+                    className="p-2 h-full bg-background rounded-lg transition-colors duration-200 text-foreground border border-border"
+                  >
+                    <Facebook size={16} />
+                  </Button>
+                  <Button
+                    variant="default"
+                    className="p-2 h-full bg-background rounded-lg transition-colors duration-200 text-foreground border border-border"
+                  >
+                    <Instagram size={16} />
+                  </Button>
+                  <Button
+                    variant="default"
+                    className="p-2 h-full bg-background rounded-lg transition-colors duration-200 text-foreground border border-border"
+                  >
+                    <Copy
+                      size={16}
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        toast("Link copied to clipboard");
+                      }}
+                    />
                   </Button>
                 </div>
-              </div>
+              </article>
             </motion.div>
           </div>
         </div>

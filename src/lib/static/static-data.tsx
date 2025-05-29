@@ -1,13 +1,6 @@
 import { ROLE, ROLES_NAME } from "@/config";
 
-import {
-  ChartConfig,
-  ChartData,
-  ComparisonChartData,
-  Rating,
-  rolesWeights,
-  NewsItem,
-} from "@/types";
+import { ChartConfig, ChartData, ComparisonChartData, Rating, rolesWeights } from "@/types";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 
 export const rolesWeightData: rolesWeights[] = [
@@ -162,83 +155,6 @@ export const getComparisonColorClass = (current: number, comparison: number) => 
   if (Math.abs(diff) < 0.2) return "text-muted-foreground";
   return diff > 0 ? "text-success" : "text-destructive";
 };
-
-export const newsItems: NewsItem[] = [
-  {
-    id: "e1d79086-85dc-428a-b682-7956b148ec50",
-    type: "topic_roundup",
-    headline: 'URL’s "Voices of the Block" Series Amplifies Social Justice Through Battle Rap',
-    published_at: "2023-11-02T15:30:00+00:00",
-    event_date: "2023-10-28T00:00:00+00:00",
-    location: "Atlanta, GA",
-    league: "Ultimate Rap League (URL)",
-    tags: ["Social Justice", "Emotional Storytelling", "Community Impact"],
-    core_topics: ["Activism in Battle Rap", "Mental Health", "Cultural Identity"],
-    main_event: {
-      title: "Voices of the Block - Volume 1",
-      description: "Main Event: Loaded Lux vs. B Dot",
-    },
-    format_innovation: {
-      quote: "This isn’t just battle rap — it’s lyrical activism.",
-      title: "Thematic Emphasis on Social Justice",
-      description:
-        "URL pioneers content-driven battles highlighting real-world issues like racial equity, mental health, and inner-city violence.",
-    },
-    community_reaction: {
-      summary:
-        "Fans and critics praised the blend of artistry and advocacy, noting the emotional impact and powerful messaging of the event.",
-      overall_sentiment: "Inspiring",
-      engagement_metrics: {
-        likes: 120,
-        retweets: 55,
-      },
-    },
-    cultural_significance: {
-      score: 10,
-      narrative:
-        "This event marked a cultural pivot in battle rap, using the platform for advocacy and real-world storytelling, drawing mainstream media attention.",
-    },
-    social_impact: {
-      quote: "Lux and B Dot aren’t just spitting bars — they’re dropping knowledge.",
-      highlight: "Youth engagement in inner cities through battle rap workshops",
-      community_response: "Positive reception from educators, activists, and fans alike",
-    },
-    ai_predictions: [
-      "Battle rap will increasingly intersect with activism and education.",
-      "Expect more collaboration between leagues and nonprofit organizations addressing community issues.",
-    ],
-    notable_content: [
-      "Lux’s closing round: “We turn pain into poetry, and struggle into soundtracks.”",
-      "B Dot’s rebuttal: “I don’t need props to be powerful — just truth.”",
-    ],
-    executive_summary: {
-      title: "Voices of the Block Recap",
-      body: "URL’s socially driven battle series bridges battle culture with community empowerment, offering a powerful commentary on issues affecting urban youth. With thoughtful lyricism and civic themes, this event sets a new gold standard for conscious performance in the scene.",
-    },
-    related_analysis: [
-      {
-        icon: "✊",
-        title: "Why Battle Rap Needs More Social Themes",
-        published: "3 days ago",
-      },
-      {
-        icon: "🧠",
-        title: "Behind the Bars: The Psychology of Powerful Rounds",
-        published: "5 days ago",
-      },
-    ],
-    actions: {
-      narrative:
-        "Use your voice. Share this event to amplify conscious storytelling in hip-hop culture.",
-      save_enabled: true,
-      share_enabled: true,
-    },
-    contentType: "article",
-    isBreaking: true,
-  },
-];
-
-export const breakingNews = newsItems.filter((item) => item.isBreaking);
 
 export const contentTypes = [
   { name: "News Article", icon: "📰", color: "bg-blue-600" },

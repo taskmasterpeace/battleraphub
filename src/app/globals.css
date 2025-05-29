@@ -26,6 +26,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 262.1 83.3% 57.8%;
     --radius: 0.5rem;
+    --card-background: 210 1% 90.1;
   }
 
   .dark {
@@ -50,6 +51,7 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 262.1 83.3% 57.8%;
+    --card-background: 220.91 39.29% 10.98%;
   }
 }
 
@@ -105,4 +107,30 @@
   100% {
     transform: translateX(100%);
   }
+}
+
+/* Styles for news contents */
+
+.article-content p {
+  @apply mb-4 text-foreground;
+}
+
+.article-content ul {
+  @apply list-disc pl-5 mb-6 text-foreground;
+}
+
+.article-content li {
+  @apply mb-2;
+}
+
+.article-content h1 {
+  @apply text-foreground sm:text-4xl text-2xl font-bold mb-6;
+}
+
+.article-content h2 {
+  @apply text-foreground sm:text-2xl text-xl font-bold mb-4;
+}
+
+.article-content h3 {
+  @apply text-lg sm:text-xl font-bold mt-6 mb-3 text-foreground;
 }
