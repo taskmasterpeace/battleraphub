@@ -114,7 +114,8 @@ BEGIN
   WHERE br.user_id = p_user_id
   GROUP BY br.battler_id, b.name;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = '';
 
 -- Schedule cron jobs to refresh materialized views
 

@@ -32,7 +32,8 @@ BEGIN
   OFFSET offsetnum
   LIMIT limitnum;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = '';
 
 -- Count the number of battlers with all the tags
 
@@ -60,4 +61,5 @@ BEGIN
   GROUP BY b.id
   ) AS filtered_battlers;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = '';

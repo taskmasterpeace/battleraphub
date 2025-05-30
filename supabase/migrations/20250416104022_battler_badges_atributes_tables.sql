@@ -101,7 +101,7 @@ CREATE POLICY "Enable insert access to authenticated user" ON battler_badges AS 
 INSERT TO authenticated WITH CHECK (true);
 
 CREATE POLICY "Enable delete access to authenticated user" ON battler_badges AS PERMISSIVE FOR
-DELETE TO authenticated USING (auth.uid() = user_id);
+DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 -- Battler rating table: authenticated
 
@@ -113,7 +113,7 @@ CREATE POLICY "Enable insert access to authenticated user" ON battler_ratings AS
 INSERT TO authenticated WITH CHECK (true);
 
 CREATE POLICY "Enable delete access to authenticated user" ON battler_ratings AS PERMISSIVE FOR
-DELETE TO authenticated USING (auth.uid() = user_id);
+DELETE TO authenticated USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Enable update access to authenticated user" ON battler_ratings AS PERMISSIVE FOR
-UPDATE TO authenticated USING (auth.uid() = user_id);
+UPDATE TO authenticated USING ((select auth.uid()) = user_id);

@@ -37,11 +37,11 @@ INSERT TO authenticated WITH CHECK (true);
 
 -- update policy to authenticated user
 CREATE POLICY "Enable update access to authenticated user" ON media_content AS PERMISSIVE FOR
-UPDATE TO authenticated USING (auth.uid() = id);
+UPDATE TO authenticated USING ((select auth.uid()) = id);
 
 -- delete policy to authenticated user
 CREATE POLICY "Enable delete access to authenticated user" ON media_content AS PERMISSIVE FOR
-UPDATE TO authenticated USING (auth.uid() = id);
+DELETE TO authenticated USING ((select auth.uid()) = id);
 
 -- read policy to public user
 CREATE POLICY "Enable read access to public" ON media_content AS PERMISSIVE FOR
