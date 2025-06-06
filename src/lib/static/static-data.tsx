@@ -1,4 +1,5 @@
 import { ROLE, ROLES_NAME } from "@/config";
+
 import { ChartConfig, ChartData, ComparisonChartData, Rating, rolesWeights } from "@/types";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 
@@ -25,9 +26,9 @@ export const rolesWeightData: rolesWeights[] = [
   },
   {
     id: 3,
-    role_id: ROLE.BATTLE,
+    role_id: ROLE.ARTIST,
     formKey: "battler",
-    key: ROLES_NAME[ROLE.BATTLE],
+    key: ROLES_NAME[ROLE.ARTIST],
     label: "Battler",
     color: "green",
     backgroundColor: "bg-success",
@@ -154,3 +155,12 @@ export const getComparisonColorClass = (current: number, comparison: number) => 
   if (Math.abs(diff) < 0.2) return "text-muted-foreground";
   return diff > 0 ? "text-success" : "text-destructive";
 };
+
+export const contentTypes = [
+  { name: "News Article", icon: "📰", color: "bg-blue-600" },
+  { name: "Controversy Analysis", icon: "⚡", color: "bg-destructive" },
+  { name: "Topic Roundup", icon: "📊", color: "bg-success" },
+  { name: "Industry Analysis", icon: "💼", color: "bg-primary" },
+  { name: "Speculation Report", icon: "🔮", color: "bg-orange-600" },
+  { name: "Community Analysis", icon: "👥", color: "bg-teal-600" },
+];

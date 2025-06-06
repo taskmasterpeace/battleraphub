@@ -17,8 +17,10 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { formatDate } from "@/lib/utils";
 
 interface MediaContentSectionProps {
   userDetails: User;
@@ -46,30 +48,6 @@ export default function MediaContentSection({ userDetails }: MediaContentSection
   useEffect(() => {
     fetchContent();
   }, [fetchContent]);
-
-  // const handleLike = async (contentId: string) => {
-  //   if (!currentUser) return;
-
-  //   try {
-  //     await likeContent(contentId);
-
-  //     // Update local state
-  //     setContent((prev) =>
-  //       prev.map((item) => {
-  //         if (item.id === contentId) {
-  //           return {
-  //             ...item,
-  //             likes: item.likes + 1,
-  //             likedByCurrentUser: true,
-  //           };
-  //         }
-  //         return item;
-  //       }),
-  //     );
-  //   } catch (error) {
-  //     console.error("Error liking content:", error);
-  //   }
-  // };
 
   const filteredContent =
     activeTab === "all" ? content : content.filter((item) => item.type === activeTab);
@@ -116,7 +94,6 @@ export default function MediaContentSection({ userDetails }: MediaContentSection
               content={item}
               isOwner={isOwnProfile}
               fetchContent={fetchContent}
-              // onLike={handleLike}
             />
           ))}
         </div>
@@ -139,16 +116,9 @@ interface ContentCardProps {
   content: MediaContent;
   isOwner: boolean;
   fetchContent: () => void;
-  // onLike: (contentId: string) => void;
 }
 
-function ContentCard({
-  content,
-  isOwner,
-  fetchContent,
-  // onLike
-}: ContentCardProps) {
-  // const { user } = useAuth();
+function ContentCard({ content, isOwner, fetchContent }: ContentCardProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isOpenDelete, setIsOpenDelete] = useState(false);
 
@@ -165,17 +135,12 @@ function ContentCard({
   const getTypeColor = (type: string) => {
     switch (type) {
       case "video":
-        return "bg-destructive text-destructive-foreground border-destructive";
+        return "bg-destructive hover:bg-destructive/70 text-destructive-foreground border-destructive";
       case "article":
-        return "bg-blue-900/30 text-blue-400 border-blue-700";
+        return "bg-blue-900/30 hover:bg-blue-900/60 text-blue-400 border-blue-700";
       default:
-        return "bg-background text-muted-foreground border-border";
+        return "bg-background hover:bg-background/70 text-muted-foreground border-border";
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
   };
 
   return (
@@ -187,8 +152,8 @@ function ContentCard({
               <Image
                 src={content.thumbnail_img || "/placeholder.svg"}
                 alt={content.title}
-                width={300}
-                height={168}
+                width={700}
+                height={192}
                 className="w-full h-full object-cover"
               />
               <Badge className={`absolute top-2 right-2 ${getTypeColor(content.type)}`}>
@@ -214,13 +179,14 @@ function ContentCard({
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
+                    <DialogContent className="w-[calc(100%-2rem)] sm:max-w-[425px]">
                       <DialogHeader>
+                        <DialogTitle>Delete {content.type}</DialogTitle>
                         <DialogDescription>
                           {`Are you sure you want to delete this ${content.type} content?`}
                         </DialogDescription>
                       </DialogHeader>
-                      <DialogFooter>
+                      <DialogFooter className="flex gap-3 sm:gap-2">
                         <Button
                           variant="outline"
                           type="submit"
@@ -262,17 +228,6 @@ function ContentCard({
               </div>
 
               <div className="flex gap-2">
-                {/* <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`flex items-center gap-1 ${content.likedByCurrentUser ? "text-amber-400" : "text-muted-foreground hover:text-amber-400"}`}
-                  onClick={() => !content.likedByCurrentUser && onLike(content.id)}
-                  disabled={!user || content.likedByCurrentUser}
-                >
-                  <ThumbsUp className="w-4 h-4" />
-                  {content.likes}
-                </Button> */}
-
                 <Button
                   asChild
                   variant="ghost"

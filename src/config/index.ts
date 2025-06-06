@@ -1,6 +1,6 @@
 const ROLE = {
   ADMIN: 1,
-  BATTLE: 2,
+  ARTIST: 2,
   MEDIA: 3,
   FAN: 4,
   LEAGUE_OWNER_INVESTOR: 5,
@@ -10,7 +10,7 @@ const ROLES = Object.values(ROLE);
 
 const ROLES_NAME = {
   [ROLE.ADMIN]: "Admin",
-  [ROLE.BATTLE]: "Battler",
+  [ROLE.ARTIST]: "Artist",
   [ROLE.MEDIA]: "Media",
   [ROLE.FAN]: "Fan",
   [ROLE.LEAGUE_OWNER_INVESTOR]: "League Owner/Investor",
@@ -41,6 +41,7 @@ const DB_TABLES = {
   MEDIA_CONTENT: "media_content",
   HIGHLIGHTS: "highlights",
   WEIGHTED_BATTLER_ANALYTICS: "weighted_battler_analytics",
+  NEWS_CONTENTS: "news_contents",
 };
 
 const MATERIALIZED_VIEWS = {
@@ -92,12 +93,23 @@ const ATTRIBUTE_CATEGORIES = {
   PERSONAL: "personal",
 };
 
+const PROMPT_MANAGEMENT_KEYS = {
+  TWITTER_ACCOUNT_ANALYSIS: "news:TWITTER_ACCOUNT_ANALYSIS",
+  CROSS_ACCOUNT_ANALYSIS: "news:CROSS_ACCOUNT_ANALYSIS",
+  YOUTUBE_CONTEXT_EXPANSION: "news:YOUTUBE_CONTEXT_EXPANSION",
+  ADDITIONAL_ACCOUNT_ANALYSIS: "news:ADDITIONAL_ACCOUNT_ANALYSIS",
+  STORYLINE_CONSOLIDATION: "news:STORYLINE_CONSOLIDATION",
+  CONTENT_GENERATION: "news:CONTENT_GENERATION",
+};
+
+const PROMPT_KEY = Object.values(PROMPT_MANAGEMENT_KEYS);
+
 const PAGES = {
   SIGN_UP: "/auth/signup",
   LOGIN: "/auth/login",
   SELECT_ROLE: "/auth/signup/role",
-  RESET_PASSWORD: "/auth/reset-password",
-  FORGOT_PASSWORD: "/auth/forgot-password",
+  RESET_PASSWORD: "/reset-password",
+  FORGOT_PASSWORD: "/forgot-password",
   BATTLERS: "/battlers",
   HOME: "/",
   ADMIN_USER_LIST: "/admin/user-list",
@@ -111,12 +123,15 @@ const PAGES = {
   DIAGNOSTICS: "/diagnostics",
   MY_RATINGS: "/my-ratings",
   PROFILE: "/profile",
-};
-
-const CATEGORY_TYPES = {
-  WRITING: "writing",
-  PERFORMANCE: "performance",
-  PERSONAL: "personal",
+  NEWS: "/news",
+  ADMIN: "/admin",
+  NOTIFICATIONS: "/notifications",
+  ABOUT: "/about",
+  CONTACT: "/contact",
+  PRIVACY: "/privacy",
+  TERMS: "/terms",
+  SETTINGS: "/settings",
+  NEWS_PROMPTS: "/admin/news-prompts",
 };
 
 export {
@@ -133,5 +148,6 @@ export {
   RANKING_TYPE,
   BUCKET_NAME,
   PERMISSIONS,
-  CATEGORY_TYPES,
+  PROMPT_MANAGEMENT_KEYS,
+  PROMPT_KEY,
 };

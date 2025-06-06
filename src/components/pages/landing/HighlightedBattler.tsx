@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useHome } from "@/contexts/home.context";
 import { Battlers, TopAssignBadgeByBattler } from "@/types";
-import { MATERIALIZED_VIEWS } from "@/config";
+import { MATERIALIZED_VIEWS, PAGES } from "@/config";
 import { supabase } from "@/utils/supabase/client";
 import useSWR from "swr";
 
@@ -294,7 +294,7 @@ export default function HighlightedBattler() {
                     asChild
                     className="w-full bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700"
                   >
-                    <Link href={`/battlers/${currentBattler?.id}`}>View Full Profile</Link>
+                    <Link href={`${PAGES.BATTLERS}/${currentBattler?.id}`}>View Full Profile</Link>
                   </Button>
                 </div>
               </div>

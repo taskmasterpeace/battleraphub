@@ -39,6 +39,7 @@ const BattlersListTable = () => {
   const { control } = useForm();
   const [open, setOpen] = useState(false);
   const [edit, setEditOpen] = useState(false);
+  const [editData, setEditData] = useState<Battlers | undefined>(undefined);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const [toggleHighlighter, setToggleHighlighter] = useState<boolean>(false);
@@ -165,7 +166,10 @@ const BattlersListTable = () => {
               )}
             </span>
           </Button>
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog modal={false} open={open} onOpenChange={setOpen}>
+            {open && (
+              <div className="fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"></div>
+            )}
             <DialogTrigger asChild>
               <Button className="text-xs sm:text-sm" variant="default">
                 Create Battlers
@@ -291,6 +295,9 @@ const BattlersListTable = () => {
                       open={activePopover === battler.id}
                       onOpenChange={(isOpen) => setActivePopover(isOpen ? battler.id : null)}
                     >
+                      {edit && (
+                        <div className="fixed inset-0 z-50 bg-black/20  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"></div>
+                      )}
                       <PopoverTrigger asChild>
                         <Button variant="link">
                           <EllipsisVertical className="text-muted-foreground" />
@@ -298,28 +305,19 @@ const BattlersListTable = () => {
                       </PopoverTrigger>
                       <PopoverContent className="w-full max-w-[190px]">
                         <div className="flex flex-col items-start gap-3 w-full">
-                          <Dialog
-                            open={edit}
-                            onOpenChange={(open) => {
-                              setEditOpen(open);
-                              if (!open) setActivePopover(null);
+                          <Button
+                            variant={"secondary"}
+                            size={"sm"}
+                            className="w-[150px]"
+                            onClick={() => {
+                              setEditOpen(true);
+                              setActivePopover(null);
+                              setEditData(battler);
                             }}
                           >
-                            <DialogTrigger asChild>
-                              <Button variant={"secondary"} size={"sm"} className="w-[150px]">
-                                Edit Battlers
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
-                              <FormBattlers
-                                createBattler={false}
-                                setPopoverOpen={() => setActivePopover(null)}
-                                setOpenClose={() => setEditOpen(false)}
-                                fetchBattlersList={() => fetchBattlersList(currentPage)}
-                                battlerData={battler}
-                              />
-                            </DialogContent>
-                          </Dialog>
+                            Edit Battlers
+                          </Button>
+
                           <Button
                             type="submit"
                             variant={"destructive"}
@@ -392,6 +390,28 @@ const BattlersListTable = () => {
             </PaginationItem>
           </PaginationContent>
         </Pagination>
+
+        <Dialog
+          modal={false}
+          open={edit}
+          onOpenChange={(open) => {
+            setEditOpen(open);
+            if (!open) {
+              setActivePopover(null);
+              setEditData(undefined);
+            }
+          }}
+        >
+          <DialogContent className="sm:max-w-[425px]">
+            <FormBattlers
+              createBattler={false}
+              setPopoverOpen={() => setActivePopover(null)}
+              setOpenClose={() => setEditOpen(false)}
+              fetchBattlersList={() => fetchBattlersList(currentPage)}
+              battlerData={editData}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

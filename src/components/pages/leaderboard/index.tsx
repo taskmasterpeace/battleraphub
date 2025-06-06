@@ -84,7 +84,7 @@ const LeaderBoard = () => {
 
       <div className="bg-background p-6 rounded-lg border border-border">
         <h2 className="text-xl font-bold mb-4">How Rankings Work</h2>
-        <div className="space-y-4 text-muted-foreground">
+        <div className="text-sm sm:text-base space-y-4 text-muted-foreground">
           <p>Our leaderboard rankings are calculated based on several factors:</p>
           <ul className="list-disc pl-6 space-y-2">
             <li>

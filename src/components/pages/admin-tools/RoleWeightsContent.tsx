@@ -51,7 +51,7 @@ const RoleWeightsContent = () => {
   useEffect(() => {
     setValue("fan", roleData.find((item) => item.role_id === ROLE.FAN)?.weight || 0);
     setValue("media", roleData.find((item) => item.role_id === ROLE.MEDIA)?.weight || 0);
-    setValue("battler", roleData.find((item) => item.role_id === ROLE.BATTLE)?.weight || 0);
+    setValue("battler", roleData.find((item) => item.role_id === ROLE.ARTIST)?.weight || 0);
     setValue(
       "league_owner",
       roleData.find((item) => item.role_id === ROLE.LEAGUE_OWNER_INVESTOR)?.weight || 0,

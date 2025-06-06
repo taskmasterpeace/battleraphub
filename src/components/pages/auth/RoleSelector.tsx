@@ -50,10 +50,10 @@ export default function RoleSelector({ role, onChange }: RoleSelectorProps) {
         />
 
         <RoleCard
-          title={ROLES_NAME[ROLE.BATTLE]}
+          title={ROLES_NAME[ROLE.ARTIST]}
           description="Active battle rapper"
           icon={<Mic className="h-5 w-5 text-success" />}
-          value={ROLE.BATTLE}
+          value={ROLE.ARTIST}
           color="green"
           requiresVerification
           badge={true}

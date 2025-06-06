@@ -1,25 +1,3 @@
-export interface MediaUser {
-  id: string;
-  name: string;
-  image: string;
-  outlet: string;
-  bio: string;
-  socialLinks: {
-    youtube?: string;
-    twitter?: string;
-    instagram?: string;
-    website?: string;
-  };
-  recentContent: {
-    title: string;
-    url: string;
-    type: "video" | "article" | "podcast";
-    thumbnail?: string;
-    likes: number;
-    date: string;
-  }[];
-}
-
 export interface Badge {
   id: number;
   category: string;
@@ -136,8 +114,6 @@ export interface rolesWeights {
   backgroundColor: string;
   description: string;
 }
-
-export type RoleKey = "fan" | "media" | "battler" | "league_owner" | "admin";
 
 export interface BattlerAnalytics {
   id: string;
@@ -274,31 +250,6 @@ export interface UserBadge {
   badges: Badge;
 }
 
-export interface VideoStatistics {
-  viewCount?: string;
-  likeCount?: string;
-  commentCount?: string;
-}
-
-export interface YoutubeSearchResponse {
-  items: {
-    id: { videoId: string };
-    snippet: {
-      title: string;
-      description: string;
-      publishedAt: string;
-      thumbnails: { high: { url: string } };
-    };
-  }[];
-}
-
-export interface YoutubeVideoStatsResponse {
-  items: {
-    id: string;
-    statistics: VideoStatistics;
-  }[];
-}
-
 export interface RatingDistribution {
   bucket: string;
   percentage: number;
@@ -418,16 +369,25 @@ export interface YoutubeVideoType {
   views?: number;
 }
 
-export interface SkillData {
-  name: string;
-  value: number;
-  info: string;
+export interface RelatedAnalysisItem {
+  title: string;
+  published: string;
+  icon: string;
+}
+export interface NewsItem {
+  id: string;
+  headline: string;
+  published_at?: string;
+  updated_at: string;
+  created_at: string;
+  event_date: string;
+  tags: string[];
+  reading_time: string;
+  blurb: string;
+  main_content: string;
 }
 
-export interface BattlerData {
-  id: string;
-  name: string;
-  writing: Attribute[];
-  performance: Attribute[];
-  personal: Attribute[];
+export interface Cluster {
+  narrative: string;
+  score: number;
 }

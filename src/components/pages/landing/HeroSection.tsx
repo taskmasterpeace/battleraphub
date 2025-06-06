@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import YouTubeFeature from "@/components/pages/landing/YouTubeFeature";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-mobile";
+import { PAGES } from "@/config";
 
 export default function HeroSection() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -54,7 +55,7 @@ export default function HeroSection() {
                   size={isMobile ? "default" : "lg"}
                   className="bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-700 hover:to-amber-900 text-white"
                 >
-                  <Link href="/battlers">
+                  <Link href={PAGES.BATTLERS}>
                     Start Rating <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -63,7 +64,7 @@ export default function HeroSection() {
                   size={isMobile ? "default" : "lg"}
                   className="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-gray-950 text-white border border-amber-700/30"
                 >
-                  <Link href="/analytics">View Analytics</Link>
+                  <Link href={PAGES.ANALYTICS}>View Analytics</Link>
                 </Button>
               </div>
             </motion.div>
@@ -88,7 +89,7 @@ export default function HeroSection() {
       {/* YouTube Feature for mobile - below the hero text */}
       {isMobile && (
         <motion.div
-          className="w-full px-4"
+          className="w-full sm:px-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.6 }}

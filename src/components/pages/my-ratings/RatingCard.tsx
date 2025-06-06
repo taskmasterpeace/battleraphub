@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { RatingButton } from "@/components/pages/my-ratings/RatingButton";
 import { MyRating } from "@/types";
+import { PAGES } from "@/config";
 
 const RatingCard = ({ rating }: { rating: MyRating }) => {
   return (
@@ -25,7 +26,7 @@ const RatingCard = ({ rating }: { rating: MyRating }) => {
               </div>
               <div>
                 <Link
-                  href={`/battlers/${rating?.battler_id}`}
+                  href={`${PAGES.BATTLERS}/${rating?.battler_id}`}
                   className="text-lg font-medium hover:text-purple-400"
                 >
                   {rating?.name || "Battler Name"}
@@ -88,10 +89,10 @@ const RatingCard = ({ rating }: { rating: MyRating }) => {
 
             <div className="flex items-center gap-2 mt-4 md:mt-0">
               <RatingButton variant="outline" size="sm">
-                <Link href={`/battlers/${rating?.battler_id}`}>View Battler</Link>
+                <Link href={`${PAGES.BATTLERS}/${rating?.battler_id}`}>View Battler</Link>
               </RatingButton>
               <RatingButton variant="outline" size="sm">
-                <Link href={`/battlers/${rating?.battler_id}`}>Edit Rating</Link>
+                <Link href={`${PAGES.BATTLERS}/${rating?.battler_id}`}>Edit Rating</Link>
               </RatingButton>
             </div>
           </div>

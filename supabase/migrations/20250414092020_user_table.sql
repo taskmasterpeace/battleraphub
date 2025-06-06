@@ -1,6 +1,8 @@
 -- trigger function to manage last_updated column
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
     RETURNS TRIGGER
+    SECURITY INVOKER
+    SET search_path = ''
     AS $$
     BEGIN
         NEW.updated_at = now();
@@ -38,7 +40,10 @@ CREATE TRIGGER handle_updated_at
 -- trigger function to add entry into public.users table when a new user is created in auth schema
 
 create or replace function public.handle_new_user()
-returns trigger as $$
+returns trigger
+language plpgsql security definer
+set search_path = ''
+as $$
 declare
   user_name text;
   user_email text;
@@ -58,7 +63,9 @@ begin
 
   return new;
 end;
-$$ language plpgsql security definer;
+$$;
+
+ALTER FUNCTION public.handle_new_user() OWNER TO postgres;
 
 -- trigger on auth.users table
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
@@ -72,18 +79,16 @@ execute function public.handle_new_user();
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 -- read policy
-CREATE POLICY "Enable read access to authenticated user" ON users AS PERMISSIVE FOR
-SELECT
-    TO authenticated USING (true);
+CREATE POLICY "Enable read access to authenticated user" ON "public"."users" AS PERMISSIVE FOR
+SELECT TO authenticated USING (true);
 
 -- update policy
 CREATE POLICY "Enable update to authenticated user" ON "public"."users" AS PERMISSIVE FOR
-UPDATE TO authenticated USING (auth.uid() = id);
+UPDATE TO authenticated USING ((select auth.uid()) = id);
 
 -- delete policy
-create policy "Enable delete for users based on user_id" on "public"."users" AS PERMISSIVE FOR
-DELETE to authenticated using (auth.uid() = id);
+CREATE POLICY "Enable delete for users based on user_id" ON "public"."users" AS PERMISSIVE FOR
+DELETE to authenticated using ((select auth.uid()) = id);
 
 -- insert policy
-CREATE POLICY "Enable insert for authenticated users" ON "public"."users" AS PERMISSIVE FOR
-INSERT TO authenticated WITH CHECK (auth.uid() = id);
+create policy "Prevent client insert" on "public"."users" as PERMISSIVE for INSERT to public with check (false);

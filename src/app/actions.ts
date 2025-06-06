@@ -4,61 +4,10 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { protectedCreateClient } from "@/utils/supabase/protected-server";
 import { DB_TABLES, PAGES, PERMISSIONS, ROLES_NAME, RPC_FUNCTIONS } from "@/config";
-import {
-  successResponse,
-  errorResponse,
-  redirectResponse,
-  encodedRedirect,
-} from "@/utils/response";
+import { successResponse, errorResponse, redirectResponse } from "@/utils/response";
 import { uploadFileToStorage } from "@/lib/uploadFileToStorage";
 import { Battlers, MediaContent, MyRating, User, UserBadge } from "@/types";
-
-export const signUpAction = async (formData: FormData) => {
-  const email = formData.get("email")?.toString();
-  const password = formData.get("password")?.toString();
-  const supabase = await createClient();
-  const origin = (await headers()).get("origin");
-
-  if (!email || !password) {
-    return encodedRedirect("error", "/sign-up", "Email and password are required");
-  }
-
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${origin}/auth/callback`,
-    },
-  });
-
-  if (error) {
-    console.error(error.code + " " + error.message);
-    return encodedRedirect("error", PAGES.SIGN_UP, error.message);
-  } else {
-    return encodedRedirect(
-      "success",
-      PAGES.SIGN_UP,
-      "Thanks for signing up! Please check your email for a verification link.",
-    );
-  }
-};
-
-export const signInAction = async (formData: FormData) => {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const supabase = await createClient();
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    return encodedRedirect("error", PAGES.LOGIN, error.message);
-  }
-
-  return redirectResponse(PAGES.HOME);
-};
+import { kv } from "@vercel/kv";
 
 export const forgotPasswordAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -71,7 +20,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?redirect_to=/reset-password`,
+    redirectTo: `${origin}/auth/callback?redirect_to=${PAGES.RESET_PASSWORD}`,
   });
 
   if (error) {
@@ -108,12 +57,6 @@ export const resetPasswordAction = async (formData: FormData) => {
     return errorResponse("Password update failed");
   }
   return successResponse("Password updated successfully");
-};
-
-export const signOutAction = async () => {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  return redirectResponse(PAGES.LOGIN);
 };
 
 export const giveUserPermissionAction = async (userId: string) => {
@@ -881,5 +824,26 @@ export const highlightedBattlerAction = async (isChecked: boolean, battler: Batt
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Something went wrong";
     return errorResponse(errorMessage);
+  }
+};
+
+export const setRedisKey = async (name: string, content: string) => {
+  try {
+    await kv.set(name, content);
+    return successResponse("Prompt saved successfully");
+  } catch (error) {
+    console.error("Error setting prompt:", error);
+    return errorResponse("Error setting prompt");
+  }
+};
+
+// for getting home page youtube videos for "AlgorithmInstituteofBR"
+export const getAlgoInstituteLatestVideos = async () => {
+  try {
+    const videos = await kv.get("recent_algo_institute_videos");
+    return videos;
+  } catch (error) {
+    console.error("Error getting youtube video from kv store:", error);
+    return errorResponse("Error getting youtube video from kv store");
   }
 };

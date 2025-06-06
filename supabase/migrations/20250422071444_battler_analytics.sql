@@ -54,7 +54,8 @@ BEGIN
         score = EXCLUDED.score,
         updated_at = NOW();
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = '';
 
 -- Create a cron job to run every 6 hours
 SELECT cron.schedule(

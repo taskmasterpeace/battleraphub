@@ -190,7 +190,8 @@ const FormBattlers = ({
                   value={createBattler ? field.value : undefined}
                   placeholder="Select tags"
                   maxCount={4}
-                  modalPopover={true}
+                  modalPopover={false}
+                  asChild
                 />
                 {!createBattler && (
                   <Input type="hidden" name="tags" value={JSON.stringify(selectedTags)} />

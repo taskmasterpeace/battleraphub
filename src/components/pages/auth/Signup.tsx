@@ -20,6 +20,7 @@ import GoogleButton from "@/components/pages/auth/GoogleButton";
 
 import Image from "next/image";
 import { useFormSubmit } from "@/hooks/useFormSubmit";
+import { PAGES } from "@/config";
 
 export default function Signup() {
   const { signUp } = useAuth();
@@ -170,7 +171,7 @@ export default function Signup() {
         <CardFooter className="flex flex-col space-y-4">
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/auth/login" className="text-purple-400 hover:text-purple-300">
+            <Link href={PAGES.LOGIN} className="text-purple-400 hover:text-purple-300">
               Login
             </Link>
           </p>

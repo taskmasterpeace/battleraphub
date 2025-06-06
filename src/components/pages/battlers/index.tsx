@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import QuickFilterBar from "@/components/pages/battlers/QuickFilterBar";
 import type { Battlers, TagsOption } from "@/types";
-import { DB_TABLES, RPC_FUNCTIONS } from "@/config";
+import { DB_TABLES, PAGES, RPC_FUNCTIONS } from "@/config";
 import { supabase } from "@/utils/supabase/client";
 import { usePagination } from "@/hooks/usePagination";
 import {
@@ -214,7 +214,7 @@ export default function Battlers({ tags }: { tags: TagsOption[] }) {
           : battlers.map((battler) => (
               <Link
                 key={battler.id}
-                href={`/battlers/${battler.id}`}
+                href={`${PAGES.BATTLERS}/${battler.id}`}
                 className="bg-background rounded-lg overflow-hidden border border-border hover:border-primary transition-all hover:shadow-lg hover:shadow-purple-900/20"
               >
                 <div className="aspect-square relative max-w-[206px] max-h-[206px]">

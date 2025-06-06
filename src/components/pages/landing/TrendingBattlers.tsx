@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Star } from "lucide-react";
 import { useHome } from "@/contexts/home.context";
+import { PAGES } from "@/config";
 
 export default function TrendingBattlers() {
   const { topBattlersUnweightedData: battlers, battlerUnweightedLoading } = useHome();
@@ -25,12 +26,12 @@ export default function TrendingBattlers() {
         <h2 className="text-2xl font-bold">Trending Battlers</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {battlerUnweightedLoading
           ? Array(4)
               .fill(0)
               .map((_, index) => (
-                <Card key={index} className="bg-foreground border-border animate-pulse">
+                <Card key={index} className="bg-muted border-border animate-pulse">
                   <CardContent className="p-4 h-64"></CardContent>
                 </Card>
               ))
@@ -42,12 +43,12 @@ export default function TrendingBattlers() {
               return (
                 <Link
                   key={battler.battler_id}
-                  href={`/battlers/${battler.battler_id}`}
+                  href={`${PAGES.BATTLERS}/${battler.battler_id}`}
                   className="group h-full"
                 >
                   <Card className="overflow-hidden hover:border-blue-500 transition-all hover:shadow-lg hover:shadow-blue-900/20 group-hover:transform group-hover:translate-y-[-5px] duration-300 h-full">
                     <CardContent className="p-0 h-full flex flex-col">
-                      <div className="relative aspect-square w-full max-h-[200px] sm:max-h-[280px]">
+                      <div className="relative w-full h-full max-h-[280px]">
                         <Image
                           src={battler.avatar || "/placeholder.svg"}
                           alt={battler.name}
@@ -58,7 +59,7 @@ export default function TrendingBattlers() {
                         <div className="absolute top-2 right-2">
                           <Badge
                             className={
-                              "bg-success/20 dark:bg-success/30 border-success dark:border-none text-success"
+                              "bg-success border-success dark:border-none text-success-foreground"
                             }
                           >
                             + 0.5

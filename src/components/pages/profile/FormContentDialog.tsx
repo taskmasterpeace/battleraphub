@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, X, Camera } from "lucide-react";
+import { Upload, X, Camera, Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { formAddContentSchema, formUpdateContentSchema } from "@/lib/schema/formAddContentSchema";
@@ -33,7 +33,6 @@ import {
 import { addUserContentAction, editMediaContentAction } from "@/app/actions";
 import { toast } from "sonner";
 import { MediaContent } from "@/types";
-import { SubmitButton } from "@/components/submit-button";
 import Image from "next/image";
 import useSWRMutation from "swr/mutation";
 
@@ -156,7 +155,7 @@ export default function FormContentDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="w-[calc(100%-2rem)] max-h-[650px] sm:max-w-[600px] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isContentCreate ? "Add New Content" : "Edit Content"}</DialogTitle>
         </DialogHeader>
@@ -297,7 +296,7 @@ export default function FormContentDialog({
               />
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="flex gap-3 sm:gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -312,15 +311,20 @@ export default function FormContentDialog({
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>
-              <SubmitButton
-                className="h-10 px-4 py-2"
-                type="submit"
-                pendingText={isContentCreate ? "Adding..." : "Updating..."}
-                disabled={isAdding || isUpdating}
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                {isContentCreate ? "Add Content" : "Edit Content"}
-              </SubmitButton>
+              <Button className="h-10 px-4 py-2" type="submit" disabled={isAdding || isUpdating}>
+                {isAdding || isUpdating ? (
+                  <Loader className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4 mr-2" />
+                )}
+                {isAdding
+                  ? "Adding..."
+                  : isUpdating
+                    ? "Updating..."
+                    : isContentCreate
+                      ? "Add Content"
+                      : "Edit Content"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

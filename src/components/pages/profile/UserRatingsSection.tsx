@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Calendar, CheckCircle, XCircle } from "lucide-react";
 import { MyRating } from "@/types";
 import { getUserRatings } from "@/app/actions";
+import { formatDate } from "@/lib/utils";
+import { PAGES } from "@/config";
 
 interface UserRatingsSectionProps {
   userId: string;
@@ -32,11 +34,6 @@ export default function UserRatingsSection({ userId }: UserRatingsSectionProps) 
     fetchRatings();
   }, [userId]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-  };
-
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">Ratings</h2>
@@ -58,7 +55,7 @@ export default function UserRatingsSection({ userId }: UserRatingsSectionProps) 
               <CardContent className="p-4">
                 <div className="flex items-center gap-4">
                   <Link
-                    href={`/battlers/${rating.battler_id}`}
+                    href={`${PAGES.BATTLERS}/${rating.battler_id}`}
                     className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0"
                   >
                     <Image
@@ -75,7 +72,7 @@ export default function UserRatingsSection({ userId }: UserRatingsSectionProps) 
                     <div className="flex justify-between items-start">
                       <div>
                         <Link
-                          href={`/battlers/${rating.battler_id}`}
+                          href={`${PAGES.BATTLERS}/${rating.battler_id}`}
                           className="font-semibold text-lg hover:text-amber-400 transition-colors"
                         >
                           {rating.name}

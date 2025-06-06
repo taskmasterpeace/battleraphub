@@ -1,6 +1,7 @@
 import { BUCKET_NAME } from "@/config";
 import { SupabaseClient } from "@supabase/supabase-js";
 
+// upload file to storage function supabase storage
 export const uploadFileToStorage = async (
   supabase: SupabaseClient,
   file: File,

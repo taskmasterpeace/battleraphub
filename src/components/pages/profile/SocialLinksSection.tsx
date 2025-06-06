@@ -232,7 +232,7 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
           ) : isOwnProfile ? (
             <div className="flex items-center text-muted-foreground">
               <Youtube className="w-5 h-5 mr-3 text-muted-foreground" />
-              Add your youTube channel
+              Add your youtube channel
             </div>
           ) : null}
           {watch("twitter") ? (
@@ -240,7 +240,7 @@ export default function SocialLinksSection({ user }: SocialLinksSectionProps) {
               href={watch("twitter")}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 text-muted-foreground hover:text-white transition-colors"
+              className="flex items-center gap-4 text-muted-foreground hover:text-primary transition-colors"
             >
               <Image
                 src={PlatformX}

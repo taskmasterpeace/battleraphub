@@ -17,7 +17,7 @@ import {
 import MobileNavbar from "./MobileNavbar";
 // import NotificationCenter from "@/components/notifications/NotificationCenter"
 import KeyboardShortcutsHelper from "@/components/KeyboardShortcutsHelper";
-import { ROLE } from "@/config";
+import { PAGES, ROLE } from "@/config";
 import { filterNavList, NAV_LINKS } from "@/lib/navigation-links";
 import { useTheme } from "next-themes";
 
@@ -33,7 +33,7 @@ export default function Header() {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center">
           <MobileNavbar />
-          <Link href="/" className="flex items-center">
+          <Link href={PAGES.HOME} className="flex items-center">
             <div className="relative mr-2">
               <Image
                 src="/image/battleraphub.png"
@@ -57,7 +57,7 @@ export default function Header() {
                   <DropdownMenu key={link.href}>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className={`text-sm font-medium transition-colors hover:text-primary outline-none ${
+                        className={`text-sm flex items-center gap-2 font-medium transition-colors hover:text-primary outline-none ${
                           isActive ? "text-primary" : "text-muted-foreground"
                         }`}
                       >
@@ -79,7 +79,7 @@ export default function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                  className={`text-sm font-medium transition-colors hover:text-primary flex items-center ${
                     pathname === link.href ? "text-primary" : "text-muted-foreground"
                   }`}
                 >
@@ -108,14 +108,14 @@ export default function Header() {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href={`/profile/${user.id}`}>Profile</Link>
+                    <Link href={`${PAGES.PROFILE}/${user.id}`}>Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/my-ratings">My Ratings</Link>
+                    <Link href={PAGES.MY_RATINGS}>My Ratings</Link>
                   </DropdownMenuItem>
                   {user.user_metadata.role === ROLE.ADMIN && (
                     <DropdownMenuItem asChild>
-                      <Link href="/admin-tools">Admin Tools</Link>
+                      <Link href={PAGES.ADMIN_TOOLS}>Admin Tools</Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
@@ -128,7 +128,7 @@ export default function Header() {
             </>
           ) : (
             <Button asChild variant="ghost" size="sm">
-              <Link href="/auth/login" className="gap-2">
+              <Link href={PAGES.LOGIN} className="gap-2">
                 <LogIn className="h-4 w-4 text-foreground" />
                 <span className="hidden sm:inline text-foreground">Login</span>
               </Link>

@@ -12,7 +12,7 @@ import LeaderboardSection from "@/components/pages/leaderboard/LeaderboardSectio
 import { useLeaderboard } from "@/contexts/leaderboard.context";
 import { FilteredData } from "@/types";
 import Link from "next/link";
-import { LEADERBOARD_TAB_TYPE } from "@/config";
+import { LEADERBOARD_TAB_TYPE, PAGES } from "@/config";
 
 export default function UserLeaderboard({
   tabType,
@@ -97,10 +97,10 @@ export default function UserLeaderboard({
                 <CardDescription>Top contributors ranked by ratings and influence</CardDescription>
               </div>
               <div className="relative w-full md:w-64">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-2.5 h-5 w-5 text-muted-foreground" />
                 <Input
                   placeholder="Search users..."
-                  className="pl-8"
+                  className="pl-10 placeholder:text-sm"
                   value={searchQuery}
                   onChange={handleSearch}
                 />
@@ -153,7 +153,7 @@ export default function UserLeaderboard({
 
                 <div className="flex justify-center pt-2">
                   <Button asChild variant="outline" size="sm">
-                    <Link href="/my-ratings">View All Rankings</Link>
+                    <Link href={PAGES.MY_RATINGS}>View All Rankings</Link>
                   </Button>
                 </div>
               </TabsContent>

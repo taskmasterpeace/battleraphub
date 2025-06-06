@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import Image from "next/image";
-import { getLatestVideos } from "@/lib/youtube-service";
+import { getAlgoInstituteLatestVideos } from "@/app/actions";
 import { Video } from "@/types/youtube";
 
 export default function YouTubeFeature() {
@@ -18,8 +18,9 @@ export default function YouTubeFeature() {
       try {
         setIsLoading(true);
         setError(null);
-        const latestVideos = await getLatestVideos();
-        setVideos(latestVideos);
+        // get youtube videos from kv store
+        const videos = await getAlgoInstituteLatestVideos();
+        setVideos(videos as Video[]);
       } catch (err) {
         console.error("Error loading featured videos:", err);
         setError("Failed to load videos. Using default content.");

@@ -63,7 +63,7 @@ export default function UserStatsOverview() {
             <div className="bg-background p-4 rounded-lg border border-border">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-muted-foreground">Active Users</h3>
-                <TrendingUp className="w-5 h-5 text-purple-400" />
+                <TrendingUp className="w-5 h-5 text-primary" />
               </div>
               <p className="text-2xl font-bold">
                 {stats?.active_users_last_30_days?.toLocaleString()}
@@ -75,7 +75,9 @@ export default function UserStatsOverview() {
 
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-background p-4 rounded-lg border border-border">
-            <h3 className="text-sm font-medium text-foreground mb-3">Most Active User Roles</h3>
+            <h3 className="text-sm font-medium text-muted-foreground mb-3">
+              Most Active User Roles
+            </h3>
             <div className="space-y-3">
               {activeRolesByRatingLoading
                 ? Array.from({ length: 4 }).map((_, i) => (
@@ -98,7 +100,7 @@ export default function UserStatsOverview() {
                           className={`h-full ${
                             role.role_id === ROLE.MEDIA
                               ? "bg-primary"
-                              : role.role_id === ROLE.BATTLE
+                              : role.role_id === ROLE.ARTIST
                                 ? "bg-success"
                                 : role.role_id === ROLE.LEAGUE_OWNER_INVESTOR
                                   ? "bg-amber-500"

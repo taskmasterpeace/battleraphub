@@ -101,8 +101,8 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
       const response = await trigger(formData);
       if (response.success) {
         toast.success("Profile updated successfully!");
-        onOpenChange(false);
         router.refresh();
+        onOpenChange(false);
       }
     } catch (error) {
       console.error("error", error);
@@ -112,11 +112,11 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="w-[calc(100%-2rem)] sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
-        <div className="overflow-y-auto max-h-[700px] pr-2">
+        <div className="overflow-y-auto max-h-[600px] md:max-h-[700px] pr-2">
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
               {user.id && <Input type="hidden" name="userId" value={user?.id} />}
@@ -286,7 +286,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                       <FormLabel>Bio</FormLabel>
                       <FormControl>
                         <Textarea
-                          className="min-h-[100px] text-sm py-2"
+                          className="min-h-[100px] text-sm py-2 m-1"
                           rows={3}
                           placeholder="Tell us about yourself..."
                           {...field}
