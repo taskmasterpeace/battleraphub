@@ -19,6 +19,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { LogIn } from "lucide-react";
 import GoogleButton from "@/components/pages/auth/GoogleButton";
+import { PAGES } from "@/config";
 
 export default function Login() {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function Login() {
       if (error) {
         setError(error.message);
       } else {
-        router.push("/");
+        router.push(PAGES.HOME);
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -97,7 +98,7 @@ export default function Login() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
                 <Link
-                  href="/forgot-password"
+                  href={PAGES.FORGOT_PASSWORD}
                   className="text-xs text-amber-400 hover:text-amber-300"
                 >
                   Forgot password?
@@ -131,7 +132,7 @@ export default function Login() {
         <CardFooter className="flex flex-col space-y-4">
           <p className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
-            <Link href="/auth/signup" className="text-amber-400 hover:text-amber-300">
+            <Link href={PAGES.SIGN_UP} className="text-amber-400 hover:text-amber-300">
               Sign up
             </Link>
           </p>

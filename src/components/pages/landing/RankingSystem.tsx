@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { TopBattlersUnweighted } from "@/types";
 import { useHome } from "@/contexts/home.context";
-import { RANKING_TYPE } from "@/config";
+import { PAGES, RANKING_TYPE } from "@/config";
 
 interface RankingSystemProps {
   compact?: boolean;
@@ -81,7 +81,7 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
                 battlers.map((battler, index) => (
                   <Link
                     key={battler.battler_id}
-                    href={`/battlers/${battler.battler_id}`}
+                    href={`${PAGES.BATTLERS}/${battler.battler_id}`}
                     className="block"
                   >
                     <div className="flex items-center gap-4 p-4 bg-background rounded-lg border border-border hover:border-blue-500 transition-all">
@@ -149,7 +149,7 @@ export default function RankingSystem({ compact = false, showTitle }: RankingSys
           {compact && battlers.length > 0 && (
             <div className="mt-4 text-center">
               <Button asChild variant="outline">
-                <Link href="/battlers">View All Battlers</Link>
+                <Link href={PAGES.BATTLERS}>View All Battlers</Link>
               </Button>
             </div>
           )}

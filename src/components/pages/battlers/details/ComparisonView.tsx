@@ -10,7 +10,7 @@ import DetailedComparison from "./DetailedComparison";
 import Link from "next/link";
 import { useBattler } from "@/contexts/battler.context";
 import { supabase } from "@/utils/supabase/client";
-import { MATERIALIZED_VIEWS } from "@/config";
+import { MATERIALIZED_VIEWS, PAGES } from "@/config";
 import useSWR from "swr";
 import { getComparisonColorClass, getComparisonIndicator } from "@/lib/static/static-data";
 import { ATTRIBUTE_CATEGORIES } from "@/config";
@@ -231,22 +231,31 @@ export default function ComparisonView() {
 
       {/* Detailed Comparison */}
       <div className="rounded-lg p-6">
-        <Tabs defaultValue="writing" className="w-full">
+        <Tabs defaultValue={ATTRIBUTE_CATEGORIES.WRITING} className="w-full">
           <div className="flex justify-center mb-6">
             <TabsList className="">
-              <TabsTrigger value="writing" className="data-[state=active]:text-primary">
+              <TabsTrigger
+                value={ATTRIBUTE_CATEGORIES.WRITING}
+                className="data-[state=active]:text-primary"
+              >
                 Writing
               </TabsTrigger>
-              <TabsTrigger value="performance" className="data-[state=active]:text-success">
+              <TabsTrigger
+                value={ATTRIBUTE_CATEGORIES.PERFORMANCE}
+                className="data-[state=active]:text-success"
+              >
                 Performance
               </TabsTrigger>
-              <TabsTrigger value="personal" className="data-[state=active]:text-amber-400">
+              <TabsTrigger
+                value={ATTRIBUTE_CATEGORIES.PERSONAL}
+                className="data-[state=active]:text-amber-400"
+              >
                 Personal
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="writing" className="mt-0">
+          <TabsContent value={ATTRIBUTE_CATEGORIES.WRITING} className="mt-0">
             <DetailedComparison
               currentBattler={currentBattler?.name || ""}
               comparisonBattler={selectedBattler?.name || ""}
@@ -256,7 +265,7 @@ export default function ComparisonView() {
             />
           </TabsContent>
 
-          <TabsContent value="performance" className="mt-0">
+          <TabsContent value={ATTRIBUTE_CATEGORIES.PERFORMANCE} className="mt-0">
             <DetailedComparison
               currentBattler={currentBattler?.name || ""}
               comparisonBattler={selectedBattler?.name || ""}
@@ -266,7 +275,7 @@ export default function ComparisonView() {
             />
           </TabsContent>
 
-          <TabsContent value="personal" className="mt-0">
+          <TabsContent value={ATTRIBUTE_CATEGORIES.PERSONAL} className="mt-0">
             <DetailedComparison
               currentBattler={currentBattler?.name || ""}
               comparisonBattler={selectedBattler?.name || ""}
@@ -300,7 +309,7 @@ export default function ComparisonView() {
           compatibility.
         </p>
         <Link
-          href="/analytics"
+          href={PAGES.ANALYTICS}
           className="text-primary-foreground rounded-md h-10 px-4 py-2 bg-muted-foreground hover:bg-accent border hover:border-muted-foreground"
         >
           View Detailed Analysis

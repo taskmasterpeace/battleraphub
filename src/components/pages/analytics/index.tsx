@@ -18,6 +18,7 @@ import RoleBasedAnalytics from "@/components/pages/analytics/RoleBasedAnalytics"
 import { Attribute, Battlers } from "@/types";
 import AutoComplete from "@/components/auto-complete";
 import { useAnalytics } from "@/contexts/analytics.context";
+import { ATTRIBUTE_CATEGORIES } from "@/config";
 
 interface AnalyticsProps {
   attributeData: Attribute[];
@@ -327,13 +328,23 @@ const AnalyticsContentPage = ({ attributeData }: AnalyticsProps) => {
                 <Legend />
                 <Line
                   type="monotone"
-                  dataKey="writing"
+                  dataKey={ATTRIBUTE_CATEGORIES.WRITING}
                   name="Writing"
                   stroke="#8884d8"
                   activeDot={{ r: 8 }}
                 />
-                <Line type="monotone" dataKey="performance" name="Performance" stroke="#82ca9d" />
-                <Line type="monotone" dataKey="personal" name="Personal" stroke="#ffc658" />
+                <Line
+                  type="monotone"
+                  dataKey={ATTRIBUTE_CATEGORIES.PERFORMANCE}
+                  name="Performance"
+                  stroke="#82ca9d"
+                />
+                <Line
+                  type="monotone"
+                  dataKey={ATTRIBUTE_CATEGORIES.PERSONAL}
+                  name="Personal"
+                  stroke="#ffc658"
+                />
               </LineChart>
             </ChartCard>
           </div>

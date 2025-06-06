@@ -18,6 +18,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { filterNavList, mainNavItems, secondaryNavItems } from "@/lib/navigation-links";
+import { PAGES } from "@/config";
 
 export default function MobileNavbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,7 +36,7 @@ export default function MobileNavbar() {
   const filteredSecondaryLinks = filterNavList(secondaryNavItems, user);
 
   const isActive = (path: string) => {
-    if (path === "/" && pathname !== "/") {
+    if (path === PAGES.HOME && pathname !== PAGES.HOME) {
       return false;
     }
     return pathname.startsWith(path);
@@ -99,12 +100,12 @@ export default function MobileNavbar() {
               <div className="flex gap-2 p-4">
                 <SheetClose asChild className="flex-1">
                   <Button asChild variant="default" className="w-full">
-                    <Link href="/auth/login">Login</Link>
+                    <Link href={PAGES.LOGIN}>Login</Link>
                   </Button>
                 </SheetClose>
                 <SheetClose asChild className="flex-1">
                   <Button asChild variant="outline" className="w-full">
-                    <Link href="/auth/signup">Sign Up</Link>
+                    <Link href={PAGES.SIGN_UP}>Sign Up</Link>
                   </Button>
                 </SheetClose>
               </div>
@@ -225,7 +226,7 @@ export default function MobileNavbar() {
               <div className="space-y-1">
                 <SheetClose asChild>
                   <Link
-                    href="/profile"
+                    href={PAGES.PROFILE}
                     className="flex items-center py-3 px-4 rounded-md transition-colors text-foreground hover:bg-muted hover:text-amber-400"
                   >
                     <User className="w-5 h-5 mr-3" />
@@ -234,7 +235,7 @@ export default function MobileNavbar() {
                 </SheetClose>
                 <SheetClose asChild>
                   <Link
-                    href="/my-ratings"
+                    href={PAGES.MY_RATINGS}
                     className="flex items-center py-3 px-4 rounded-md transition-colors text-foreground hover:bg-muted hover:text-amber-400"
                   >
                     <Star className="w-5 h-5 mr-3" />
@@ -243,7 +244,7 @@ export default function MobileNavbar() {
                 </SheetClose>
                 <SheetClose asChild>
                   <Link
-                    href="/notifications"
+                    href={PAGES.NOTIFICATIONS}
                     className="flex items-center py-3 px-4 rounded-md transition-colors text-foreground hover:bg-muted hover:text-amber-400"
                   >
                     <Bell className="w-5 h-5 mr-3" />
@@ -255,7 +256,7 @@ export default function MobileNavbar() {
                 </SheetClose>
                 <SheetClose asChild>
                   <Link
-                    href="/settings"
+                    href={PAGES.SETTINGS}
                     className="flex items-center py-3 px-4 rounded-md transition-colors text-foreground hover:bg-muted hover:text-amber-400"
                   >
                     <Settings className="w-5 h-5 mr-3" />
@@ -270,22 +271,22 @@ export default function MobileNavbar() {
           <div className="border-t border-border pt-4 mt-auto">
             <div className="flex flex-wrap gap-3 px-4 text-sm text-muted-foreground">
               <SheetClose asChild>
-                <Link href="/about" className="hover:text-foreground">
+                <Link href={PAGES.ABOUT} className="hover:text-foreground">
                   About
                 </Link>
               </SheetClose>
               <SheetClose asChild>
-                <Link href="/contact" className="hover:text-foreground">
+                <Link href={PAGES.CONTACT} className="hover:text-foreground">
                   Contact
                 </Link>
               </SheetClose>
               <SheetClose asChild>
-                <Link href="/privacy" className="hover:text-foreground">
+                <Link href={PAGES.PRIVACY} className="hover:text-foreground">
                   Privacy
                 </Link>
               </SheetClose>
               <SheetClose asChild>
-                <Link href="/terms" className="hover:text-foreground">
+                <Link href={PAGES.TERMS} className="hover:text-foreground">
                   Terms
                 </Link>
               </SheetClose>

@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import type { Session, User, AuthResponse } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { PAGES } from "@/config";
 
 type AuthContextType = {
   user: User | null;
@@ -93,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     await supabase.auth.signOut();
     router.refresh();
-    router.push("/");
+    router.push(PAGES.HOME);
   };
 
   const value: AuthContextType = {

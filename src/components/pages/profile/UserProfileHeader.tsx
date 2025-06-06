@@ -115,7 +115,7 @@ export default function UserProfileHeader({ user }: UserProfileHeaderProps) {
                       href={user.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center hover:text-muted-foreground"
+                      className="flex items-center hover:text-accent-foreground"
                     >
                       <ExternalLink className="w-4 h-4 mr-1" />
                       Website

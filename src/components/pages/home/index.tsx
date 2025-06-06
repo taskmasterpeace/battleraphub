@@ -10,6 +10,7 @@ import RankingSystem from "@/components/pages/landing/RankingSystem";
 import MediaHighlight from "@/components/pages/landing/MediaHighlight";
 import HeroSection from "@/components/pages/landing/HeroSection";
 import { useHome } from "@/contexts/home.context";
+import { PAGES } from "@/config";
 
 const HomePage = () => {
   const { recentBattlers, recentBattlerLoading } = useHome();
@@ -39,7 +40,7 @@ const HomePage = () => {
         <div className="flex justify-between items-center mb-6 md:mb-8">
           <h2 className="text-xl md:text-2xl font-bold">Recently Added Battlers</h2>
           <Button asChild variant="outline" size="sm" className="hidden sm:flex">
-            <Link href="/battlers">View All</Link>
+            <Link href={PAGES.BATTLERS}>View All</Link>
           </Button>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
@@ -64,7 +65,7 @@ const HomePage = () => {
             : recentBattlers.slice(0, 6).map((battler) => (
                 <Link
                   key={battler.id}
-                  href={`/battlers/${battler.id}`}
+                  href={`${PAGES.BATTLERS}/${battler.id}`}
                   className="bg-background rounded-lg overflow-hidden border border-border hover:border-amber-500 transition-all hover:shadow-lg hover:shadow-amber-900/20"
                 >
                   <div className="aspect-square relative max-h-[206px] max-w-[206px]">
@@ -85,7 +86,7 @@ const HomePage = () => {
         </div>
         <div className="mt-4 flex sm:hidden justify-center">
           <Button asChild variant="outline" className="w-full">
-            <Link href="/battlers">View All Battlers</Link>
+            <Link href={PAGES.BATTLERS}>View All Battlers</Link>
           </Button>
         </div>
       </section>

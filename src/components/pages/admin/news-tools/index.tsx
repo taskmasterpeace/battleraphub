@@ -11,6 +11,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { setRedisKey } from "@/app/actions";
+import { PAGES } from "@/config";
 
 const PromptSchema = z.object({
   message: z.string().min(10, "Prompt must be at least 10 characters"),
@@ -78,7 +79,7 @@ const NewsTools = ({ prompts }: { prompts: Record<string, string> }) => {
         <h1 className="text-xl sm:text-3xl font-bold text-nowrap">News Tools</h1>
         <div className="flex items-center gap-2">
           <Link
-            href="/admin"
+            href={PAGES.ADMIN}
             className="border border-gray-800 text-accent-foreground hover:bg-muted px-4 py-2 mt-1 sm:mt-0 rounded-md text-sm"
           >
             Back to Admin

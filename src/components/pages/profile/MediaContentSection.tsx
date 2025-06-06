@@ -17,6 +17,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { formatDate } from "@/lib/utils";
@@ -134,11 +135,11 @@ function ContentCard({ content, isOwner, fetchContent }: ContentCardProps) {
   const getTypeColor = (type: string) => {
     switch (type) {
       case "video":
-        return "bg-destructive text-destructive-foreground border-destructive";
+        return "bg-destructive hover:bg-destructive/70 text-destructive-foreground border-destructive";
       case "article":
-        return "bg-blue-900/30 text-blue-400 border-blue-700";
+        return "bg-blue-900/30 hover:bg-blue-900/60 text-blue-400 border-blue-700";
       default:
-        return "bg-background text-muted-foreground border-border";
+        return "bg-background hover:bg-background/70 text-muted-foreground border-border";
     }
   };
 
@@ -151,8 +152,8 @@ function ContentCard({ content, isOwner, fetchContent }: ContentCardProps) {
               <Image
                 src={content.thumbnail_img || "/placeholder.svg"}
                 alt={content.title}
-                width={300}
-                height={168}
+                width={700}
+                height={192}
                 className="w-full h-full object-cover"
               />
               <Badge className={`absolute top-2 right-2 ${getTypeColor(content.type)}`}>
@@ -180,6 +181,7 @@ function ContentCard({ content, isOwner, fetchContent }: ContentCardProps) {
                     </DialogTrigger>
                     <DialogContent className="w-[calc(100%-2rem)] sm:max-w-[425px]">
                       <DialogHeader>
+                        <DialogTitle>Delete {content.type}</DialogTitle>
                         <DialogDescription>
                           {`Are you sure you want to delete this ${content.type} content?`}
                         </DialogDescription>

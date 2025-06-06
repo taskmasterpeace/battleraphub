@@ -16,6 +16,7 @@ import { BarChartIcon as ChartSquare } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useHome } from "@/contexts/home.context";
+import { PAGES } from "@/config";
 
 export default function SpotlightAnalytics() {
   const { mostValuesAttributes, mostAssignBadges } = useHome();
@@ -134,7 +135,7 @@ export default function SpotlightAnalytics() {
           </div>
           <div className="flex justify-end mt-4">
             <Button asChild variant="ghost" size="sm">
-              <Link href="/analytics">View Full Analytics</Link>
+              <Link href={PAGES.ANALYTICS}>View Full Analytics</Link>
             </Button>
           </div>
         </CardContent>

@@ -1,3 +1,4 @@
+import { PAGES } from "@/config";
 import { useRouter } from "next/navigation";
 import React from "react";
 
@@ -11,7 +12,7 @@ const NotFound = () => {
           The analysis you're looking for doesn't exist or has been removed.
         </p>
         <button
-          onClick={() => router.push("/news")}
+          onClick={() => router.push(PAGES.NEWS)}
           className="bg-amber-400 hover:bg-amber-500 text-muted font-medium px-6 py-3 rounded-md transition-all duration-300"
         >
           Back to Analysis

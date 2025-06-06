@@ -7,7 +7,7 @@ import { NewsItem } from "@/types";
 import LoadingSpinner from "./LoadingSpinner";
 import NotFound from "./NotFound";
 import { supabase } from "@/utils/supabase/client";
-import { DB_TABLES } from "@/config";
+import { DB_TABLES, PAGES } from "@/config";
 import useSWR from "swr";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,7 @@ const NewsDetails = () => {
           <div className="container mx-auto px-4 sm:py-4 py-2">
             <Button
               variant="ghost"
-              onClick={() => router.push("/news")}
+              onClick={() => router.push(PAGES.NEWS)}
               className="flex items-center text-muted-foreground hover:!text-amber-400 text-base transition-colors duration-200 hover:!bg-transparent"
             >
               <ArrowLeft size={20} className="mr-2" />

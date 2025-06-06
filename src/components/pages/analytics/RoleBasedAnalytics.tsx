@@ -24,17 +24,17 @@ import { rolesWeightData } from "@/lib/static/static-data";
 import { topBattlerByRatingAction } from "@/app/actions";
 import { Loader, CircleUser } from "lucide-react";
 import Image from "next/image";
-import { CATEGORY_TYPES } from "@/config";
+import { ATTRIBUTE_CATEGORIES, PAGES } from "@/config";
 
 interface RoleBasedAnalyticsProps {
   attributeData: Attribute[];
 }
 
-const categories = Object.values(CATEGORY_TYPES);
+const categories = Object.values(ATTRIBUTE_CATEGORIES);
 
 export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalyticsProps) {
   const [selectedRole, setSelectedRole] = useState<number>(4);
-  const [selectedCategory, setSelectedCategory] = useState<string>("writing");
+  const [selectedCategory, setSelectedCategory] = useState<string>(ATTRIBUTE_CATEGORIES.WRITING);
   const [selectedAttribute, setSelectedAttribute] = useState<number | string>("All");
   const [topBattlers, setTopBattlers] = useState<BattlerAttribute[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -184,7 +184,7 @@ export default function RoleBasedAnalytics({ attributeData }: RoleBasedAnalytics
                 {topBattlers.slice(0, 6).map((battler, index) => (
                   <Link
                     key={`${battler.battler_id}-${index}`}
-                    href={`/battlers/${battler.battler_id}`}
+                    href={`${PAGES.BATTLERS}/${battler.battler_id}`}
                     className="block"
                   >
                     <Card className="hover:border-primary transition-colors">

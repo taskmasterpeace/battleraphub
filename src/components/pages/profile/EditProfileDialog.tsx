@@ -286,7 +286,7 @@ export default function EditProfileDialog({ open, onOpenChange, user }: EditProf
                       <FormLabel>Bio</FormLabel>
                       <FormControl>
                         <Textarea
-                          className="min-h-[100px] text-sm py-2"
+                          className="min-h-[100px] text-sm py-2 m-1"
                           rows={3}
                           placeholder="Tell us about yourself..."
                           {...field}

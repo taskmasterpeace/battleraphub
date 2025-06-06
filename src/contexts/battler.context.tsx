@@ -7,6 +7,7 @@ import {
   BattlerAnalytics,
   BattlerRating,
   Battlers,
+  Category,
   TopAssignBadgeByBattler,
 } from "@/types";
 import { supabase } from "@/utils/supabase/client";
@@ -53,7 +54,7 @@ type BattlerContextType = {
   selectedBattlerTotalRatings: number;
   setSearchQuery: (query: string) => void;
   fetchBattlerAnalytics: (battlerId: string, store?: boolean) => Promise<BattlerAnalytics[]>;
-  toggleChartType: (section: "writing" | "performance" | "personal") => void;
+  toggleChartType: (section: Category) => void;
   handleRatingChange: (attributeId: number, value: number) => Promise<void>;
   handleBadgeSelect: (badge: string, isPositive: boolean) => Promise<void>;
   setSelectedBattler: (battler: Battlers | null) => void;
@@ -370,7 +371,7 @@ export const BattlerProvider = ({
   };
 
   // Toggle chart type
-  const toggleChartType = useCallback((section: "writing" | "performance" | "personal") => {
+  const toggleChartType = useCallback((section: Category) => {
     setChartType((prev) => ({
       ...prev,
       [section]: prev[section] === "radar" ? "bar" : "radar",

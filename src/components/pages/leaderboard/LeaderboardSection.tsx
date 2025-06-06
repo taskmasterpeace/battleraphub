@@ -37,17 +37,20 @@ export default function LeaderboardSection<T extends FilteredData>({
                 />
               </div>
               <div>
-                <Link href={`/profile/${entry.user_id}`} className="font-medium hover:underline">
+                <Link
+                  href={`/profile/${entry.user_id}`}
+                  className="font-medium hover:underline text-nowrap"
+                >
                   {entry?.name || "N/A"}
                 </Link>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground text-nowrap">
                   @{entry?.name?.toLowerCase().split(" ").join("")}
                 </p>
               </div>
             </div>
             <div className="w-full text-end">
               <div className="font-semibold">{String(entry[valueKey] || "0")}</div>
-              <div className="text-sm text-muted-foreground">{valueLabel}</div>
+              <div className="text-sm text-muted-foreground text-nowrap">{valueLabel}</div>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { ChartConfig } from "@/types";
+import { Category, ChartConfig } from "@/types";
 import AttributeSlider from "@/components/pages/battlers/details/AttributeSlider";
 import BadgeSection from "@/components/pages/battlers/details/BadgeSection";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -15,7 +15,7 @@ import {
 } from "recharts";
 import { BarChart, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useBattler } from "@/contexts/battler.context";
-import { ATTRIBUTE_CATEGORIES, CATEGORY_TYPES } from "@/config";
+import { ATTRIBUTE_CATEGORIES } from "@/config";
 import { colorOptions, generateComparisonChartData } from "@/lib/static/static-data";
 import { useAuth } from "@/contexts/auth.context";
 import { motion } from "framer-motion";
@@ -66,7 +66,7 @@ export const AttributeTabsContent = ({
   const { battlerAnalytics, battlerRatings, chartType, toggleChartType } = useBattler();
 
   const chartConfig: ChartConfig = {
-    categoryTypes: Object.values(CATEGORY_TYPES),
+    categoryTypes: Object.values(ATTRIBUTE_CATEGORIES),
     colorOptions,
     attributes: categoryAttributes,
   };
@@ -81,7 +81,7 @@ export const AttributeTabsContent = ({
   );
 
   // Get the section from the title
-  const getSection = (): "writing" | "performance" | "personal" => {
+  const getSection = (): Category => {
     if (title.toLowerCase().includes("writing")) return "writing";
     if (title.toLowerCase().includes("performance")) return "performance";
     return "personal";

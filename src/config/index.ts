@@ -108,8 +108,8 @@ const PAGES = {
   SIGN_UP: "/auth/signup",
   LOGIN: "/auth/login",
   SELECT_ROLE: "/auth/signup/role",
-  RESET_PASSWORD: "/auth/reset-password",
-  FORGOT_PASSWORD: "/auth/forgot-password",
+  RESET_PASSWORD: "/reset-password",
+  FORGOT_PASSWORD: "/forgot-password",
   BATTLERS: "/battlers",
   HOME: "/",
   ADMIN_USER_LIST: "/admin/user-list",
@@ -124,13 +124,14 @@ const PAGES = {
   MY_RATINGS: "/my-ratings",
   PROFILE: "/profile",
   NEWS: "/news",
+  ADMIN: "/admin",
+  NOTIFICATIONS: "/notifications",
+  ABOUT: "/about",
+  CONTACT: "/contact",
+  PRIVACY: "/privacy",
+  TERMS: "/terms",
+  SETTINGS: "/settings",
   NEWS_PROMPTS: "/admin/news-prompts",
-};
-
-const CATEGORY_TYPES = {
-  WRITING: "writing",
-  PERFORMANCE: "performance",
-  PERSONAL: "personal",
 };
 
 export {
@@ -149,5 +150,4 @@ export {
   PERMISSIONS,
   PROMPT_MANAGEMENT_KEYS,
   PROMPT_KEY,
-  CATEGORY_TYPES,
 };

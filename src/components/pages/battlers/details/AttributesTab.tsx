@@ -52,7 +52,7 @@ export default function AttributesTab() {
 
   return (
     <div>
-      <Tabs defaultValue="writing" className="w-full">
+      <Tabs defaultValue={ATTRIBUTE_CATEGORIES.WRITING} className="w-full">
         <motion.div initial="hidden" animate="visible" variants={fadeIn}>
           <div className="w-full max-w-[400px] sm:max-w-full overflow-x-auto mb-6">
             <TabsList className="mb-6">
@@ -63,11 +63,17 @@ export default function AttributesTab() {
                 transition={{ delay: 0.2 }}
               >
                 <TabsList>
-                  <TabsTrigger value="writing" className="data-[state=active]:text-primary">
+                  <TabsTrigger
+                    value={ATTRIBUTE_CATEGORIES.WRITING}
+                    className="data-[state=active]:text-primary"
+                  >
                     <PenTool className="h-4 w-4 mr-2" />
                     Writing
                   </TabsTrigger>
-                  <TabsTrigger value="performance" className="data-[state=active]:text-success">
+                  <TabsTrigger
+                    value={ATTRIBUTE_CATEGORIES.PERFORMANCE}
+                    className="data-[state=active]:text-success"
+                  >
                     <Mic className="h-4 w-4 mr-2" />
                     Performance
                   </TabsTrigger>
