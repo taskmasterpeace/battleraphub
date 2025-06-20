@@ -49,7 +49,17 @@ export class NewsAggregatorAgent {
     const pattern = /```json\s*([\s\S]*?)\s*```/g;
     const matches = text.match(pattern);
     if (matches) {
-      return matches.map((match) => JSON.parse(match.replace(/```json|```/g, "")));
+      return matches
+        .map((match) => {
+          const cleaned = match.replace(/```json|```/g, "");
+          try {
+            return JSON.parse(cleaned);
+          } catch (e) {
+            console.error("Invalid JSON block:", cleaned, e);
+            return null;
+          }
+        })
+        .filter(Boolean);
     }
     return null;
   };
@@ -88,6 +98,7 @@ export class NewsAggregatorAgent {
   }
 
   async getYoutubeContext(searchTerms: string[]): Promise<{ [key: string]: unknown }> {
+    searchTerms = Array.isArray(searchTerms) ? searchTerms : [];
     console.log("Phase 3: YouTube context analysis...", searchTerms);
 
     // Get videos for each search term
@@ -205,9 +216,9 @@ export class NewsAggregatorAgent {
 
       // Phase 4: Topic Expansion
       const expandedTopics = await this.additionalAccountAnalysis(
-        Array(youtubeAnalysis)
-          .map((t) => t.alternative_terms)
-          .flat(),
+        Array.isArray(youtubeAnalysis)
+          ? youtubeAnalysis.map((t) => t.alternative_terms).flat()
+          : [],
         xAccounts,
       );
 
@@ -221,7 +232,7 @@ export class NewsAggregatorAgent {
 
       // // Phase 6: Content Generation
       const content = await this.generateContent(storylineConsolidation?.top_storylines);
-      return content;
+      return content.flat();
     } catch (error) {
       console.error("Error in battle rap analysis:", error);
       throw error;

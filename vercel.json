@@ -4,6 +4,10 @@
     {
       "path": "/api/youtube-fetch",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/aggregate-news",
+      "schedule": "0 5 * * *"
     }
   ]
 }

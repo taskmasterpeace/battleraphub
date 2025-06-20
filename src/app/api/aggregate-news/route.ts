@@ -38,9 +38,9 @@ export async function GET(request: Request) {
         { status: 500 },
       );
     }
-    return NextResponse.json({ message: "Videos updated successfully", result });
+    return NextResponse.json({ message: "News updated successfully", result });
   } catch (error) {
-    console.error("Error fetching YouTube videos:", error);
-    return NextResponse.json({ error: "Failed to fetch YouTube videos" }, { status: 500 });
+    console.error("Error fetching news:", error);
+    return NextResponse.json({ error: "Failed to fetch news" }, { status: 500 });
   }
 }
