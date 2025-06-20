@@ -10,6 +10,7 @@ import {
   Radar,
   RadarChart,
   Tooltip,
+  TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
@@ -71,10 +72,23 @@ export const AttributeTabsContent = ({
     attributes: categoryAttributes,
   };
 
-  // TODO: Needs improvement
+  // Inline default ratings
+  const defaultRating =
+    categoryAttributes?.map((attr) => ({
+      attribute_id: attr.id,
+      score: 0,
+    })) || [];
+
+  const battlerAnalyticsData =
+    battlerAnalytics && battlerAnalytics.length > 0 ? battlerAnalytics : defaultRating;
+
+  const battlerRatingsData =
+    battlerRatings && battlerRatings.length > 0 ? battlerRatings : defaultRating;
+
+  // Generate comparison data
   const comparisonData = generateComparisonChartData(
-    battlerAnalytics,
-    battlerRatings,
+    battlerAnalyticsData,
+    battlerRatingsData,
     chartConfig,
     "community-score",
     "rating-score",
@@ -146,23 +160,7 @@ export const AttributeTabsContent = ({
                           <RadarChart data={item.data}>
                             <PolarGrid />
                             <PolarAngleAxis dataKey="name" />
-                            <Tooltip
-                              content={({ active, payload }) =>
-                                active &&
-                                payload &&
-                                payload.length && (
-                                  <ChartTooltip className="p-2 rounded bg-muted">
-                                    <ChartTooltipContent>
-                                      {payload.map((entry, index) => (
-                                        <div key={`tooltip-${index}`}>
-                                          {entry.name}: {entry.value}
-                                        </div>
-                                      ))}
-                                    </ChartTooltipContent>
-                                  </ChartTooltip>
-                                )
-                              }
-                            />
+                            <Tooltip content={renderTooltip} />
                             {userId && (
                               <Radar
                                 name="My Rating"
@@ -187,23 +185,7 @@ export const AttributeTabsContent = ({
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
                             <YAxis />
-                            <Tooltip
-                              content={({ active, payload }) =>
-                                active &&
-                                payload &&
-                                payload.length && (
-                                  <ChartTooltip className="p-2 rounded bg-muted">
-                                    <ChartTooltipContent>
-                                      {payload.map((entry, index) => (
-                                        <div key={`tooltip-${index}`}>
-                                          {entry.name}: {entry.value}
-                                        </div>
-                                      ))}
-                                    </ChartTooltipContent>
-                                  </ChartTooltip>
-                                )
-                              }
-                            />
+                            <Tooltip content={renderTooltip} />
                             {userId && (
                               <Bar
                                 name="My Rating"
@@ -257,5 +239,20 @@ export const AttributeTabsContent = ({
         </div>
       </div>
     </motion.div>
+  );
+};
+
+const renderTooltip = ({ active, payload }: TooltipProps<string, string>): React.ReactNode => {
+  if (!active || !payload?.length) return null;
+  return (
+    <ChartTooltip className="p-2 rounded bg-muted">
+      <ChartTooltipContent>
+        {payload.map((entry, index) => (
+          <div key={`tooltip-${index}`}>
+            {entry.name}: {entry.value}
+          </div>
+        ))}
+      </ChartTooltipContent>
+    </ChartTooltip>
   );
 };
