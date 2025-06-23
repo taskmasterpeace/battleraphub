@@ -3,7 +3,25 @@ import { NewsAggregatorAgent } from ".";
 import { DB_TABLES } from "@/config";
 import { protectedCreateClient } from "@/utils/supabase/protected-server";
 
-const xAccounts = ["urltv", "KingOfTheDot"];
+const xAccounts = [
+  "LTBRpodcast",
+  "15MofeRadio",
+  "hiphopisrealtv",
+  "BattleRapTrap",
+  "Iam_AWard",
+  "MetaphorMessiah",
+  "bigGeechiMbb",
+  "TheOnlyTayRoc",
+  "islandgodverb",
+  "Eazyblockcapt",
+  "RuinYourDayNow",
+  "ChrisUnbias",
+  "HitmanHolla",
+  "chillajones",
+  "foe_tru",
+  "JoeyNine3",
+  "bigGeechiMbb",
+];
 
 // This route is protected by a cron secret, get youtube videos from AlgorithmInstituteofBR channel for home page videos with vercel cron job
 export async function GET(request: Request) {
