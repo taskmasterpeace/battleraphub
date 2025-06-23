@@ -33,7 +33,7 @@ BEGIN
   LIMIT limitnum;
 END;
 $$ LANGUAGE plpgsql
-SET search_path = '';
+SET search_path = 'public';
 
 -- Count the number of battlers with all the tags
 
@@ -62,4 +62,4 @@ BEGIN
   ) AS filtered_battlers;
 END;
 $$ LANGUAGE plpgsql
-SET search_path = '';
+SET search_path = 'public';

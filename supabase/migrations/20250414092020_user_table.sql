@@ -2,7 +2,7 @@
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
     RETURNS TRIGGER
     SECURITY INVOKER
-    SET search_path = ''
+    SET search_path = 'public'
     AS $$
     BEGIN
         NEW.updated_at = now();
@@ -42,7 +42,7 @@ CREATE TRIGGER handle_updated_at
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql security definer
-set search_path = ''
+set search_path = 'public'
 as $$
 declare
   user_name text;

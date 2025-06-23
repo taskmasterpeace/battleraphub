@@ -77,7 +77,8 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchHighlightBattlers = async () => {
     const { data: highlightData, error: highlightError } = await supabase
       .from(DB_TABLES.HIGHLIGHTS)
-      .select("*");
+      .select("*")
+      .eq("entity_type", "battler");
 
     if (highlightError) {
       console.error("Error fetching highlight battlers:", highlightError);
@@ -87,9 +88,7 @@ export const HomeProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: battlerData, error: battlerError } = await supabase
       .from(DB_TABLES.BATTLERS)
       .select(
-        `*, battler_tags (tags(id, name)),
-            battler_analytics !inner(type, score),
-            battler_badges (badges (id, name, description, is_positive, category))`,
+        `*, battler_tags (tags(id, name)), battler_badges (badges (id, name, description, is_positive, category)), battler_analytics (type, score)`,
       )
       .in("id", highlightData?.map(({ entity_id }) => entity_id) || []);
 
