@@ -55,7 +55,7 @@ BEGIN
         updated_at = NOW();
 END;
 $$ LANGUAGE plpgsql
-SET search_path = '';
+SET search_path = 'public';
 
 -- Create a cron job to run every 6 hours
 SELECT cron.schedule(

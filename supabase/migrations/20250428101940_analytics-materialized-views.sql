@@ -258,7 +258,7 @@ BEGIN
   LIMIT 10;
 END;
 $$ LANGUAGE plpgsql
-SET search_path = '';
+SET search_path = 'public';
 
 
 -- all_my_ratings_battlers
@@ -301,4 +301,4 @@ BEGIN
   GROUP BY br.battler_id, b.name, b.avatar;
 END;
 $$ LANGUAGE plpgsql
-SET search_path = '';
+SET search_path = 'public';

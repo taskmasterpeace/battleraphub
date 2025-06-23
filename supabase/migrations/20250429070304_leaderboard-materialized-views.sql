@@ -115,10 +115,11 @@ BEGIN
   GROUP BY br.battler_id, b.name;
 END;
 $$ LANGUAGE plpgsql
-SET search_path = '';
+SET search_path = 'public';
 
 -- Schedule cron jobs to refresh materialized views
 
 SELECT cron.schedule('refresh-leaderboard-community-stats', '0 1 * * *', 'REFRESH MATERIALIZED VIEW leaderboard_community_stats');
 SELECT cron.schedule('refresh-leaderboard-rating-distribution', '5 1 * * *', 'REFRESH MATERIALIZED VIEW leaderboard_rating_distribution');
 SELECT cron.schedule('refresh-leaderboard-active-roles-by-ratings', '10 1 * * *', 'REFRESH MATERIALIZED VIEW leaderboard_active_roles_by_ratings');
+SELECT cron.schedule('refresh-most-assigned-badges', '15 1 * * *', 'REFRESH MATERIALIZED VIEW most_assigned_badges')

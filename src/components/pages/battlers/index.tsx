@@ -259,7 +259,7 @@ export default function Battlers({ tags }: { tags: TagsOption[] }) {
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    handlePageChange(Math.max(totalPages, index + 1));
+                    handlePageChange(index + 1);
                   }}
                   isActive={currentPage === index + 1}
                 >

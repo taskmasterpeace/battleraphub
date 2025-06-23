@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { protectedCreateClient } from "@/utils/supabase/protected-server";
-import { DB_TABLES, PAGES, PERMISSIONS, ROLES_NAME, RPC_FUNCTIONS } from "@/config";
+import { DB_TABLES, PAGES, PERMISSIONS, RPC_FUNCTIONS } from "@/config";
 import { successResponse, errorResponse, redirectResponse } from "@/utils/response";
 import { uploadFileToStorage } from "@/lib/uploadFileToStorage";
 import { Battlers, MediaContent, MyRating, User, UserBadge } from "@/types";
@@ -590,11 +590,12 @@ export async function getUserByUsername(username: string): Promise<User | null> 
 
 export async function getUserRatings(userId: string): Promise<MyRating[]> {
   const supabase = await protectedCreateClient();
-  const { data } = await supabase.rpc(RPC_FUNCTIONS.ALL_MY_RATINGS_BATTLERS, {
+  const { data, error } = await supabase.rpc(RPC_FUNCTIONS.ALL_MY_RATINGS_BATTLERS, {
     p_user_id: userId,
   });
 
-  if (!data) {
+  if (error) {
+    console.error("Error fetching user ratings:", error);
     throw new Error("Failed to fetch user profiles");
   }
 
@@ -800,7 +801,7 @@ export const highlightedBattlerAction = async (isChecked: boolean, battler: Batt
         .from(DB_TABLES.HIGHLIGHTS)
         .insert({
           entity_id: battler.id,
-          entity_type: ROLES_NAME[userData.role_id],
+          entity_type: "battler",
         })
         .select();
 

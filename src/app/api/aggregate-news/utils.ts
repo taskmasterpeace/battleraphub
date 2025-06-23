@@ -97,7 +97,7 @@ export const getUserTweetsByUserName = async (username: string): Promise<Tweet[]
 
     // Step 2: Get tweets using user ID
     const tweetRes = await fetch(
-      `https://api.twitter.com/2/users/${userId}/tweets?tweet.fields=note_tweet,text&max_results=20`,
+      `https://api.twitter.com/2/users/${userId}/tweets?tweet.fields=note_tweet,text&max_results=10`,
       {
         headers: {
           Authorization: `Bearer ${bearerToken}`,

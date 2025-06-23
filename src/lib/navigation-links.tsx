@@ -68,7 +68,7 @@ export const NAV_LINKS: NavList[] = [
     roles: [],
     permissions: [],
   },
-  { href: PAGES.DIAGNOSTICS, label: "Diagnostics", icon: null, roles: [], permissions: [] },
+  // { href: PAGES.DIAGNOSTICS, label: "Diagnostics", icon: null, roles: [], permissions: [] },
   {
     href: PAGES.NEWS,
     label: "News",
