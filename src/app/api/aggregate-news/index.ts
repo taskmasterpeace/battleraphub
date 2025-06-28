@@ -208,10 +208,10 @@ export class NewsAggregatorAgent {
 
       // Phase 2: Cross-Topic Analysis
       const crossAccountAnalysis = await this.crossAccountAnalysis(initialAnalyses);
-
+      const analysisResults = Array.isArray(crossAccountAnalysis) ? crossAccountAnalysis[0] : {};
       // Phase 3: YouTube Context
       const youtubeAnalysis = await this.getYoutubeContext(
-        crossAccountAnalysis.youtube_search_terms as string[],
+        analysisResults.youtube_search_terms as string[],
       );
 
       // Phase 4: Topic Expansion

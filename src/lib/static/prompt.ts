@@ -197,7 +197,7 @@ Output in JSON:
 }
 `;
 
-const CONTENT_GENERATION = `
+export const CONTENT_GENERATION = `
 Using this storyline: {TOP_STORYLINE_JSON}, create compelling battle rap content in ONE of these formats:
 1. News Article (500-1000 words): Attention-grabbing headline, hook, background, perspectives, cultural significance, forward-looking conclusion.
 2. Video Script (3-5 min): Conversational dialogue for a Battle Rap News Show, with segment breaks and timestamps.
@@ -214,58 +214,14 @@ Handle edge cases:
 - If no recent battles are tied to the storyline, focus on verbal beefs or announcements.
 Give Output in JSON format:
 [{
-  "type": "event_analysis",
+  "reading_time": string,                     // Estimated reading time
   "headline": string,                         // A compelling title summarizing the event impact
+  "blurb": string,                            // A short summary of the article 
   "published_at": string (ISO date),
-  "tags": string[],                           // 3 descriptive tags like "Innovation", "Community Impact"
-  "location": string,                         // City, State
   "event_date": string (ISO date),            // Date of the event
-  "league": string,                           // e.g. "KOTD", "URL"
-  "main_event": {
-    "title": string,
-    "description": string
-  },
-  "format_innovation": {
-    "title": string,
-    "description": string,
-    "quote": string                            // If applicable
-  },
-  "community_reaction": {
-    "overall_sentiment": "Positive" | "Mixed" | "Negative",
-    "engagement_metrics": {
-      "likes": number,
-      "retweets": number
-    },
-    "summary": string
-  },
-  "cultural_significance": {
-    "score": number (1–10),
-    "narrative": string
-  },
-  "social_impact": {
-    "highlight": string,
-    "community_response": string,
-    "quote": string
-  },
-  "ai_predictions": string[],                 // At least 2 predictions
-  "core_topics": string[],                    // e.g. "Performance Evolution", "Virtual Formats"
-  "notable_content": string[],                // Direct powerful lines from the article
-  "executive_summary": {
-    "title": string,
-    "body": string
-  },
-  "related_analysis": [
-    {
-      "title": string,
-      "published": string (e.g. "2 days ago"),
-      "icon": string (emoji)
-    }
-  ],
-  "actions": {
-    "share_enabled": boolean,
-    "save_enabled": boolean,
-    "narrative": string
-  }
+  "tags": string[],                           // 3 descriptive tags like "Innovation", "Community Impact"
+  "main_content": string,                     // Main content of the article (500-1000 words) in html format  
+                                              // please only use h2, h3 and p tags so it can have a proper heading and paragraphs, please don't use /n
 }]
 `;
 
