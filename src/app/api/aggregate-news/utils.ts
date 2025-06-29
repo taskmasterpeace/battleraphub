@@ -1,5 +1,5 @@
 import { YoutubeTranscript } from "youtube-transcript";
-
+import { Supadata } from "@supadata/js";
 interface Tweet {
   text: string;
   edit_history_tweet_ids: string[];
@@ -118,20 +118,55 @@ export const getUserTweetsByUserName = async (username: string): Promise<Tweet[]
   }
 };
 
+const supadata = new Supadata({
+  apiKey: process.env.SUPADATA_API_KEY!,
+});
+
 /**
  *
  * @param {string} videoId
  * @returns {Promise<string>}
  */
 export const getVideoTranscript = async (videoId: string): Promise<string> => {
-  try {
-    const transcript = await YoutubeTranscript.fetchTranscript(videoId);
-    const combinedText = transcript.map((item) => item.text).join(" ");
-    return combinedText;
-  } catch (error) {
-    console.error(`Error fetching transcript for video ${videoId}:`, error);
+  if (!videoId) {
+    console.warn("No video ID provided for transcript");
     return "";
   }
+
+  try {
+    const transcript = await YoutubeTranscript.fetchTranscript(videoId);
+    const transcriptText = transcript
+      .map((item) => item.text)
+      .join(" ")
+      .trim();
+
+    if (transcriptText) {
+      return transcriptText;
+    }
+    console.warn("Transcript text is empty for video:", videoId);
+  } catch (err) {
+    console.warn(`Primary fetch failed for videoId: ${videoId}, trying Supadata`, err);
+
+    // Fallback to Supadata
+    try {
+      const transcriptSupadata = await supadata.youtube.transcript({
+        videoId,
+        text: true,
+      });
+
+      if (typeof transcriptSupadata.content === "string") {
+        return transcriptSupadata.content;
+      } else if (Array.isArray(transcriptSupadata.content)) {
+        return transcriptSupadata.content.map((item) => item?.text || "").join(" ");
+      }
+      console.warn("No valid transcript content found in Supadata response");
+    } catch (error) {
+      console.error(`All transcript fetch methods failed for video ${videoId}:`, error);
+    }
+  }
+
+  // Return empty string if all methods fail
+  return "";
 };
 
 /**

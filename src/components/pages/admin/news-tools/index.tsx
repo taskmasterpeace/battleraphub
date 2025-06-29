@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { setRedisKey } from "@/app/actions";
 import { PAGES } from "@/config";
+import { newsPrompts } from "@/lib/static/prompt";
 
 const PromptSchema = z.object({
   message: z.string().min(10, "Prompt must be at least 10 characters"),
@@ -60,7 +61,7 @@ const NewsTools = ({ prompts }: { prompts: Record<string, string> }) => {
   const handleReset = async () => {
     try {
       const name = activeKey;
-      const content = activeTemplate;
+      const content = newsPrompts[activeKey.replace("news:", "") as keyof typeof newsPrompts];
       const prompt = await setRedisKey(name, content);
       if (prompt.success) {
         toast.success("Your changes have been reset.");
